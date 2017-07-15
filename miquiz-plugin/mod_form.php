@@ -1,8 +1,6 @@
 <?php
 
-if (!defined('MOODLE_INTERNAL')) {
-    die('Direct access to this script is forbidden.');    ///  It must be included from a Moodle page
-}
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
 require_once($CFG->dirroot.'/question/editlib.php');
@@ -32,7 +30,13 @@ class mod_miquiz_mod_form extends moodleform_mod {
             $mform->setType('name', PARAM_CLEANHTML);
         }
         $mform->addRule('name', null, 'required', null, 'client');
-        $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+        $mform->addRule('name', get_string('maximumchars', '', 50), 'maxlength', 50, 'client');
+
+        if( $this->_instance == ''){
+            $mform->addElement('text', 'short_name', get_string('miquiz_create_short_name', 'miquiz'), array('size'=>'64'));
+            $mform->addRule('short_name', null, 'required', null, 'client');
+            $mform->addRule('short_name', get_string('maximumchars', '', 10), 'maxlength', 10, 'client');
+        }
 
         if( $this->_instance == ''){
             $options=array(); //use string keys as keys since conversion to numbers more complicated
@@ -106,7 +110,12 @@ class mod_miquiz_mod_form extends moodleform_mod {
      * @return array
      **/
     function validation($data, $files) {
+        global $DB;
         $errors = parent::validation($data, $files);
+
+        $same_names = $DB->get_records("miquiz", array("short_name" => $data["short_name"]));
+        if(count($same_names) > 0)
+            $errors['short_name'] = get_string('miquiz_create_error_unique', 'miquiz');
 
         // Check open and close times are consistent.
         if ($data['available'] != 0 && $data['deadline'] != 0 &&

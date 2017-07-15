@@ -7,6 +7,7 @@
     <TABLE NAME="miquiz" COMMENT="Defines miquiz">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"/>
+        <FIELD NAME="coursemodule" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" /> <!-- This field is for convenience since the id can be retrieved by cm->instance-->
         <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" />
         <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
         <FIELD NAME="intro" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
@@ -18,6 +19,7 @@
 
         <!-- If this time is over miquiz will be in productive mode-->
         <FIELD NAME="timeuntilproductive" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="short_name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
         <!-- If score_mode is:
         0: keine Punktvergabe
         1: einfache Punktvergabe ohne Minuspunkte (0 oder 1 Punkt)
@@ -28,6 +30,7 @@ Antwortmöglichkeiten)
 Antwortmöglichkeiten + gewählte/mögliche richtige Antwortmöglichkeiten)
         set respective scoring mode-->
         <FIELD NAME="scoremode" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="miquizcategoryid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="Primary key"/>
@@ -49,6 +52,21 @@ Antwortmöglichkeiten + gewählte/mögliche richtige Antwortmöglichkeiten)
       <INDEXES>
         <INDEX NAME="quizid" UNIQUE="false" FIELDS="quizid"/>
         <INDEX NAME="questionid" UNIQUE="false" FIELDS="questionid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="miquiz_users" COMMENT="Users belonging to quiz">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="quizid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="quizid" UNIQUE="false" FIELDS="quizid"/>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
       </INDEXES>
     </TABLE>
   </TABLES>
