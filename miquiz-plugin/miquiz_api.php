@@ -56,8 +56,27 @@ class miquiz {
     function create($miquiz){
         global $DB;
 
-        $moduleid = miquiz::get_module_id($miquiz);
+        $moduleid = miquiz::get_module_id();
+
+
+        switch ($miquiz->scoremode) {
+            case 1:
+                $scoremode = "rating_without_demerit";
+                break;
+            case 2:
+                $scoremode = "rating_with_demerit";
+                break;
+            case 3:
+                $scoremode = "relative_rating_without_demerit";
+                break;
+            case 4:
+                $scoremode = "relative_rating_with_demerit";
+                break;
+            default:
+                $scoremode = "no_rating";
+        }
         $resp = miquiz::post("api/categories", array("parent" => $moduleid,
+                                                     "scoreStrategy" => $scoremode,
                                                      "fullName" => $miquiz->name,
                                                      "name" => $miquiz->short_name));
         $catid = (int)$resp['id'];
@@ -91,17 +110,20 @@ class miquiz {
 
     function update($miquiz){
         global $DB;
-
+        /*
+        assesstimestart
+        assesstimefinish
+        timeuntilproductive
+        */
         return True; //TODO success
     }
 
     function delete($miquiz){
-        global $DB;
-
-        return True; //TODO success
+        $resp = miquiz::post("api/categories/" . $miquiz->$miquizcategoryid, array("active" => False));
+        return True;
     }
 
-    function get_module_id($miquiz){
+    function get_module_id(){
         $resp = miquiz::get("api/modules");
         foreach($resp as $cat){
             if($cat["name"] == get_string('miquizcategorygroup', 'miquiz'))
@@ -180,7 +202,20 @@ class miquiz {
             }
         }
 
-        //TODO send patch to miquiz to update user links
+        // send patch to miquiz to update user links
+        $user_patch = array();
+        foreach($enrolled as $a_user){
+            $a_user_id = 0;
+            foreach($miquiz_user as $a_miquiz_user) {
+                if($a_miquiz_user["login"] == $a_user->username){
+                    $a_user_id = $a_miquiz_user["id"];
+                    break;
+                }
+            }
+            $user_patch[] = ["type" => "users", "id" => $a_user_id];
+        }
+        $resp = miquiz::post("/api/categories/" . $miquiz->$miquizcategoryid . "/relationships/players",
+                              array("data" => $user_patch));
 
         return $enrolled;
     }
