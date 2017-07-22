@@ -113,8 +113,21 @@ class mod_miquiz_mod_form extends moodleform_mod {
         global $DB;
         $errors = parent::validation($data, $files);
 
+        # check categories in moodle
         $same_names = $DB->get_records("miquiz", array("short_name" => $data["short_name"]));
-        if(count($same_names) > 0)
+
+        # check categories in miquiz
+        $moduleid = miquiz::get_module_id();
+        $all_categories = miquiz::get("api/categories");
+        $exists_in_miquiz = False;
+        foreach($all_categories as $category){
+            if($category["name"] == $data["short_name"]){
+                $exists_in_miquiz = True;
+                break;
+            }
+        }
+
+        if(count($same_names) > 0 || $exists_in_miquiz)
             $errors['short_name'] = get_string('miquiz_create_error_unique', 'miquiz');
 
         // Check open and close times are consistent.
