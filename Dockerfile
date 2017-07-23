@@ -11,6 +11,6 @@ sed -e "s/pgsql/mariadb/" \
   -e "s/username/moodle/" \
   -e "s/password/moodle/" \
   -e "s/localhost/db/" \
-  -e "s/example.com\/moodle/129.206.245.121:8080/" \
+  -e "s/http:\/\/example.com\/moodle/http:\/\/test.mi-quiz.de/" \
   -e "s/\/home\/example\/moodledata/\/var\/www\/moodledata/" /var/www/htdocs/config-dist.php > /var/www/htdocs/config.php && \
 chown www-data:www-data /var/www/htdocs/config.php

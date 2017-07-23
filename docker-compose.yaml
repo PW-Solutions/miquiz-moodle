@@ -9,11 +9,17 @@ services:
        - MYSQL_DATABASE=moodle
   moodle:
     build: .
-    ports:
-      - 8080:80
+    expose:
+      - "80"
+#    ports:
+#      - 8090:80
     links:
       - db
     volumes:
       - ./miquiz-plugin/:/var/www/htdocs/mod/miquiz/
     environment:
-      - MOODLE_URL=http://129.206.245.121:8080
+      - MOODLE_URL=https://$SERVER
+      - SERVER_NAME=$SERVER
+      - VIRTUAL_HOST=$SERVER
+      - CERT_NAME=mi-quiz
+      - HTTPS_METHOD=noredirect
