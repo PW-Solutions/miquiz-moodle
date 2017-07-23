@@ -49,9 +49,8 @@ class mod_miquiz_mod_form extends moodleform_mod {
         }
 
         $mform->addElement('date_time_selector', 'assesstimestart', get_string('miquiz_create_assesstimestart', 'miquiz'));
-        $mform->addElement('date_time_selector', 'assesstimefinish', get_string('miquiz_create_assesstimefinish', 'miquiz'));
-
         $mform->addElement('date_time_selector', 'timeuntilproductive', get_string('miquiz_create_timeuntilproductive', 'miquiz'));
+        $mform->addElement('date_time_selector', 'assesstimefinish', get_string('miquiz_create_assesstimefinish', 'miquiz'));
 
         $this->standard_intro_elements(get_string('description', 'miquiz'));
 
@@ -126,8 +125,8 @@ class mod_miquiz_mod_form extends moodleform_mod {
                 break;
             }
         }
-        
-        if($data['assesstimestart'] <= $data['assesstimefinish'])
+
+        if($data['assesstimestart'] >= $data['assesstimefinish'])
             $errors['assesstimefinish'] = get_string('miquiz_create_error_endbeforestart', 'miquiz');
 
         if($data['timeuntilproductive'] >= $data['assesstimefinish'] ||

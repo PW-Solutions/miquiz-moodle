@@ -32,7 +32,12 @@ function miquiz_update_instance($miquiz) {
     $miquiz->id = $miquiz->instance;
     $miquiz->timemodified = time();
 
-    miquiz::update($miquiz);
+    // get a fresh copy of the miquiz object, since the received obj just contains the changes
+    $miquiz_fresh = $DB->get_record("miquiz", array("id"=>$miquiz->id));
+    $miquiz_fresh->assesstimestart = $miquiz->assesstimestart;
+    $miquiz_fresh->assesstimefinish = $miquiz->assesstimefinish;
+    $miquiz_fresh->timeuntilproductive = $miquiz->timeuntilproductive;
+    miquiz::update($miquiz_fresh);
 
     return $DB->update_record('miquiz', $miquiz);
 }

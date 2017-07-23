@@ -24,12 +24,14 @@ $enrolled = miquiz::sync_users($miquiz);
 
 echo $OUTPUT->header();
 
+echo '<h3>'.$miquiz->intro.'</h3></br>';
+echo '<form action="'.$url.'" target="_blanc"><input class="btn btn-primary" id="id_tomiquizbutton" type="submit" value="'.get_string('miquiz_view_openlink', 'miquiz').'"></form>';
+
 echo '<br/><b>'.get_string('miquiz_view_overview', 'miquiz').'</b><br/>';
-echo '<b>'.$miquiz->intro.'</b>';
 echo get_string('miquiz_view_shortname', 'miquiz').': '.$miquiz->short_name.'<br/>';
-echo get_string('miquiz_view_assesstimestart', 'miquiz').': '.gmdate("m.d.Y H:i", $miquiz->assesstimestart).'<br/>';
-echo get_string('miquiz_view_timeuntilproductive', 'miquiz').': '.gmdate("m.d.Y H:i", $miquiz->timeuntilproductive).'<br/>';
-echo get_string('miquiz_view_assesstimefinish', 'miquiz').': '.gmdate("m.d.Y H:i", $miquiz->assesstimefinish).'<br/>';
+echo get_string('miquiz_view_assesstimestart', 'miquiz').': '.gmdate("d.m.Y H:i", $miquiz->assesstimestart).'<br/>';
+echo get_string('miquiz_view_timeuntilproductive', 'miquiz').': '.gmdate("d.m.Y H:i", $miquiz->timeuntilproductive).'<br/>';
+echo get_string('miquiz_view_assesstimefinish', 'miquiz').': '.gmdate("d.m.Y H:i", $miquiz->assesstimefinish).'<br/>';
 echo get_string('miquiz_view_scoremode', 'miquiz').': '.get_string('miquiz_create_scoremode_'.$miquiz->scoremode, 'miquiz').'<br/>';
 
 if (has_capability('moodle/course:manageactivities', $context)) {
@@ -39,13 +41,14 @@ if (has_capability('moodle/course:manageactivities', $context)) {
     if (has_capability('moodle/course:manageactivities', $context)) {
         $resp = miquiz::api_get("/api/categories/" . $miquiz->miquizcategoryid . "/reports");
         foreach($resp as $report){
-            if(!isset($reports[$resp["questionId"]]))
-                $reports[$resp["questionId"]] = [];
-            $reports[$resp["questionId"]][] = $report;
+            if(!isset($reports[$report["questionId"]]))
+                $reports[$report["questionId"]] = [];
+            $reports[$report["questionId"]][] = $report;
         }
     }
 
     $quiz_questions = $DB->get_records('miquiz_questions', array('quizid' => $miquiz->id));
+    echo '<ul class="list-group">';
     if(count($quiz_questions) > 0){
         $question_ids = "";
         foreach($quiz_questions as $quiz_question){
@@ -55,15 +58,22 @@ if (has_capability('moodle/course:manageactivities', $context)) {
             $question_ids .="id=".$quiz_question->questionid;
         }
         $questions = $DB->get_records_sql('SELECT * FROM {question} q WHERE '. $question_ids);
+
         foreach($questions as $question){
+            //TODO this query can be joint with the above
+            $miquiz_question = $DB->get_record_sql('SELECT miquizquestionid FROM {miquiz_questions} WHERE questionid='. $question->id);
+            echo '<li class="list-group-item">';
             $category = $DB->get_record('question_categories', array('id' => $question->category));
-            echo $question->name.' ('.$category->name.')<ul>';
-            foreach($reports[$question->miquizquestionid] as $report){
-                echo '<li>['.$report['category'].']['.$report['author'].'] '.$report['message'].'</li>';
+            echo $question->name.' <span class="badge">'.$category->name.'</span><ul class="list-group">';
+            foreach($reports[$miquiz_question->miquizquestionid] as $report){
+                echo '<li class="list-group-item"><u>'.$report['category'].'</u></br>';
+                echo $report['message'];
+                echo '</br><i>'.$report['author'].'</i></li>';
             }
-            echo "</ul>";
+            echo "</ul></li>";
         }
     }
+    echo '</ul>';
 
     /*
     echo '<br/><b>'.get_string('miquiz_view_user', 'miquiz').'</b><br/>';
@@ -124,7 +134,7 @@ if (has_capability('moodle/course:manageactivities', $context)) {
 
     echo get_string('miquiz_view_statistics_answeredquestions', 'miquiz').': '.$answered_abs.' '.$answered_rel.'<br/>';
 
-    echo '<br/>';
+    echo '<br/><b>'.get_string('miquiz_view_statistics_user', 'miquiz').'</b><br/>';
     foreach($user_stats as $user_score){
         $score_training = $user_score["score"]["training"]["total"];
         $score_duel = $user_score["score"]["duel"]["total"];
@@ -149,14 +159,12 @@ if (has_capability('moodle/course:manageactivities', $context)) {
         $answered_rel = "(".$rel_answeredQuestions_total."/".$rel_answeredQuestions_correct."/".$rel_answeredQuestions_wrong.")";
 
         $username = miquiz::get_username($user_score["userId"], $user_obj);
-        echo "<p>".$username."<ul>";
+        echo '<div class="well"><u>'.$username.'</u><ul>';
         echo '<li>'.get_string('miquiz_view_statistics_answeredquestions', 'miquiz').': '.$answered_abs.' '.$answered_rel.'</li>';
         echo '<li>'.get_string('miquiz_view_statistics_totalscore', 'miquiz').': '.$score.'/'.$score_possible.'</li>';
-        echo "</ul></p>";
+        echo "</ul></div>";
     }
 }
-
-echo '<br/><form action="'.$url.'"><input class="btn btn-primary" id="id_tomiquizbutton" type="submit" value="'.get_string('miquiz_view_openlink', 'miquiz').'"></form>';
 
 //print_r($miquiz);
 
