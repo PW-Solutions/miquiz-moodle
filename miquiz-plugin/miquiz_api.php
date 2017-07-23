@@ -3,7 +3,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 class miquiz {
-    function get($endpoint) {
+    function api_get_base_crl($endpoint) {
         $url = get_string('modulebaseurl', 'miquiz') . "/" . $endpoint;
         $accesstoken = get_string('miquizapikey', 'miquiz');
         $headr = array();
@@ -15,49 +15,115 @@ class miquiz {
         curl_setopt($crl, CURLOPT_URL, $url);
         curl_setopt($crl, CURLOPT_HTTPHEADER, $headr);
         curl_setopt($crl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($crl, CURLOPT_HTTPGET, true);
+        return $crl;
+    }
+
+    function api_send($endpoint, $crl) {
         $reply = curl_exec($crl);
 
         if ($reply === false) {
             throw new Exception('Curl error: ' . curl_error($crl));
-        //    print_r('Curl error: ' . curl_error($crl));
         }
-        curl_close($crl);
+        $info = curl_getinfo($crl);
+        if($info['http_code'] != 200 && $info['http_code'] != 201 && $info['http_code'] != 204){
+            $error_ob = [
+                "info" => $info
+            ];
+            if($info['http_code'] == 422)  # print response if api was not used properly
+                $error_ob['reply'] = $reply;
+            throw new Exception('mi-quiz api error: ' . json_encode($error_ob, True));
+        }
 
+        curl_close($crl);
         return json_decode($reply, true);
     }
 
-    function post($endpoint, $data=array()) {
-        $url = get_string('modulebaseurl', 'miquiz') . "/" . $endpoint;
-        $accesstoken = get_string('miquizapikey', 'miquiz');
-        $headr = array();
-        $headr[] = 'Accept: application/json';
-        $headr[] = 'Content-type: application/json';
-        $headr[] = 'Authorization: Bearer '.$accesstoken;
-        $data_string = json_encode($data);
+    function api_get($endpoint) {
+        $crl = miquiz::api_get_base_crl($endpoint);
+        curl_setopt($crl, CURLOPT_HTTPGET, true);
+        return miquiz::api_send($endpoint, $crl);
+    }
 
-        $crl = curl_init();
-        curl_setopt($crl, CURLOPT_URL, $url);
-        curl_setopt($crl, CURLOPT_HTTPHEADER, $headr);
+    function api_post($endpoint, $data=array()) {
+        $crl = miquiz::api_get_base_crl($endpoint);
         curl_setopt($crl, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($crl, CURLOPT_POSTFIELDS, $data_string);
-        curl_setopt($crl, CURLOPT_RETURNTRANSFER, true);
-        $reply = curl_exec($crl);
+        curl_setopt($crl, CURLOPT_POSTFIELDS, json_encode($data));
+        return miquiz::api_send($endpoint, $crl);
+    }
 
-        if ($reply === false) {
-            throw new Exception('Curl error: ' . curl_error($crl));
-        //    print_r('Curl error: ' . curl_error($crl));
-        }
-        curl_close($crl);
-
-        return json_decode($reply, true);
+    function api_delete($endpoint) {
+        $crl = miquiz::api_get_base_crl($endpoint);
+        curl_setopt($crl, CURLOPT_CUSTOMREQUEST, "DELETE");
+        return miquiz::api_send($endpoint, $crl);
     }
 
     function create($miquiz){
         global $DB;
 
         $moduleid = miquiz::get_module_id();
+        $resp = miquiz::api_post("api/categories", array("parent" => $moduleid,
+                                                         "active" => False,
+                                                         "fullName" => $miquiz->name,
+                                                         "name" => $miquiz->short_name));
+        $catid = (int)$resp['id'];
+        $miquiz->miquizcategoryid = $catid;
 
+        //get questions from moodle
+        $question_ids = $miquiz->questions;
+        $query_question_ids = "";
+        foreach($question_ids as $question_id){
+            if($query_question_ids != ""){
+                $query_question_ids .= " OR ";
+            }
+            $query_question_ids .="id=".$question_id;
+        }
+        $questions = $DB->get_records_sql('SELECT * FROM {question} q WHERE '. $query_question_ids);
+
+        $miquiz_qids = [];
+        foreach($questions as $question){
+            $possibilities = $DB->get_records('question_answers', array('question' => $question->id));
+            $json_possibilities = [];
+            foreach($possibilities as $possibility)
+                $json_possibilities[] = ["description" => $possibility->answer, "isCorrect" => ((float)$possibility->fraction) > 0];
+
+            $resp = miquiz::api_post("api/questions", ["description" => ["text" => $question->questiontext],
+                                                   "possibilities" => $json_possibilities,
+                                                   "comment" => ["text" => $question->generalfeedback],
+                                                   "status" => "active",
+                                                   "timeToAnswer" => get_question_answeringtime($question->id),
+                                                   "categories" => [["id" => $catid]]]);
+            $miquiz_qids[$question->id] = (int)$resp["question"]["id"];
+        }
+
+        miquiz::scheduleTasks($miquiz);
+
+        return ['catid' => $catid, 'qids' => $miquiz_qids];
+    }
+
+    function update($miquiz){
+        global $DB;
+        miquiz::scheduleTasks($miquiz);
+        return True;
+    }
+
+    function delete($miquiz){
+        //TODO this is not the original obj
+        miquiz::deleteTasks($miquiz);
+        $resp = miquiz::api_post("api/categories/" . $miquiz->miquizcategoryid, array("active" => False));
+        return True;
+    }
+
+    function deleteTasks($miquiz){
+        $oldTasks = miquiz::api_get("api/tasks?filter[resource]=categories&filter[resourceId]=".$miquiz->miquizcategoryid);
+        foreach($oldTasks['data'] as $a_task){
+            miquiz::api_delete("api/tasks/".$a_task["id"]);
+        }
+    }
+
+    function scheduleTasks($miquiz){
+        miquiz::deleteTasks($miquiz);
+
+        $currentTime = time();
 
         switch ($miquiz->scoremode) {
             case 1:
@@ -75,67 +141,122 @@ class miquiz {
             default:
                 $scoremode = "no_rating";
         }
-        $resp = miquiz::post("api/categories", array("parent" => $moduleid,
-                                                     "scoreStrategy" => $scoremode,
-                                                     "fullName" => $miquiz->name,
-                                                     "name" => $miquiz->short_name));
-        $catid = (int)$resp['id'];
 
-        //get questions from moodle
-        $question_ids = $miquiz->questions;
-        $query_question_ids = "";
-        foreach($question_ids as $question_id){
-            if($query_question_ids != ""){
-                $query_question_ids .= " OR ";
-            }
-            $query_question_ids .="id=".$question_id;
+        //set category to current status
+        if($miquiz->assesstimestart>$currentTime){
+            $is_active = False;
+            $score_Strategy = "no_rating";
+            $enabled_game_modes = 'training';
         }
-        $questions = $DB->get_records_sql('SELECT * FROM {question} q WHERE '. $query_question_ids);
-
-        foreach($questions as $question){
-            $possibilities = $DB->get_records('question_answers', array('question' => $question->id));
-            $json_possibilities = [];
-            foreach($possibilities as $possibility)
-                $json_possibilities[] = ["description" => $possibility->answer, "isCorrect" => ((float)$possibility->fraction) > 0];
-
-            miquiz::post("api/questions", ["description" => ["text" => $question->questiontext],
-                                           "possibilities" => $json_possibilities,
-                                           "comment" => ["text" => $question->generalfeedback],
-                                           "timeToAnswer" => get_question_answeringtime($question->id),
-                                           "categories" => [["id" => $catid]]]);
+        else if($miquiz->assesstimestart<=$currentTime &&
+                $miquiz->assesstimefinish>$currentTime &&
+                $miquiz->timeuntilproductive>$currentTime){
+            $is_active = True;
+            $score_Strategy = "no_rating";
+            $enabled_game_modes = 'training';
+        }
+        else if($miquiz->assesstimestart<=$currentTime &&
+                $miquiz->assesstimefinish>$currentTime &&
+                $miquiz->timeuntilproductive<=$currentTime){
+            $is_active = True;
+            $score_Strategy = $scoremode;
+            $enabled_game_modes = "random-fight";
+        }
+        else if($miquiz->assesstimefinish<=$currentTime){
+            $is_active = False;
         }
 
-        return $catid;
-    }
+        $task = [
+            "type" => "tasks",
+            "attributes" => [
+                  "trigger" => [
+                    "type" => "timestamp",
+                    "operator" => ">=",
+                    "value" => (string)($currentTime-1)
+                  ],
+                  "resourceType" => "categories",
+                  "resourceId" => (string)$miquiz->miquizcategoryid,
+                  "action" => "update",
+                  "data" => [
+                      "active" => $is_active,
+                      "scoreStrategy" => $score_Strategy,
+                      "enabledModes" => $enabled_game_modes
+                  ]
+            ]
+        ];
+        miquiz::api_post("api/tasks", array("data" => $task));
+        //change status in the future
+        if($miquiz->assesstimestart>$currentTime){
+            $task = [
+                "type" => "tasks",
+                "attributes" => [
+                      "trigger" => [
+                        "type" => "timestamp",
+                        "operator" => ">=",
+                        "value" => (string)$miquiz->assesstimestart
+                      ],
+                      "resourceType" => "categories",
+                      "resourceId" => (string)$miquiz->miquizcategoryid,
+                      "action" => "update",
+                      "data" => [
+                          "active" => True,
+                          "scoreStrategy" => "no_rating",
+                          "enabledModes" => "training"
+                      ]
+                ]
+            ];
+            miquiz::api_post("api/tasks", array("data" => $task));
+        }
 
-    function update($miquiz){
-        global $DB;
-        /*
-        assesstimestart
-        assesstimefinish
-        timeuntilproductive
-        */
-        return True; //TODO success
-    }
+        if($miquiz->assesstimefinish>$currentTime){
+            $task = [
+                "type" => "tasks",
+                "attributes" => [
+                      "trigger" => [
+                        "type" => "timestamp",
+                        "operator" => ">=",
+                        "value" => (string)$miquiz->assesstimefinish
+                      ],
+                      "resourceType" => "categories",
+                      "resourceId" => (string)$miquiz->miquizcategoryid,
+                      "action" => "update",
+                      "data" => [
+                          "active" => False
+                      ]
+                ]
+            ];
+            miquiz::api_post("api/tasks", array("data" => $task));
+        }
 
-    function delete($miquiz){
-        $resp = miquiz::post("api/categories/" . $miquiz->$miquizcategoryid, array("active" => False));
-        return True;
+        if($miquiz->timeuntilproductive>$currentTime){
+            $task = [
+                "type" => "tasks",
+                "attributes" => [
+                      "trigger" => [
+                        "type" => "timestamp",
+                        "operator" => ">=",
+                        "value" => (string)$miquiz->timeuntilproductive
+                      ],
+                      "resourceType" => "categories",
+                      "resourceId" => (string)$miquiz->miquizcategoryid,
+                      "action" => "update",
+                      "data" => [
+                          "scoreStrategy" => $scoremode,
+                          "enabledModes" => "random-fight"
+                      ]
+                ]
+            ];
+            miquiz::api_post("api/tasks", array("data" => $task));
+        }
     }
 
     function get_module_id(){
-        $resp = miquiz::get("api/modules");
+        $resp = miquiz::api_get("api/modules");
         foreach($resp as $cat){
             if($cat["name"] == get_string('miquizcategorygroup', 'miquiz'))
                 return (int)$cat['id'];
         }
         return -1;
-    }
-
-    function sync_feedback($miquiz){
-        global $DB;
-
-        //TODO sync feeback with moodle
     }
 
     function sync_users($miquiz){
@@ -154,17 +275,18 @@ class miquiz {
         $activity_users = $DB->get_records('miquiz_users', array('quizid' => $miquiz->id));
 
         //create users not existing in mi-quiz
-        $miquiz_user = miquiz::get("api/users");
+        $miquiz_user = miquiz::api_get("api/users");
         foreach($enrolled as $a_user){
             $found = False;
             foreach($miquiz_user as $a_miquiz_user){
-                if($a_miquiz_user["externalLogin"] == $a_user->username){
+                if($a_miquiz_user["externalLogin"] == $a_user->username &&
+                   $a_miquiz_user["externalProvider"] == get_string('miquizloginprovider', 'miquiz')){
                     $found = True;
                     break;
                 }
             }
             if(!$found){
-                $resp = miquiz::post("api/users", array("login" => $a_user->username,
+                $resp = miquiz::api_post("api/users", array("login" => get_string('miquizloginprovider', 'miquiz').'_'.$a_user->username,
                                                         "role" => "standard",
                                                         "externalProvider" => get_string('miquizloginprovider', 'miquiz'),
                                                         "externalLogin" => $a_user->username));
@@ -175,9 +297,10 @@ class miquiz {
         foreach($enrolled as $a_user){
             $found = False;
             foreach($activity_users as $b_user){
-                if($a_user->id == $b_user->userid)
+                if($a_user->id == $b_user->userid){
                     $found = True;
                     break;
+                }
             }
             if(!$found){
                 $added_user = array(
@@ -205,18 +328,33 @@ class miquiz {
         // send patch to miquiz to update user links
         $user_patch = array();
         foreach($enrolled as $a_user){
-            $a_user_id = 0;
-            foreach($miquiz_user as $a_miquiz_user) {
-                if($a_miquiz_user["login"] == $a_user->username){
-                    $a_user_id = $a_miquiz_user["id"];
-                    break;
-                }
-            }
-            $user_patch[] = ["type" => "users", "id" => $a_user_id];
+            $a_user_id = miquiz::get_user_id($a_user->username, $miquiz_user);
+            $user_patch[] = ["type" => "users", "id" => (string)$a_user_id];
         }
-        $resp = miquiz::post("/api/categories/" . $miquiz->$miquizcategoryid . "/relationships/players",
-                              array("data" => $user_patch));
-
+        $resp = miquiz::api_post("/api/categories/" . $miquiz->miquizcategoryid . "/relationships/players",
+                      array("data" => $user_patch));
         return $enrolled;
+    }
+
+    function get_user_id($username, $user_obj=null){
+        if(is_null($user_obj))
+            $user_obj = miquiz::api_get("api/users");
+        foreach($user_obj as $a_miquiz_user) {
+            if($a_miquiz_user["externalLogin"] == $username &&
+               $a_miquiz_user["externalProvider"] == get_string('miquizloginprovider', 'miquiz'))
+                return $a_miquiz_user["id"];
+        }
+        return -1;
+    }
+
+    function get_username($id, $user_obj=null){
+        if(is_null($user_obj))
+            $user_obj = miquiz::api_get("api/users");
+
+        foreach($user_obj as $a_miquiz_user) {
+            if($a_miquiz_user["id"] == $id)
+                return $a_miquiz_user["externalLogin"];
+        }
+        return "";
     }
 }

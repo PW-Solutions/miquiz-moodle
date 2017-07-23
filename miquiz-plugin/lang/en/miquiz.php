@@ -25,6 +25,8 @@ $string['miquiz_create_questions'] = 'Questions';
 $string['miquiz_create_assesstimestart'] = 'Quiz Start Date';
 $string['miquiz_create_assesstimefinish'] = 'Quiz Stop Date';
 $string['miquiz_create_error_unique'] = 'Has to be unique.';
+$string['miquiz_create_error_endbeforestart'] = 'Quiz end date date has to be later than quiz start date.';
+$string['miquiz_create_error_betweenendstart'] = 'Test phase ending time has to be between quiz start and end date.';
 
 $string['miquiz_view_overview'] = 'Overview'; //&Uuml;bersicht
 $string['miquiz_view_shortname'] = 'Short name'; //Abk&uuml;rzung
@@ -36,9 +38,9 @@ $string['miquiz_view_questions'] = 'Questions'; //Fragen
 $string['miquiz_view_user'] = 'Player'; //Mitspieler
 $string['miquiz_view_statistics'] = 'Statistics'; //Statistiken
 $string['miquiz_view_score'] = 'Your score'; //Deine Punke
-$string['miquiz_view_statisticsans_answeredquestions'] = 'Answered questions (total/correct/wrong, absolute/relative)'; //Beantwortete Fragen (gesamt/richtig/falsch, absolut/relativ)
-$string['miquiz_view_statisticsans_totalscore'] = 'Score (achieved/maximum)'; //Punkte (erreicht/gesamt erreichbar)
-$string['miquiz_view_score'] = 'Your score'; //Deine Punke
+$string['miquiz_view_statistics_answeredquestions'] = 'Answered questions absolute(total/correct/wrong), relative(total/correct/wrong)'; //Beantwortete Fragen (gesamt/richtig/falsch, absolut/relativ)
+$string['miquiz_view_statistics_totalscore'] = 'Score (achieved/maximum)'; //Punkte (erreicht/gesamt erreichbar)
+$string['miquiz_view_score'] = 'Your score training(achieved/maximum), duel(achieved/maximum)'; //Deine Punke
 $string['miquiz_view_openlink'] = 'Open ' . $string['modulename']; //$string['modulename'] &ouml;ffnen
 
 $string['description'] = 'Description';

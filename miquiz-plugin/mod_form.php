@@ -118,7 +118,7 @@ class mod_miquiz_mod_form extends moodleform_mod {
 
         # check categories in miquiz
         $moduleid = miquiz::get_module_id();
-        $all_categories = miquiz::get("api/categories");
+        $all_categories = miquiz::api_get("api/categories");
         $exists_in_miquiz = False;
         foreach($all_categories as $category){
             if($category["name"] == $data["short_name"]){
@@ -126,6 +126,13 @@ class mod_miquiz_mod_form extends moodleform_mod {
                 break;
             }
         }
+        
+        if($data['assesstimestart'] <= $data['assesstimefinish'])
+            $errors['assesstimefinish'] = get_string('miquiz_create_error_endbeforestart', 'miquiz');
+
+        if($data['timeuntilproductive'] >= $data['assesstimefinish'] ||
+           $data['timeuntilproductive'] < $data['assesstimestart'])
+            $errors['timeuntilproductive'] = get_string('miquiz_create_error_betweenendstart', 'miquiz');
 
         if(count($same_names) > 0 || $exists_in_miquiz)
             $errors['short_name'] = get_string('miquiz_create_error_unique', 'miquiz');

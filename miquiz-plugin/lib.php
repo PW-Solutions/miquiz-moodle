@@ -8,16 +8,15 @@ function miquiz_add_instance($miquiz) {
     global $DB, $CFG;
 
     $miquiz->timemodified = time();
-    $questions = $miquiz->questions;
-
-    $miquiz->miquizcategoryid = miquiz::create($miquiz);
-
+    $miquiz_ids = miquiz::create($miquiz);
+    $miquiz->miquizcategoryid = $miquiz_ids["catid"];
     $miquiz->id = $DB->insert_record("miquiz", $miquiz);
 
-    foreach($questions as $question){
+    foreach($miquiz->questions as $question){
         $added_question = array(
             'quizid' => $miquiz->id,
             'questionid' => $question,
+            'miquizquestionid' => $miquiz_ids["qids"][$question],
             'timecreated' => time()
         );
         $DB->insert_record("miquiz_questions", $added_question);
