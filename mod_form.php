@@ -34,6 +34,11 @@ class mod_miquiz_mod_form extends moodleform_mod {
 
         if( $this->_instance == ''){
             $mform->addElement('text', 'short_name', get_string('miquiz_create_short_name', 'miquiz'), array('size'=>'64'));
+            if (!empty($CFG->formatstringstriptags)) {
+            	$mform->setType('short_name', PARAM_TEXT);
+            } else {
+            	$mform->setType('short_name', PARAM_CLEANHTML);
+            }
             $mform->addRule('short_name', null, 'required', null, 'client');
             $mform->addRule('short_name', get_string('maximumchars', '', 10), 'maxlength', 10, 'client');
         }
