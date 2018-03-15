@@ -2,11 +2,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['modulebaseurl'] = 'https://test.mi-quiz.de';
-$string['miquizapikey'] = '9b1d8a1bd3bf840b916464688b763f60';
+$string['generalconfig'] = 'MI-Quiz API Config';
+$string['explaingeneralconfig'] = 'MI-Quiz API Config';
+$string['configbaseurl'] = 'Base URL';
+$string['configapikey'] = 'API Key';
+$string['configloginprovider'] = 'Login Provider';
+$string['configcategorygroup'] = 'Category Group';
+
 $string['miquiz:addinstance'] = '';
-$string['miquizloginprovider'] = 'fhstp';
-$string['miquizcategorygroup'] = 'FHSTP';
 $string['modulename'] = 'SKILL-Quiz';
 $string['modulenameplural'] = 'SKILL-Quizze';
 $string['miquiz_question_timetag'] = 'Antwortzeit:';

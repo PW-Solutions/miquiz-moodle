@@ -69,14 +69,13 @@ function miquiz_delete_instance($id) {
 }
 
 
-function startsWith($haystack, $needle)
-{
+function startsWith($haystack, $needle) {
      $length = strlen($needle);
      return (substr($haystack, 0, $length) === $needle);
 }
 
 
-function get_question_answeringtime($question_id){
+function get_question_answeringtime($question_id) {
     global $DB;
 
     $tags = $DB->get_records_sql('SELECT t.rawname FROM {tag} t JOIN {tag_instance} ti on t.id=ti.tagid JOIN {question} q on q.id=ti.itemid WHERE ti.itemtype=\'question\' AND q.id=?', array($question_id));
@@ -91,7 +90,7 @@ function get_question_answeringtime($question_id){
 function miquiz_cron() {
     global $DB;
     $miquizs = $DB->get_records("miquiz");
-    foreach($miquizs as $miquiz){
+    foreach($miquizs as $miquiz) {
         try {
     		miquiz::sync_users($miquiz);
         } catch (Exception $e) {
