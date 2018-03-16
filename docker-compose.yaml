@@ -17,4 +17,4 @@ services:
     links:
       - db
     volumes:
-      - ./miquiz-plugin/:/var/www/htdocs/mod/miquiz/
+      - ./:/var/www/htdocs/mod/miquiz/
