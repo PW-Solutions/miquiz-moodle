@@ -13,7 +13,7 @@ services:
       args:
         - MOODLE_URL=$SERVER
     ports:
-      - 8080:80
+      - ${PORT}:80
     links:
       - db
     volumes:
