@@ -20,7 +20,7 @@ class mod_miquiz_mod_form extends moodleform_mod {
         global $CFG, $COURSE, $DB, $OUTPUT;
 
         $mform =& $this->_form;
-        
+
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
         $mform->addElement('text', 'name', get_string('miquiz_create_name', 'miquiz'), array('size'=>'64'));
@@ -116,19 +116,24 @@ class mod_miquiz_mod_form extends moodleform_mod {
     function validation($data, $files) {
         global $DB;
         $errors = parent::validation($data, $files);
-
-        # check categories in moodle
-        $same_names = $DB->get_records("miquiz", array("short_name" => $data["short_name"]));
-
-        # check categories in miquiz
-        $moduleid = miquiz::get_module_id();
-        $all_categories = miquiz::api_get("api/categories");
         $exists_in_miquiz = False;
-        foreach($all_categories as $category){
-            if($category["name"] == $data["short_name"]){
-                $exists_in_miquiz = True;
-                break;
+
+        if (isset($data["short_name"])) {
+            # check categories in moodle
+            $same_names = $DB->get_records("miquiz", array("short_name" => $data["short_name"]));
+
+            # check categories in miquiz
+            $moduleid = miquiz::get_module_id();
+            $all_categories = miquiz::api_get("api/categories");
+            $exists_in_miquiz = False;
+            foreach($all_categories as $category){
+                if($category["name"] == $data["short_name"]){
+                    $exists_in_miquiz = True;
+                    break;
+                }
             }
+            if(count($same_names) > 0 || $exists_in_miquiz)
+                $errors['short_name'] = get_string('miquiz_create_error_unique', 'miquiz');
         }
 
         if($data['assesstimestart'] >= $data['assesstimefinish'])
@@ -138,13 +143,12 @@ class mod_miquiz_mod_form extends moodleform_mod {
            $data['timeuntilproductive'] < $data['assesstimestart'])
             $errors['timeuntilproductive'] = get_string('miquiz_create_error_betweenendstart', 'miquiz');
 
-        if(count($same_names) > 0 || $exists_in_miquiz)
-            $errors['short_name'] = get_string('miquiz_create_error_unique', 'miquiz');
-
         // Check open and close times are consistent.
-        if ($data['available'] != 0 && $data['deadline'] != 0 &&
-                $data['deadline'] < $data['available']) {
-            $errors['deadline'] = get_string('closebeforeopen', 'lesson');
+        if (isset($data['available'])) {
+            if ($data['available'] != 0 && $data['deadline'] != 0 &&
+                    $data['deadline'] < $data['available']) {
+                $errors['deadline'] = get_string('closebeforeopen', 'lesson');
+            }
         }
 
         if (!empty($data['usepassword']) && empty($data['password'])) {

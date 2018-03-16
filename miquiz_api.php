@@ -59,7 +59,7 @@ class miquiz {
         return miquiz::api_send($endpoint, $crl);
     }
 
-    function create($miquiz){
+    static function create($miquiz){
         global $DB;
 
         $moduleid = miquiz::get_module_id();
@@ -102,13 +102,13 @@ class miquiz {
         return ['catid' => $catid, 'qids' => $miquiz_qids];
     }
 
-    function update($miquiz){
+    static function update($miquiz){
         global $DB;
         miquiz::scheduleTasks($miquiz);
         return True;
     }
 
-    function delete($miquiz){
+    static function delete($miquiz){
         miquiz::deleteTasks($miquiz);
         $resp = miquiz::api_post("api/categories/" . $miquiz->miquizcategoryid, array("active" => False));
         return True;
@@ -121,7 +121,7 @@ class miquiz {
         }
     }
 
-    function scheduleTasks($miquiz){
+    static function scheduleTasks($miquiz){
         miquiz::deleteTasks($miquiz);
 
         $currentTime = time();
@@ -277,7 +277,7 @@ class miquiz {
         miquiz::api_post("api/tasks", array("data" => $task));
     }
 
-    function get_module_id() {
+    static function get_module_id() {
         global $CFG;
 
         $resp = miquiz::api_get("api/modules");
@@ -301,11 +301,14 @@ class miquiz {
         $enrolled = $info->filter_user_list($enrolled);
 
         //sync with db
+
         $activity_users = $DB->get_records('miquiz_users', array('quizid' => $miquiz->id));
 
         //create users not existing in mi-quiz
         $miquiz_user = miquiz::api_get("api/users");
-        foreach($enrolled as $a_user){
+        $miquiz_user_dirty = false;
+        foreach($enrolled as $a_user) {
+            cli_write("    $a_user->username");
             $found = False;
             foreach($miquiz_user as $a_miquiz_user){
                 if($a_miquiz_user["externalLogin"] == $a_user->username &&
@@ -320,11 +323,15 @@ class miquiz {
                                                             "role" => "standard",
                                                             "externalProvider" => $CFG->miquiz_loginprovider,
                                                             "externalLogin" => $a_user->username));
+                    cli_write("[36;40;1m synced[m\n");
+                    $miquiz_user_dirty = true;
                 } catch (Exception $e) {
                     echo $e->getMessage();
                 }
-            }
+            } else cli_write("[32;40;1m OK[m\n");
         }
+        // call again to get ids for new users
+        if ($miquiz_user_dirty) $miquiz_user = miquiz::api_get("api/users");
 
         //create non existing user links
         foreach($enrolled as $a_user){
