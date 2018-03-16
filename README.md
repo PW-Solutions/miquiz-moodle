@@ -14,6 +14,10 @@ This repository comes with a ready to use docker configuration to test the plugi
 4. If port is other than `8080` change host port in `docker-compose.yml`
 5. Start containers with `docker-compose up -d`
 
+**Important:** To perform the initial moodle installation with this plugin already imported, we
+have to temporary comment out the lines in `lang\{en|de}\miquiz.php` where `get_config` is called,
+as Moodle tries to get the config value from the database before any tables are created.
+
 
 # TODOs
 - clean up code
