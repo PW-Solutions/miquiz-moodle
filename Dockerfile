@@ -4,9 +4,9 @@ ARG MOODLE_URL
 
 RUN mkdir /var/www/htdocs && mkdir /var/www/moodledata && mkdir -p /var/www/htdocs/www/calo && \
 chown -R www-data:www-data /var/www/moodledata && cd /var/www/htdocs && \
-curl -O https://download.moodle.org/download.php/direct/stable33/moodle-latest-33.tgz && \
-tar -xzf moodle-latest-33.tgz && \
-rm moodle-latest-33.tgz && \
+curl https://download.moodle.org/download.php/direct/stable33/moodle-latest-33.tgz > moodle.tgz && \
+tar -xzf moodle.tgz && \
+rm moodle.tgz && \
 mv moodle/* . && rm -rf moodle && cd / && \
 chown -R www-data:www-data /var/www && \
 sed -e "s/pgsql/mariadb/" \
