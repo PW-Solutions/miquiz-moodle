@@ -2,6 +2,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['modulename'] = 'MI-Quiz';
+$string['modulenameplural'] = 'MI-Quizze';
 $string['modulename_help'] = 'Erstelle ein ' . get_config('mod_miquiz', 'instancename') . ' Duell.';
 
 $string['miquiz_setting_instanceurl_title'] = 'URL zur Quiz-Instanz';
