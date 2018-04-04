@@ -2,20 +2,24 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['generalconfig'] = 'MI-Quiz API Config';
-$string['explaingeneralconfig'] = 'MI-Quiz API Config';
-$string['configbaseurl'] = 'Base URL';
-$string['configapikey'] = 'API Key';
-$string['configloginprovider'] = 'Login Provider';
-$string['configcategorygroup'] = 'Category Group';
+$string['modulename'] = 'MI-Quiz';
+$string['modulenameplural'] = 'MI-Quizzes';
+$string['modulename_help'] = 'Challenge your students in a ' . get_config('mod_miquiz', 'instancename') . ' duel.';
 
-$string['miquiz:addinstance'] = '';
-$string['modulename'] = 'SKILL-Quiz';
-$string['modulenameplural'] = 'SKILL-Quizze';
-$string['miquiz_question_timetag'] = 'Antwortzeit:';
-$string['miquiz_question_defaulttimetag'] = '60';
-
-$string['modulename_help'] = 'Challenge your students in a '. $string['modulename'] . ' duel.';
+$string['miquiz_setting_instanceurl_title'] = 'URL for quiz instance';
+$string['miquiz_setting_instanceurl_helper'] = 'Please add the full url to the quiz instance';
+$string['miquiz_setting_apikey_title'] = 'API key for quiz instance';
+$string['miquiz_setting_apikey_helper'] = 'The API key is necessary to make a connection to the quiz instance.';
+$string['miquiz_setting_loginprovider_title'] = 'Login provider';
+$string['miquiz_setting_loginprovider_helper'] = 'The login provider determines, how the user logs into the quiz instance.';
+$string['miquiz_setting_modulename_title'] = 'Module name';
+$string['miquiz_setting_modulename_helper'] = 'Name of the module in the quiz instance that groups all the Moodle content.';
+$string['miquiz_setting_instancename_title'] = 'Instance name';
+$string['miquiz_setting_instancename_helper'] = 'Name of the quiz instance how it is used in Moodle';
+$string['miquiz_setting_questiontimetag_title'] = 'Tag name for time to answer';
+$string['miquiz_setting_questiontimetag_helper'] = 'First part of the question tag that determines the time to answer. The complete tag is structered like this: [tagname]:[time_to_answer]';
+$string['miquiz_setting_questiondefaulttime_title'] = 'Default time to answer (in s)';
+$string['miquiz_setting_questiondefaulttime_helper'] = 'In case no specific time to answer is set, this default time (in seconds) will be used.';
 
 $string['miquiz_create_name'] = 'Quiz Name';
 $string['miquiz_create_short_name'] = 'Short Name';
@@ -47,7 +51,7 @@ $string['miquiz_view_score'] = 'Your score'; //Deine Punke
 $string['miquiz_view_statistics_answeredquestions'] = 'Answered questions absolute(total/correct/wrong), relative(total/correct/wrong)'; //Beantwortete Fragen (gesamt/richtig/falsch, absolut/relativ)
 $string['miquiz_view_statistics_totalscore'] = 'Score (achieved/maximum)'; //Punkte (erreicht/gesamt erreichbar)
 $string['miquiz_view_score'] = 'Your score training(achieved/maximum), duel(achieved/maximum)'; //Deine Punke
-$string['miquiz_view_openlink'] = 'Open ' . $string['modulename']; //$string['modulename'] &ouml;ffnen
+$string['miquiz_view_openlink'] = 'Open ' . get_config('mod_miquiz', 'instancename'); //$string['modulename'] &ouml;ffnen
 
 $string['description'] = 'Description';
 

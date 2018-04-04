@@ -4,13 +4,12 @@ defined('MOODLE_INTERNAL') || die();
 
 class miquiz {
     static function api_get_base_crl($endpoint) {
-        global $CFG;
-
-        $url = $CFG->miquiz_baseurl . $endpoint;
+        $url = get_config('mod_miquiz', 'instanceurl') . "/" . $endpoint;
+        $accesstoken = get_config('mod_miquiz', 'apikey');
         $headr = array();
         $headr[] = 'Accept: application/json';
         $headr[] = 'Content-type: application/json';
-        $headr[] = 'Authorization: Bearer '.$CFG->miquiz_apikey;
+        $headr[] = 'Authorization: Bearer ' . $accesstoken;
 
         $crl = curl_init();
         curl_setopt($crl, CURLOPT_URL, $url);
@@ -102,13 +101,13 @@ class miquiz {
         return ['catid' => $catid, 'qids' => $miquiz_qids];
     }
 
-    static function update($miquiz){
+    function update($miquiz){
         global $DB;
         miquiz::scheduleTasks($miquiz);
         return True;
     }
 
-    static function delete($miquiz){
+    function delete($miquiz){
         miquiz::deleteTasks($miquiz);
         $resp = miquiz::api_post("api/categories/" . $miquiz->miquizcategoryid, array("active" => False));
         return True;
@@ -277,19 +276,17 @@ class miquiz {
         miquiz::api_post("api/tasks", array("data" => $task));
     }
 
-    static function get_module_id() {
-        global $CFG;
-
+    static function get_module_id(){
         $resp = miquiz::api_get("api/modules");
         foreach($resp as $cat){
-            if($cat["name"] == $CFG->miquiz_categorygroup)
+            if($cat["name"] == get_config('mod_miquiz', 'modulename'))
                 return (int)$cat['id'];
         }
         return -1;
     }
 
     static function sync_users($miquiz){
-        global $DB, $CFG;
+        global $DB;
 
         // get users which can access miquiz
         $context = context_course::instance($miquiz->course);
@@ -301,35 +298,35 @@ class miquiz {
         $enrolled = $info->filter_user_list($enrolled);
 
         //sync with db
-
         $activity_users = $DB->get_records('miquiz_users', array('quizid' => $miquiz->id));
 
         //create users not existing in mi-quiz
         $miquiz_user = miquiz::api_get("api/users");
         $miquiz_user_dirty = false;
-        foreach($enrolled as $a_user) {
+        foreach($enrolled as $a_user){
             cli_write("    $a_user->username");
             $found = False;
             foreach($miquiz_user as $a_miquiz_user){
                 if($a_miquiz_user["externalLogin"] == $a_user->username &&
-                        $a_miquiz_user["externalProvider"] == $CFG->miquiz_loginprovider) {
+                   $a_miquiz_user["externalProvider"] == get_config('mod_miquiz', 'loginprovider')){
                     $found = True;
                     break;
                 }
             }
             if(!$found){
                 try {
-                    $resp = miquiz::api_post("api/users", array("login" => $CFG->miquiz_loginprovider.'_'.$a_user->username,
+                    $resp = miquiz::api_post("api/users", array("login" => get_config('mod_miquiz', 'loginprovider') . '_' . $a_user->username,
                                                             "role" => "standard",
-                                                            "externalProvider" => $CFG->miquiz_loginprovider,
+                                                            "externalProvider" => get_config('mod_miquiz', 'loginprovider'),
                                                             "externalLogin" => $a_user->username));
-                    cli_write("[36;40;1m synced[m\n");
+                    cli_write(" synced\n");
                     $miquiz_user_dirty = true;
                 } catch (Exception $e) {
                     echo $e->getMessage();
                 }
-            } else cli_write("[32;40;1m OK[m\n");
+            } else cli_write(" OK\n");
         }
+
         // call again to get ids for new users
         if ($miquiz_user_dirty) $miquiz_user = miquiz::api_get("api/users");
 
@@ -376,14 +373,12 @@ class miquiz {
         return $enrolled;
     }
 
-    static function get_user_id($username, $user_obj=null) {
-        global $CFG;
-
+    static function get_user_id($username, $user_obj=null){
         if(is_null($user_obj))
             $user_obj = miquiz::api_get("api/users");
         foreach($user_obj as $a_miquiz_user) {
             if($a_miquiz_user["externalLogin"] == $username &&
-                    $a_miquiz_user["externalProvider"] == $CFG->miquiz_loginprovider)
+               $a_miquiz_user["externalProvider"] == get_config('mod_miquiz', 'loginprovider'))
                 return $a_miquiz_user["id"];
         }
         return -1;

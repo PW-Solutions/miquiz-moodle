@@ -18,12 +18,13 @@ if (!$miquiz = $DB->get_record('miquiz', array('id'=> $cm->instance))) {
 }
 require_login($course, false, $cm);
 
+$url = getConfig('mod_miquiz', 'instanceurl');
 $context = context_module::instance($cm->id);
 
 echo $OUTPUT->header();
 
 echo '<h3>'.$miquiz->intro.'</h3></br>';
-echo '<form action="'.$CFG->miquiz_baseurl.'" target="_blanc"><input class="btn btn-primary" id="id_tomiquizbutton" type="submit" value="'.get_string('miquiz_view_openlink', 'miquiz').'"></form>';
+echo '<form action="'.$url.'" target="_blanc"><input class="btn btn-primary" id="id_tomiquizbutton" type="submit" value="'.get_string('miquiz_view_openlink', 'miquiz').'"></form>';
 
 echo '<br/><b>'.get_string('miquiz_view_overview', 'miquiz').'</b><br/>';
 echo get_string('miquiz_view_shortname', 'miquiz').': '.$miquiz->short_name.'<br/>';
