@@ -2,7 +2,24 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['modulename_help'] = 'Erstelle ein '. $string['modulename'] . ' Duell.';
+$string['modulename'] = 'MI-Quiz';
+$string['modulenameplural'] = 'MI-Quizze';
+$string['modulename_help'] = 'Erstelle ein ' . get_config('mod_miquiz', 'instancename') . ' Duell.';
+
+$string['miquiz_setting_instanceurl_title'] = 'URL zur Quiz-Instanz';
+$string['miquiz_setting_instanceurl_helper'] = 'Bitte die komplette URL zur Quiz-Instanz angeben, mit der dieses Plugin arbeiten soll';
+$string['miquiz_setting_apikey_title'] = 'API-Key zur  Quiz-Instanz';
+$string['miquiz_setting_apikey_helper'] = 'Der API-Key ist notwendig, um eine Verbindung zu der Quiz-Instanz aufbauen zu können.';
+$string['miquiz_setting_loginprovider_title'] = 'Login-Provider';
+$string['miquiz_setting_loginprovider_helper'] = 'Der Login-Provider legt fest, wie die User sich in der Quiz-Instanz einloggen.';
+$string['miquiz_setting_modulename_title'] = 'Modulname';
+$string['miquiz_setting_modulename_helper'] = 'Name des Modules in der Quiz-Instanz, in der alle Moodle-Inhalte gruppiert werden.';
+$string['miquiz_setting_instancename_title'] = 'Instanzname';
+$string['miquiz_setting_instancename_helper'] = 'Name der Quiz-Instanz, wie er in Moodle verwendet wird.';
+$string['miquiz_setting_questiontimetag_title'] = 'Tagname für Beantwortungszeit';
+$string['miquiz_setting_questiontimetag_helper'] = 'Name des Fragetags, dass die Beantwortungszeit festlegt. Der Tag setzt sich folgendermaßen zusammen: [tagname]:[beantwortungszeit]';
+$string['miquiz_setting_questiondefaulttime_title'] = 'Default-Beantwortungszeit (in s)';
+$string['miquiz_setting_questiondefaulttime_helper'] = 'Falls für eine Frage keine Beantwortungszeit festgelegt wurde, wird diese Zeit in Sekunden verwendet.';
 
 $string['miquiz_create_name'] = 'Quiz Name';
 $string['miquiz_create_short_name'] = 'Abk&uuml;rzung';
@@ -34,7 +51,7 @@ $string['miquiz_view_score'] = 'Deine Punke';
 $string['miquiz_view_statistics_answeredquestions'] = 'Beantwortete Fragen absolut(gesamt/richtig/falsch), relativ(gesamt/richtig/falsch)';
 $string['miquiz_view_statistics_totalscore'] = 'Punkte (erreicht/gesamt erreichbar)';
 $string['miquiz_view_score'] = 'Deine Punke Training(Erreicht/M&ouml;glich), Duel(Erreicht/M&ouml;glich)';
-$string['miquiz_view_openlink'] = $string['modulename'] . ' &ouml;ffnen';
+$string['miquiz_view_openlink'] =  get_config('mod_miquiz', 'instancename') . ' &ouml;ffnen';
 
 $string['description'] = 'Beschreibung';
 

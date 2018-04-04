@@ -1,0 +1,20 @@
+version: '2'
+services:
+  db:
+    image: mariadb
+    environment:
+       - MYSQL_ROOT_PASSWORD=admin
+       - MYSQL_USER=moodle
+       - MYSQL_PASSWORD=moodle
+       - MYSQL_DATABASE=moodle
+  moodle:
+    build: 
+      context: .
+      args:
+        - MOODLE_URL=$SERVER
+    ports:
+      - ${PORT}:80
+    links:
+      - db
+    volumes:
+      - ./:/var/www/htdocs/mod/miquiz/
