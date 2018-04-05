@@ -97,6 +97,7 @@ class miquiz {
         }
 
         miquiz::scheduleTasks($miquiz);
+        miquiz::sync_users($miquiz);
 
         return ['catid' => $catid, 'qids' => $miquiz_qids];
     }
