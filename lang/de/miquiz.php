@@ -54,5 +54,6 @@ $string['miquiz_view_score'] = 'Deine Punke Training(Erreicht/M&ouml;glich), Due
 $string['miquiz_view_openlink'] =  get_config('mod_miquiz', 'instancename') . ' &ouml;ffnen';
 
 $string['description'] = 'Beschreibung';
+$string['task_sync_users_name'] = 'Synchronisiere Quiz-User mit Instanz';
 
 $string['pluginadministration'] = 'MI-Quiz Plugin administration';
