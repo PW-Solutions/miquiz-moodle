@@ -54,6 +54,7 @@ $string['miquiz_view_score'] = 'Your score training(achieved/maximum), duel(achi
 $string['miquiz_view_openlink'] = 'Open ' . get_config('mod_miquiz', 'instancename'); //$string['modulename'] &ouml;ffnen
 
 $string['description'] = 'Description';
+$string['task_sync_users_name'] = 'Sync quiz users with instance';
 
 $string['pluginname'] = 'MI-Quiz';
 $string['pluginadministration'] = 'MI-Quiz Plugin administration';

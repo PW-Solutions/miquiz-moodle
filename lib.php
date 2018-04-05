@@ -86,18 +86,3 @@ function get_question_answeringtime($question_id){
     }
     return (int)get_config('mod_miquiz', 'questiondefaulttime');
 }
-
-
-function miquiz_cron() {
-    global $DB;
-    $miquizs = $DB->get_records("miquiz");
-    cli_heading('MIQUIZ usersync');
-    foreach($miquizs as $miquiz){
-        try {
-            cli_write("syncing $miquiz->short_name (course $miquiz->course)\n");
-    		miquiz::sync_users($miquiz);
-        } catch (Exception $e) {
-            echo $e->getMessage();
-        }
-    }
-}
