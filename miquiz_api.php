@@ -3,8 +3,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 class miquiz {
-    function api_get_base_crl($endpoint) {
-        $url = getConfig('mod_miquiz', 'instanceurl') . "/" . $endpoint;
+    static function api_get_base_crl($endpoint) {
+        $url = get_config('mod_miquiz', 'instanceurl') . "/" . $endpoint;
         $accesstoken = get_config('mod_miquiz', 'apikey');
         $headr = array();
         $headr[] = 'Accept: application/json';
@@ -18,7 +18,7 @@ class miquiz {
         return $crl;
     }
 
-    function api_send($endpoint, $crl) {
+    static function api_send($endpoint, $crl) {
         $reply = curl_exec($crl);
 
         if ($reply === false) {
@@ -39,26 +39,26 @@ class miquiz {
         return json_decode($reply, true);
     }
 
-    function api_get($endpoint) {
+    static function api_get($endpoint) {
         $crl = miquiz::api_get_base_crl($endpoint);
         curl_setopt($crl, CURLOPT_HTTPGET, true);
         return miquiz::api_send($endpoint, $crl);
     }
 
-    function api_post($endpoint, $data=array()) {
+    static function api_post($endpoint, $data=array()) {
         $crl = miquiz::api_get_base_crl($endpoint);
         curl_setopt($crl, CURLOPT_CUSTOMREQUEST, "POST");
         curl_setopt($crl, CURLOPT_POSTFIELDS, json_encode($data));
         return miquiz::api_send($endpoint, $crl);
     }
 
-    function api_delete($endpoint) {
+    static function api_delete($endpoint) {
         $crl = miquiz::api_get_base_crl($endpoint);
         curl_setopt($crl, CURLOPT_CUSTOMREQUEST, "DELETE");
         return miquiz::api_send($endpoint, $crl);
     }
 
-    function create($miquiz){
+    static function create($miquiz){
         global $DB;
 
         $moduleid = miquiz::get_module_id();
@@ -113,14 +113,14 @@ class miquiz {
         return True;
     }
 
-    function deleteTasks($miquiz){
+    static function deleteTasks($miquiz){
         $oldTasks = miquiz::api_get("api/tasks?filter[resource]=categories&filter[resourceId]=".$miquiz->miquizcategoryid);
         foreach($oldTasks['data'] as $a_task){
             miquiz::api_delete("api/tasks/".$a_task["id"]);
         }
     }
 
-    function scheduleTasks($miquiz){
+    static function scheduleTasks($miquiz){
         miquiz::deleteTasks($miquiz);
 
         $currentTime = time();
@@ -276,7 +276,7 @@ class miquiz {
         miquiz::api_post("api/tasks", array("data" => $task));
     }
 
-    function get_module_id(){
+    static function get_module_id(){
         $resp = miquiz::api_get("api/modules");
         foreach($resp as $cat){
             if($cat["name"] == get_config('mod_miquiz', 'modulename'))
@@ -285,7 +285,7 @@ class miquiz {
         return -1;
     }
 
-    function sync_users($miquiz){
+    static function sync_users($miquiz){
         global $DB;
 
         // get users which can access miquiz
@@ -302,7 +302,9 @@ class miquiz {
 
         //create users not existing in mi-quiz
         $miquiz_user = miquiz::api_get("api/users");
+        $miquiz_user_dirty = false;
         foreach($enrolled as $a_user){
+            cli_write("    $a_user->username");
             $found = False;
             foreach($miquiz_user as $a_miquiz_user){
                 if($a_miquiz_user["externalLogin"] == $a_user->username &&
@@ -317,11 +319,16 @@ class miquiz {
                                                             "role" => "standard",
                                                             "externalProvider" => get_config('mod_miquiz', 'loginprovider'),
                                                             "externalLogin" => $a_user->username));
+                    cli_write(" synced\n");
+                    $miquiz_user_dirty = true;
                 } catch (Exception $e) {
                     echo $e->getMessage();
                 }
-            }
+            } else cli_write(" OK\n");
         }
+
+        // call again to get ids for new users
+        if ($miquiz_user_dirty) $miquiz_user = miquiz::api_get("api/users");
 
         //create non existing user links
         foreach($enrolled as $a_user){
@@ -346,7 +353,7 @@ class miquiz {
         foreach($activity_users as $a_user){
             $found = False;
             foreach($enrolled as $b_user){
-                if($a_user->id == $b_user->userid)
+                if($a_user->id == $b_user->id)
                     $found = True;
                     break;
             }
@@ -366,7 +373,7 @@ class miquiz {
         return $enrolled;
     }
 
-    function get_user_id($username, $user_obj=null){
+    static function get_user_id($username, $user_obj=null){
         if(is_null($user_obj))
             $user_obj = miquiz::api_get("api/users");
         foreach($user_obj as $a_miquiz_user) {
@@ -377,7 +384,7 @@ class miquiz {
         return -1;
     }
 
-    function get_username($id, $user_obj=null){
+    static function get_username($id, $user_obj=null){
         if(is_null($user_obj))
             $user_obj = miquiz::api_get("api/users");
 

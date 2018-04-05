@@ -20,7 +20,7 @@ class mod_miquiz_mod_form extends moodleform_mod {
         global $CFG, $COURSE, $DB, $OUTPUT;
 
         $mform =& $this->_form;
-        
+
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
         $mform->addElement('text', 'name', get_string('miquiz_create_name', 'miquiz'), array('size'=>'64'));
@@ -34,6 +34,11 @@ class mod_miquiz_mod_form extends moodleform_mod {
 
         if( $this->_instance == ''){
             $mform->addElement('text', 'short_name', get_string('miquiz_create_short_name', 'miquiz'), array('size'=>'64'));
+            if (!empty($CFG->formatstringstriptags)) {
+                $mform->setType('short_name', PARAM_TEXT);
+            } else {
+                $mform->setType('short_name', PARAM_CLEANHTML);
+            }
             $mform->addRule('short_name', null, 'required', null, 'client');
             $mform->addRule('short_name', get_string('maximumchars', '', 10), 'maxlength', 10, 'client');
         }
@@ -137,9 +142,11 @@ class mod_miquiz_mod_form extends moodleform_mod {
             $errors['short_name'] = get_string('miquiz_create_error_unique', 'miquiz');
 
         // Check open and close times are consistent.
-        if ($data['available'] != 0 && $data['deadline'] != 0 &&
-                $data['deadline'] < $data['available']) {
-            $errors['deadline'] = get_string('closebeforeopen', 'lesson');
+        if (isset($data['available'])) {
+            if ($data['available'] != 0 && $data['deadline'] != 0 &&
+                    $data['deadline'] < $data['available']) {
+                $errors['deadline'] = get_string('closebeforeopen', 'lesson');
+            }
         }
 
         if (!empty($data['usepassword']) && empty($data['password'])) {
