@@ -3,12 +3,14 @@
 defined('MOODLE_INTERNAL') || die();
 
 class miquiz {
-    static function api_get_base_crl($endpoint) {
+    static function api_get_base_crl($endpoint, $asJson = true) {
         $url = get_config('mod_miquiz', 'instanceurl') . "/" . $endpoint;
         $accesstoken = get_config('mod_miquiz', 'apikey');
         $headr = array();
-        $headr[] = 'Accept: application/json';
+        if ($asJson) {
         $headr[] = 'Content-type: application/json';
+        }
+        $headr[] = 'Accept: application/json';
         $headr[] = 'Authorization: Bearer ' . $accesstoken;
 
         $crl = curl_init();
