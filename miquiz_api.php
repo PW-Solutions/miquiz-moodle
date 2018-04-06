@@ -104,6 +104,34 @@ class miquiz {
         return ['catid' => $catid, 'qids' => $miquiz_qids];
     }
 
+    static function addImage($string, $contextId, $component, $filearea, $objectId){
+        $fs = get_file_storage();
+        $files = $fs->get_area_files($contextid, $component, $filearea, $objectId);
+        if (empty($files) || strpos($string, '@@PLUGINFILE@@') === false) {
+            return $string;
+        }
+        foreach ($files as $file) {
+            $fileUrl = miquiz::uploadFile($file->get_filepath(), $file->get_filename());
+            $string = str_replace('@@PLUGINFILE@@/' . $file->get_filename(), $fileUrl, $string);
+        }
+        return $string;
+    }
+
+    static function uploadFile($filepath, $filename) {
+        $endpoint = 'api/upload';
+        $fileData = [
+            'file' => '@' . $filepath . ';filename=' . $filename . ';type=' . $mimetype
+        ];
+        $crl = miquiz::api_get_base_crl($endpoint, false);
+        curl_setopt($crl, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($crl, CURLOPT_POSTFIELDS, $fileData);
+        $response = miquiz::api_send($endpoint, $crl);
+        if (!isset($response['success']) || !$response['success']) {
+            return null;
+        }
+        return $response['src'];
+    }
+
     function update($miquiz){
         global $DB;
         miquiz::scheduleTasks($miquiz);
