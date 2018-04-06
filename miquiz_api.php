@@ -8,7 +8,7 @@ class miquiz {
         $accesstoken = get_config('mod_miquiz', 'apikey');
         $headr = array();
         if ($asJson) {
-        $headr[] = 'Content-type: application/json';
+            $headr[] = 'Content-type: application/json';
         }
         $headr[] = 'Accept: application/json';
         $headr[] = 'Authorization: Bearer ' . $accesstoken;
@@ -61,8 +61,10 @@ class miquiz {
     }
 
     static function create($miquiz){
-        global $DB;
+        global $DB, $COURSE;
 
+        
+        $context = context_course::instance($COURSE->id);
         $moduleid = miquiz::get_module_id();
         $resp = miquiz::api_post("api/categories", array("parent" => $moduleid,
                                                          "active" => False,
@@ -86,10 +88,14 @@ class miquiz {
         foreach($questions as $question){
             $possibilities = $DB->get_records('question_answers', array('question' => $question->id));
             $json_possibilities = [];
-            foreach($possibilities as $possibility)
-                $json_possibilities[] = ["description" => $possibility->answer, "isCorrect" => ((float)$possibility->fraction) > 0];
+            foreach($possibilities as $possibility) {
+                $possibilityDescription = miquiz::addImage($possibility->answer, $context->id, 'question', 'answer', $possibility->id);
+                $json_possibilities[] = ["description" => $possibilityDescription, "isCorrect" => ((float)$possibility->fraction) > 0];
+            }
 
-            $resp = miquiz::api_post("api/questions", ["description" => ["text" => $question->questiontext],
+            $questionDescription = miquiz::addImage($question->questiontext, $context->id, 'question', 'questiontext', $question->id);
+
+            $resp = miquiz::api_post("api/questions", ["description" => ["text" => $questionDescription],
                                                    "possibilities" => $json_possibilities,
                                                    "comment" => ["text" => $question->generalfeedback],
                                                    "status" => "active",
