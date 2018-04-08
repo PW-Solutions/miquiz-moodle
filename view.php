@@ -69,11 +69,12 @@ if (has_capability('moodle/course:manageactivities', $context)) {
             echo '<li class="list-group-item">';
             $category = $DB->get_record('question_categories', array('id' => $question->category));
             echo $question->name.' <span class="badge">'.$category->name.'</span><ul class="list-group">';
-
+            if (isset($reports[$miquiz_question->miquizquestionid])) {
             foreach($reports[$miquiz_question->miquizquestionid] as $report){
                 echo '<li class="list-group-item"><u>'.$report['category'].'</u></br>';
                 echo $report['message'];
                 echo '</br><i>'.$report['author'].'</i></li>';
+            }
             }
             echo "</ul></li>";
         }
