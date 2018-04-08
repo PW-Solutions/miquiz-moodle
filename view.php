@@ -18,7 +18,7 @@ if (!$miquiz = $DB->get_record('miquiz', array('id'=> $cm->instance))) {
 }
 require_login($course, false, $cm);
 
-$url = getConfig('mod_miquiz', 'instanceurl');
+$url = get_config('mod_miquiz', 'instanceurl');
 $context = context_module::instance($cm->id);
 
 echo $OUTPUT->header();
