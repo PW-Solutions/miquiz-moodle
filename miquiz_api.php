@@ -110,22 +110,34 @@ class miquiz {
     }
 
     static function addImage($string, $contextId, $component, $filearea, $objectId){
+        global $CFG;
         $fs = get_file_storage();
-        $files = $fs->get_area_files($contextid, $component, $filearea, $objectId);
+        $files = $fs->get_area_files($contextId, $component, $filearea, $objectId);
         if (empty($files) || strpos($string, '@@PLUGINFILE@@') === false) {
             return $string;
         }
         foreach ($files as $file) {
-            $fileUrl = miquiz::uploadFile($file->get_filepath(), $file->get_filename());
-            $string = str_replace('@@PLUGINFILE@@/' . $file->get_filename(), $fileUrl, $string);
+            if (!in_array($file->get_mimetype(), ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'])) {
+                continue;
+            }
+            $hash = $file->get_contenthash();
+            $filePath = implode('/', [
+                $CFG->dataroot,
+                'filedir',
+                substr($hash, 0, 2),
+                substr($hash, 2, 2),
+                $hash
+            ]);
+            $fileUrl = miquiz::uploadFile($filePath, $file->get_filename(), $file->get_mimetype());
+            $string = str_replace('@@PLUGINFILE@@/' . rawurlencode($file->get_filename()), $fileUrl, $string);
         }
         return $string;
     }
 
-    static function uploadFile($filepath, $filename) {
+    static function uploadFile($filepath, $filename, $mimetype) {
         $endpoint = 'api/upload';
         $fileData = [
-            'file' => '@' . $filepath . ';filename=' . $filename . ';type=' . $mimetype
+            'file' => new CURLFile($filepath, $mimetype, $filename),
         ];
         $crl = miquiz::api_get_base_crl($endpoint, false);
         curl_setopt($crl, CURLOPT_CUSTOMREQUEST, "POST");
