@@ -3,12 +3,14 @@
 defined('MOODLE_INTERNAL') || die();
 
 class miquiz {
-    static function api_get_base_crl($endpoint) {
+    static function api_get_base_crl($endpoint, $asJson = true) {
         $url = get_config('mod_miquiz', 'instanceurl') . "/" . $endpoint;
         $accesstoken = get_config('mod_miquiz', 'apikey');
         $headr = array();
+        if ($asJson) {
+            $headr[] = 'Content-type: application/json';
+        }
         $headr[] = 'Accept: application/json';
-        $headr[] = 'Content-type: application/json';
         $headr[] = 'Authorization: Bearer ' . $accesstoken;
 
         $crl = curl_init();
@@ -59,8 +61,10 @@ class miquiz {
     }
 
     static function create($miquiz){
-        global $DB;
+        global $DB, $COURSE;
 
+        
+        $context = context_course::instance($COURSE->id);
         $moduleid = miquiz::get_module_id();
         $resp = miquiz::api_post("api/categories", array("parent" => $moduleid,
                                                          "active" => False,
@@ -84,10 +88,14 @@ class miquiz {
         foreach($questions as $question){
             $possibilities = $DB->get_records('question_answers', array('question' => $question->id));
             $json_possibilities = [];
-            foreach($possibilities as $possibility)
-                $json_possibilities[] = ["description" => $possibility->answer, "isCorrect" => ((float)$possibility->fraction) > 0];
+            foreach($possibilities as $possibility) {
+                $possibilityDescription = miquiz::addImage($possibility->answer, $context->id, 'question', 'answer', $possibility->id);
+                $json_possibilities[] = ["description" => $possibilityDescription, "isCorrect" => ((float)$possibility->fraction) > 0];
+            }
 
-            $resp = miquiz::api_post("api/questions", ["description" => ["text" => $question->questiontext],
+            $questionDescription = miquiz::addImage($question->questiontext, $context->id, 'question', 'questiontext', $question->id);
+
+            $resp = miquiz::api_post("api/questions", ["description" => ["text" => $questionDescription],
                                                    "possibilities" => $json_possibilities,
                                                    "comment" => ["text" => $question->generalfeedback],
                                                    "status" => "active",
@@ -97,9 +105,48 @@ class miquiz {
         }
 
         miquiz::scheduleTasks($miquiz);
-        miquiz::sync_users($miquiz);
 
         return ['catid' => $catid, 'qids' => $miquiz_qids];
+    }
+
+    static function addImage($string, $contextId, $component, $filearea, $objectId){
+        global $CFG;
+        $fs = get_file_storage();
+        $files = $fs->get_area_files($contextId, $component, $filearea, $objectId);
+        if (empty($files) || strpos($string, '@@PLUGINFILE@@') === false) {
+            return $string;
+        }
+        foreach ($files as $file) {
+            if (!in_array($file->get_mimetype(), ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'])) {
+                continue;
+            }
+            $hash = $file->get_contenthash();
+            $filePath = implode('/', [
+                $CFG->dataroot,
+                'filedir',
+                substr($hash, 0, 2),
+                substr($hash, 2, 2),
+                $hash
+            ]);
+            $fileUrl = miquiz::uploadFile($filePath, $file->get_filename(), $file->get_mimetype());
+            $string = str_replace('@@PLUGINFILE@@/' . rawurlencode($file->get_filename()), $fileUrl, $string);
+        }
+        return $string;
+    }
+
+    static function uploadFile($filepath, $filename, $mimetype) {
+        $endpoint = 'api/upload';
+        $fileData = [
+            'file' => new CURLFile($filepath, $mimetype, $filename),
+        ];
+        $crl = miquiz::api_get_base_crl($endpoint, false);
+        curl_setopt($crl, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($crl, CURLOPT_POSTFIELDS, $fileData);
+        $response = miquiz::api_send($endpoint, $crl);
+        if (!isset($response['success']) || !$response['success']) {
+            return null;
+        }
+        return $response['src'];
     }
 
     function update($miquiz){
