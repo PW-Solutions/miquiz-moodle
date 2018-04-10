@@ -1,8 +1,9 @@
 <?php
 
 namespace mod_miquiz\task;
+require_once($CFG->dirroot.'/mod/miquiz/miquiz_api.php');
 
-class sync_users extends \core\task\scheduled_task 
+class sync_users extends \core\task\scheduled_task
 {
     public function get_name()
     {
@@ -13,7 +14,8 @@ class sync_users extends \core\task\scheduled_task
     {
         global $DB;
         $miquizs = $DB->get_records("miquiz");
-        cli_heading('MIQUIZ usersync');
+        if (defined('CLI_SCRIPT') && CLI_SCRIPT === true) cli_heading('MIQUIZ usersync');
+        else echo 'MIQUIZ usersync<br>';
         $currentTime = time();
         foreach($miquizs as $miquiz){
             // Check if sync is necessary
@@ -23,11 +25,12 @@ class sync_users extends \core\task\scheduled_task
                 continue;
             }
             try {
-                cli_write("syncing $miquiz->short_name (course $miquiz->course)\n");
-                miquiz::sync_users($miquiz);
+               if (defined('CLI_SCRIPT') && CLI_SCRIPT === true) cli_write("syncing $miquiz->short_name (course $miquiz->course)\n");
+               else echo "syncing $miquiz->short_name (course $miquiz->course)<br>";
+                \miquiz::sync_users($miquiz);
             } catch (Exception $e) {
                 echo $e->getMessage();
             }
-        }        
+        }
     }
 }
