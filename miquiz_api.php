@@ -63,7 +63,7 @@ class miquiz {
     static function create($miquiz){
         global $DB, $COURSE;
 
-        
+
         $context = context_course::instance($COURSE->id);
         $moduleid = miquiz::get_module_id();
         $resp = miquiz::api_post("api/categories", array("parent" => $moduleid,
@@ -352,7 +352,8 @@ class miquiz {
         $miquiz_user = miquiz::api_get("api/users");
         $miquiz_user_dirty = false;
         foreach($enrolled as $a_user){
-            cli_write("    $a_user->username");
+            if (defined('CLI_SCRIPT') && CLI_SCRIPT === true) cli_write("    $a_user->username");
+            else echo " $a_user->username";
             $found = False;
             foreach($miquiz_user as $a_miquiz_user){
                 if($a_miquiz_user["externalLogin"] == $a_user->username &&
@@ -367,12 +368,16 @@ class miquiz {
                                                             "role" => "standard",
                                                             "externalProvider" => get_config('mod_miquiz', 'loginprovider'),
                                                             "externalLogin" => $a_user->username));
-                    cli_write(" synced\n");
+                    if (defined('CLI_SCRIPT') && CLI_SCRIPT === true) cli_write(" synced\n");
+                    else echo " synced<br>";
                     $miquiz_user_dirty = true;
                 } catch (Exception $e) {
                     echo $e->getMessage();
                 }
-            } else cli_write(" OK\n");
+            } else {
+                if (defined('CLI_SCRIPT') && CLI_SCRIPT === true) cli_write(" OK\n");
+                else echo " OK<br>";
+            }
         }
 
         // call again to get ids for new users
