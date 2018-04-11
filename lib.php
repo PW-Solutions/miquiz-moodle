@@ -80,9 +80,17 @@ function get_question_answeringtime($question_id){
     global $DB;
 
     $tags = $DB->get_records_sql('SELECT t.rawname FROM {tag} t JOIN {tag_instance} ti on t.id=ti.tagid JOIN {question} q on q.id=ti.itemid WHERE ti.itemtype=\'question\' AND q.id=?', array($question_id));
-    foreach($tags as $tag){
-        if(startsWith($tag->rawname, get_config('mod_miquiz', 'questiontimetag')))
-            return (int)(trim(str_replace(get_config('mod_miquiz', 'questiontimetag') . ':', "", $tag->rawname)));
+    foreach ($tags as $tag) {
+        if (startsWith($tag->rawname, get_config('mod_miquiz', 'questiontimetag'))) {
+            $timeToAnswer = (int)(trim(str_replace(get_config('mod_miquiz', 'questiontimetag') . ':', "", $tag->rawname)));
+            break;
+        }
     }
-    return (int)get_config('mod_miquiz', 'questiondefaulttime');
+    if (empty($timeToAnswer)) {
+        $timeToAnswer = (int) get_config('mod_miquiz', 'questiondefaulttime');
+    }
+    if ($timeToAnswer < 15) {
+        $timeToAnswer = 15;
+    }
+    return $timeToAnswer;
 }
