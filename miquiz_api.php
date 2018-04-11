@@ -304,7 +304,7 @@ class miquiz {
             miquiz::api_post("api/tasks", array("data" => $task));
         }
 
-        //set/update full-name
+        //set/update names
         $task = [
             "type" => "tasks",
             "attributes" => [
@@ -317,7 +317,8 @@ class miquiz {
                   "resourceId" => (string)$miquiz->miquizcategoryid,
                   "action" => "update",
                   "data" => [
-                      "fullName" => $miquiz->name
+                      "fullName" => $miquiz->name,
+                      'name' => $miquiz->short_name,
                   ]
             ]
         ];

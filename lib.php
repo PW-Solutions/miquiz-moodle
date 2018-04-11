@@ -42,6 +42,7 @@ function miquiz_update_instance($miquiz) {
     $miquiz_fresh->assesstimefinish = $miquiz->assesstimefinish;
     $miquiz_fresh->timeuntilproductive = $miquiz->timeuntilproductive;
     $miquiz_fresh->name = $miquiz->name;
+    $miquiz_fresh->short_name = $miquiz->short_name;
     try {
         miquiz::update($miquiz_fresh);
     } catch (Exception $e) {
