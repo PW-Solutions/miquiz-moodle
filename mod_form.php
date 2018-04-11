@@ -32,16 +32,14 @@ class mod_miquiz_mod_form extends moodleform_mod {
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 50), 'maxlength', 50, 'client');
 
-        if( $this->_instance == ''){
-            $mform->addElement('text', 'short_name', get_string('miquiz_create_short_name', 'miquiz'), array('size'=>'64'));
-            if (!empty($CFG->formatstringstriptags)) {
-                $mform->setType('short_name', PARAM_TEXT);
-            } else {
-                $mform->setType('short_name', PARAM_CLEANHTML);
-            }
-            $mform->addRule('short_name', null, 'required', null, 'client');
-            $mform->addRule('short_name', get_string('maximumchars', '', 10), 'maxlength', 10, 'client');
+        $mform->addElement('text', 'short_name', get_string('miquiz_create_short_name', 'miquiz'), array('size'=>'64'));
+        if (!empty($CFG->formatstringstriptags)) {
+            $mform->setType('short_name', PARAM_TEXT);
+        } else {
+            $mform->setType('short_name', PARAM_CLEANHTML);
         }
+        $mform->addRule('short_name', null, 'required', null, 'client');
+        $mform->addRule('short_name', get_string('maximumchars', '', 10), 'maxlength', 10, 'client');
 
         if( $this->_instance == ''){
             $options=array(); //use string keys as keys since conversion to numbers more complicated
