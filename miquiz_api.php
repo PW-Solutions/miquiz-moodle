@@ -54,6 +54,13 @@ class miquiz {
         return miquiz::api_send($endpoint, $crl);
     }
 
+    static function api_put($endpoint, $data=array()) {
+        $crl = miquiz::api_get_base_crl($endpoint);
+        curl_setopt($crl, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($crl, CURLOPT_POSTFIELDS, json_encode($data));
+        return miquiz::api_send($endpoint, $crl);
+    }
+
     static function api_delete($endpoint) {
         $crl = miquiz::api_get_base_crl($endpoint);
         curl_setopt($crl, CURLOPT_CUSTOMREQUEST, "DELETE");
@@ -157,7 +164,7 @@ class miquiz {
 
     function delete($miquiz){
         miquiz::deleteTasks($miquiz);
-        $resp = miquiz::api_post("api/categories/" . $miquiz->miquizcategoryid, array("active" => False));
+        $resp = miquiz::api_put("api/categories/" . $miquiz->miquizcategoryid, array("active" => False));
         return True;
     }
 
