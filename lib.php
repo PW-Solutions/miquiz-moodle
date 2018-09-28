@@ -4,7 +4,8 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once("miquiz_api.php");
 
-function miquiz_add_instance($miquiz) {
+function miquiz_add_instance($miquiz)
+{
     global $DB, $CFG;
 
     $miquiz->timemodified = time();
@@ -17,7 +18,7 @@ function miquiz_add_instance($miquiz) {
     $miquiz->miquizcategoryid = $miquiz_ids["catid"];
     $miquiz->id = $DB->insert_record("miquiz", $miquiz);
 
-    foreach($miquiz->questions as $question){
+    foreach ($miquiz->questions as $question) {
         $added_question = array(
             'quizid' => $miquiz->id,
             'questionid' => $question,
@@ -30,7 +31,8 @@ function miquiz_add_instance($miquiz) {
 }
 
 
-function miquiz_update_instance($miquiz) {
+function miquiz_update_instance($miquiz)
+{
     global $DB, $CFG;
 
     $miquiz->id = $miquiz->instance;
@@ -53,7 +55,8 @@ function miquiz_update_instance($miquiz) {
 }
 
 
-function miquiz_delete_instance($id) {
+function miquiz_delete_instance($id)
+{
     global $DB;
 
     $miquiz = $DB->get_record("miquiz", array("id"=>"$id"));
@@ -66,18 +69,19 @@ function miquiz_delete_instance($id) {
     $DB->delete_records('miquiz_questions', array("quizid" => $id));
     $DB->delete_records('miquiz_users', array("quizid" => $id));
     $DB->delete_records('miquiz', array('id' => $id));
-    return True;
+    return true;
 }
 
 
 function startsWith($haystack, $needle)
 {
-     $length = strlen($needle);
-     return (substr($haystack, 0, $length) === $needle);
+    $length = strlen($needle);
+    return (substr($haystack, 0, $length) === $needle);
 }
 
 
-function get_question_answeringtime($question_id){
+function get_question_answeringtime($question_id)
+{
     global $DB;
 
     $tags = $DB->get_records_sql('SELECT t.rawname FROM {tag} t JOIN {tag_instance} ti on t.id=ti.tagid JOIN {question} q on q.id=ti.itemid WHERE ti.itemtype=\'question\' AND q.id=?', array($question_id));
