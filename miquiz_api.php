@@ -195,21 +195,15 @@ class miquiz
 
         $currentTime = time();
 
-        switch ($miquiz->scoremode) {
-            case 1:
-                $scoremode = "rating_without_demerit";
-                break;
-            case 2:
-                $scoremode = "rating_with_demerit";
-                break;
-            case 3:
-                $scoremode = "relative_rating_without_demerit";
-                break;
-            case 4:
-                $scoremode = "relative_rating_with_demerit";
-                break;
-            default:
-                $scoremode = "no_rating";
+        $scoreModes = [
+            1 => 'rating_without_demerit',
+            2 => 'rating_with_demerit',
+            3 => 'relative_rating_without_demerit',
+            4 => 'relative_rating_with_demerit',
+        ];
+        $scoremode = 'no_rating';
+        if (!is_null($miquiz->scoremode) && isset($scoreModes[$miquiz->scoremode])) {
+            $scoremode = $scoreModes[$miquiz->scoremode];
         }
 
         //set category to current status
