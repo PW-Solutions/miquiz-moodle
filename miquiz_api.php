@@ -191,9 +191,15 @@ class miquiz
 
     public static function scheduleTasks($miquiz)
     {
-        miquiz::deleteTasks($miquiz);
-
         $currentTime = time();
+        $categoryId = (string) $miquiz->miquizcategoryid;
+
+        $stateTimestamps = [
+            'not_started' => 0,
+            'training' => $miquiz->assesstimestart,
+            'productive' => $miquiz->timeuntilproductive,
+            'finished' => $miquiz->assesstimefinish,
+        ];
 
         $scoreModes = [
             1 => 'rating_without_demerit',
@@ -206,136 +212,77 @@ class miquiz
             $scoremode = $scoreModes[$miquiz->scoremode];
         }
 
-        //set category to current status
-        if ($miquiz->assesstimestart>$currentTime) {
-            $is_active = false;
-            $score_Strategy = "no_rating";
-            $enabled_game_modes = 'training';
-        } elseif ($miquiz->assesstimestart<=$currentTime &&
-                $miquiz->assesstimefinish>$currentTime &&
-                $miquiz->timeuntilproductive>$currentTime) {
-            $is_active = true;
-            $score_Strategy = "no_rating";
-            $enabled_game_modes = 'training';
-        } elseif ($miquiz->assesstimestart<=$currentTime &&
-                $miquiz->assesstimefinish>$currentTime &&
-                $miquiz->timeuntilproductive<=$currentTime) {
-            $is_active = true;
-            $score_Strategy = $scoremode;
-            $enabled_game_modes = "random-fight";
-        } elseif ($miquiz->assesstimefinish<=$currentTime) {
-            $is_active = false;
+        // Delete old tasks for this category
+        miquiz::deleteTasks($miquiz);
+
+        // Configure current state
+        $currentState = self::getStateAtTimestamp($stateTimestamps, $currentTime);
+        $currentStateConfig = self::getConfigForState($currentState, $scoremode);
+        self::scheduleTaskForCategory($categoryId, $currentTime - 1, $currentStateConfig);
+
+        // Configure future states
+        $futureStates = self::getStatesAfterTimestamp($stateTimestamps, $currentTime);
+        foreach ($futureStates as $state) {
+            $stateConfig = self::getConfigForState($state, $scoremode);
+            self::scheduleTaskForCategory($categoryId, $stateTimestamps[$state], $currentStateConfig);
         }
 
-        $data = [];
-        if (isset($is_active)) {
-            $data['active'] = $is_active;
-        }
-        if (isset($score_Strategy)) {
-            $data['scoreStrategy'] = $score_Strategy;
-        }
-        if (isset($enabled_game_modes)) {
-            $data['enabledModes'] = $enabled_game_modes;
-        }
+        // Set category name
+        $nameConfig = [
+            'fullName' => $miquiz->name,
+            'name' => $miquiz->short_name,
+        ];
+        self::scheduleTaskForCategory($categoryId, $currentTime - 1, $nameConfig);
+    }
 
+    private static function getStateAtTimestamp($stateTimestamps, $timestamp)
+    {
+        foreach (array_reverse($stateTimestamps) as $state => $stateTimestamp) {
+            if ($stateTimestamp <= $timestamp) {
+                return $state;
+            }
+        }
+    }
+
+    private static function getStatesAfterTimestamp($stateTimestamps, $timestamp)
+    {
+        return array_keys(
+            array_filter($stateTimestamps, function ($stateTimestamp) use ($timestamp) {
+                return $stateTimestamp > $timestamp;
+            })
+        );
+    }
+
+    private static function getConfigForState($state, $scoreMode)
+    {
+        $active = in_array($state, ['training', 'productive']);
+        $scoreStrategy = $state === 'production' ? $scoreMode : 'no_rating';
+        $enabledModes = $state === 'production' ? 'random-fight' : 'training';
+
+        return [
+            'active' => $active,
+            'scoreStrategy' => $scoreStrategy,
+            'enabledModes' => $enabledModes,
+        ];
+    }
+
+    private static function scheduleTaskForCategory($id, $timestamp, $data)
+    {
         $task = [
             "type" => "tasks",
             "attributes" => [
-                  "trigger" => [
+                "trigger" => [
                     "type" => "timestamp",
                     "operator" => ">=",
-                    "value" => (string)($currentTime-1)
-                  ],
-                  "resourceType" => "categories",
-                  "resourceId" => (string)$miquiz->miquizcategoryid,
-                  "action" => "update",
-                  "data" => $data,
+                    "value" => (string) $timestamp,
+                ],
+                "resourceType" => "categories",
+                "resourceId" => $id,
+                "action" => "update",
+                "data" => $data,
             ]
         ];
-        miquiz::api_post("api/tasks", array("data" => $task));
-        //change status in the future
-        if ($miquiz->assesstimestart>$currentTime) {
-            $task = [
-                "type" => "tasks",
-                "attributes" => [
-                      "trigger" => [
-                        "type" => "timestamp",
-                        "operator" => ">=",
-                        "value" => (string)$miquiz->assesstimestart
-                      ],
-                      "resourceType" => "categories",
-                      "resourceId" => (string)$miquiz->miquizcategoryid,
-                      "action" => "update",
-                      "data" => [
-                          "active" => true,
-                          "scoreStrategy" => "no_rating",
-                          "enabledModes" => "training"
-                      ]
-                ]
-            ];
-            miquiz::api_post("api/tasks", array("data" => $task));
-        }
-
-        if ($miquiz->assesstimefinish>$currentTime) {
-            $task = [
-                "type" => "tasks",
-                "attributes" => [
-                      "trigger" => [
-                        "type" => "timestamp",
-                        "operator" => ">=",
-                        "value" => (string)$miquiz->assesstimefinish
-                      ],
-                      "resourceType" => "categories",
-                      "resourceId" => (string)$miquiz->miquizcategoryid,
-                      "action" => "update",
-                      "data" => [
-                          "active" => false
-                      ]
-                ]
-            ];
-            miquiz::api_post("api/tasks", array("data" => $task));
-        }
-
-        if ($miquiz->timeuntilproductive>$currentTime) {
-            $task = [
-                "type" => "tasks",
-                "attributes" => [
-                      "trigger" => [
-                        "type" => "timestamp",
-                        "operator" => ">=",
-                        "value" => (string)$miquiz->timeuntilproductive
-                      ],
-                      "resourceType" => "categories",
-                      "resourceId" => (string)$miquiz->miquizcategoryid,
-                      "action" => "update",
-                      "data" => [
-                          "scoreStrategy" => $scoremode,
-                          "enabledModes" => "random-fight"
-                      ]
-                ]
-            ];
-            miquiz::api_post("api/tasks", array("data" => $task));
-        }
-
-        //set/update names
-        $task = [
-            "type" => "tasks",
-            "attributes" => [
-                  "trigger" => [
-                    "type" => "timestamp",
-                    "operator" => ">=",
-                    "value" => (string)(time()-1)
-                  ],
-                  "resourceType" => "categories",
-                  "resourceId" => (string)$miquiz->miquizcategoryid,
-                  "action" => "update",
-                  "data" => [
-                      "fullName" => $miquiz->name,
-                      'name' => $miquiz->short_name,
-                  ]
-            ]
-        ];
-        miquiz::api_post("api/tasks", array("data" => $task));
+        miquiz::api_post("api/tasks", ["data" => $task]);
     }
 
     public static function get_module_id()
