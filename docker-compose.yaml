@@ -3,12 +3,14 @@ services:
   db:
     image: mariadb
     environment:
-       - MYSQL_ROOT_PASSWORD=admin
-       - MYSQL_USER=moodle
-       - MYSQL_PASSWORD=moodle
-       - MYSQL_DATABASE=moodle
+      - MYSQL_ROOT_PASSWORD=admin
+      - MYSQL_USER=moodle
+      - MYSQL_PASSWORD=moodle
+      - MYSQL_DATABASE=moodle
+    volumes:
+      - ./startup_db.sql:/docker-entrypoint-initdb.d/dump.sql
   moodle:
-    build: 
+    build:
       context: .
       args:
         - MOODLE_URL=$SERVER
