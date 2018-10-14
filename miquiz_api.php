@@ -167,7 +167,8 @@ class miquiz
         return $response['src'];
     }
 
-    public static function update($miquiz)
+    //TODO: static
+    public function update($miquiz)
     {
         global $DB;
         miquiz::scheduleTasks($miquiz);
@@ -218,13 +219,19 @@ class miquiz
         // Configure current state
         $currentState = self::getStateAtTimestamp($stateTimestamps, $currentTime);
         $currentStateConfig = self::getConfigForState($currentState, $scoremode);
-        self::scheduleTaskForCategory($categoryId, $currentTime - 1, $currentStateConfig);
+        self::scheduleTaskForCategory($categoryId, $stateTimestamps[$currentState], $currentStateConfig);
 
         // Configure future states
         $futureStates = self::getStatesAfterTimestamp($stateTimestamps, $currentTime);
         foreach ($futureStates as $state) {
             $stateConfig = self::getConfigForState($state, $scoremode);
-            self::scheduleTaskForCategory($categoryId, $stateTimestamps[$state], $currentStateConfig);
+            // echo '<pre>';
+            // var_dump([
+            //     'futureState' => $state,
+            //     'stateConfig' => $stateConfig,
+            // ]);
+            // echo '</pre>';
+            self::scheduleTaskForCategory($categoryId, $stateTimestamps[$state], $stateConfig);
         }
 
         // Set category name
@@ -256,8 +263,8 @@ class miquiz
     private static function getConfigForState($state, $scoreMode)
     {
         $active = in_array($state, ['training', 'productive']);
-        $scoreStrategy = $state === 'production' ? $scoreMode : 'no_rating';
-        $enabledModes = $state === 'production' ? 'random-fight' : 'training';
+        $scoreStrategy = $state === 'productive' ? $scoreMode : 'no_rating';
+        $enabledModes = $state === 'productive' ? 'random-fight' : 'training';
 
         return [
             'active' => $active,
