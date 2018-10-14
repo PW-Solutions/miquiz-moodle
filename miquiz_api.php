@@ -167,8 +167,7 @@ class miquiz
         return $response['src'];
     }
 
-    //TODO: static
-    public function update($miquiz)
+    public static function update($miquiz)
     {
         global $DB;
         miquiz::scheduleTasks($miquiz);
@@ -225,12 +224,6 @@ class miquiz
         $futureStates = self::getStatesAfterTimestamp($stateTimestamps, $currentTime);
         foreach ($futureStates as $state) {
             $stateConfig = self::getConfigForState($state, $scoremode);
-            // echo '<pre>';
-            // var_dump([
-            //     'futureState' => $state,
-            //     'stateConfig' => $stateConfig,
-            // ]);
-            // echo '</pre>';
             self::scheduleTaskForCategory($categoryId, $stateTimestamps[$state], $stateConfig);
         }
 
