@@ -18,6 +18,11 @@ This repository comes with a ready to use docker configuration to test the plugi
 have to temporary comment out the lines in `lang\{en|de}\miquiz.php` where `get_config` is called,
 as Moodle tries to get the config value from the database before any tables are created.
 
+### Connect with MI-Quiz development workspace
+
+Default host: dev.mi-quiz (Moodle plugin settings)
+Add the host in `/etc/hosts`
+
 
 # TODOs
 - clean up code
