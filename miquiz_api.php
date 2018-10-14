@@ -167,14 +167,14 @@ class miquiz
         return $response['src'];
     }
 
-    public function update($miquiz)
+    public static function update($miquiz)
     {
         global $DB;
         miquiz::scheduleTasks($miquiz);
         return true;
     }
 
-    public function delete($miquiz)
+    public static function delete($miquiz)
     {
         miquiz::deleteTasks($miquiz);
         $resp = miquiz::api_put("api/categories/" . $miquiz->miquizcategoryid, array("active" => false));
