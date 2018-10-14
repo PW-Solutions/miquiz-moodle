@@ -120,18 +120,26 @@ class mod_miquiz_mod_form extends moodleform_mod
         global $DB;
         $errors = parent::validation($data, $files);
 
-        # check categories in moodle
-        $same_names = $DB->get_records("miquiz", array("short_name" => $data["short_name"]));
+        if ($this->current->instance) {
+            $activities = $DB->get_records("miquiz", array("short_name" => $data["short_name"]));
+            if (!empty($activities)) {
+                $activity = array_pop($activities);
+            }
+        }
 
         # check categories in miquiz
         $moduleid = miquiz::get_module_id();
-        $all_categories = miquiz::api_get("api/categories");
+        $categories = miquiz::api_get("api/categories");
         $exists_in_miquiz = false;
-        foreach ($all_categories as $category) {
-            if ($category["name"] == $data["short_name"]) {
-                $exists_in_miquiz = true;
+        foreach ($categories as $category) {
+            if ($category["name"] === $data["short_name"]) {
+                $exists_in_miquiz = !isset($activity) || strval($category['id']) !== $activity->miquizcategoryid;
                 break;
             }
+        }
+
+        if ($exists_in_miquiz) {
+            $errors['short_name'] = get_string('miquiz_create_error_unique', 'miquiz');
         }
 
         if ($data['assesstimestart'] >= $data['assesstimefinish']) {
@@ -141,10 +149,6 @@ class mod_miquiz_mod_form extends moodleform_mod
         if ($data['timeuntilproductive'] >= $data['assesstimefinish'] ||
            $data['timeuntilproductive'] < $data['assesstimestart']) {
             $errors['timeuntilproductive'] = get_string('miquiz_create_error_betweenendstart', 'miquiz');
-        }
-
-        if (count($same_names) > 0 || $exists_in_miquiz) {
-            $errors['short_name'] = get_string('miquiz_create_error_unique', 'miquiz');
         }
 
         // Check open and close times are consistent.
