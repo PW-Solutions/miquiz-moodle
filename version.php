@@ -8,7 +8,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_miquiz'; // Full name of the plugin (used for diagnostics).
-$plugin->version   = 2018041001;  // The current module version (Date: YYYYMMDDXX).
+$plugin->version   = 2018101400;  // The current module version (Date: YYYYMMDDXX).
 $plugin->requires  = 2010112400;  // Requires Moodle 2.0.
 $plugin->release   = '2017-08-06';
 $plugin->maturity = MATURITY_BETA;

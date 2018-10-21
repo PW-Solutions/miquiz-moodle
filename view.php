@@ -45,36 +45,37 @@ if (has_capability('moodle/course:manageactivities', $context)) {
     $reports = [];
     if (has_capability('moodle/course:manageactivities', $context)) {
         $resp = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/reports");
-        foreach($resp as $report){
-            if(!isset($reports[$report["questionId"]]))
+        foreach ($resp as $report) {
+            if (!isset($reports[$report["questionId"]])) {
                 $reports[$report["questionId"]] = [];
+            }
             $reports[$report["questionId"]][] = $report;
         }
     }
 
     $quiz_questions = $DB->get_records('miquiz_questions', array('quizid' => $miquiz->id));
     echo '<ul class="list-group">';
-    if(count($quiz_questions) > 0){
+    if (count($quiz_questions) > 0) {
         $question_ids = "";
-        foreach($quiz_questions as $quiz_question){
-            if($question_ids != ""){
+        foreach ($quiz_questions as $quiz_question) {
+            if ($question_ids != "") {
                 $question_ids .= " OR ";
             }
             $question_ids .="id=".$quiz_question->questionid;
         }
         $questions = $DB->get_records_sql('SELECT * FROM {question} q WHERE '. $question_ids);
 
-        foreach($questions as $question){
+        foreach ($questions as $question) {
             $miquiz_question = $DB->get_record_sql('SELECT miquizquestionid FROM {miquiz_questions} WHERE questionid='. $question->id.' AND quizid='.$miquiz->id);
             echo '<li class="list-group-item">';
             $category = $DB->get_record('question_categories', array('id' => $question->category));
             echo $question->name.' <span class="badge">'.$category->name.'</span><ul class="list-group">';
             if (isset($reports[$miquiz_question->miquizquestionid])) {
-            foreach($reports[$miquiz_question->miquizquestionid] as $report){
-                echo '<li class="list-group-item"><u>'.$report['category'].'</u></br>';
-                echo $report['message'];
-                echo '</br><i>'.$report['author'].'</i></li>';
-            }
+                foreach ($reports[$miquiz_question->miquizquestionid] as $report) {
+                    echo '<li class="list-group-item"><u>'.$report['category'].'</u></br>';
+                    echo $report['message'];
+                    echo '</br><i>'.$report['author'].'</i></li>';
+                }
             }
             echo "</ul></li>";
         }
@@ -99,14 +100,14 @@ if (has_capability('moodle/course:manageactivities', $context)) {
     $answeredQuestions_duel_total = $resp["answeredQuestions"]["duel"]["total"];
     $answeredQuestions_duel_correct = $resp["answeredQuestions"]["duel"]["correct"];
 
-    $answeredQuestions_total = number_format($answeredQuestions_training_total+$answeredQuestions_duel_total,0);
-    $answeredQuestions_correct = number_format($answeredQuestions_training_correct+$answeredQuestions_duel_correct,0);
-    $answeredQuestions_wrong = number_format($answeredQuestions_total-$answeredQuestions_correct,0);
+    $answeredQuestions_total = number_format($answeredQuestions_training_total+$answeredQuestions_duel_total, 0);
+    $answeredQuestions_correct = number_format($answeredQuestions_training_correct+$answeredQuestions_duel_correct, 0);
+    $answeredQuestions_wrong = number_format($answeredQuestions_total-$answeredQuestions_correct, 0);
 
     $eps = pow(10000000, -1);
-    $rel_answeredQuestions_total = number_format($answeredQuestions_total/($answeredQuestions_total+$eps),2);
-    $rel_answeredQuestions_correct = number_format($answeredQuestions_correct/($answeredQuestions_total+$eps),2);
-    $rel_answeredQuestions_wrong = number_format($answeredQuestions_wrong/($answeredQuestions_total+$eps),2);
+    $rel_answeredQuestions_total = number_format($answeredQuestions_total/($answeredQuestions_total+$eps), 2);
+    $rel_answeredQuestions_correct = number_format($answeredQuestions_correct/($answeredQuestions_total+$eps), 2);
+    $rel_answeredQuestions_wrong = number_format($answeredQuestions_wrong/($answeredQuestions_total+$eps), 2);
 
     $answered_abs = "(".$answeredQuestions_total."/".$answeredQuestions_correct."/".$answeredQuestions_wrong.")";
     $answered_rel = "(".$rel_answeredQuestions_total."/".$rel_answeredQuestions_correct."/".$rel_answeredQuestions_wrong.")";
@@ -114,7 +115,7 @@ if (has_capability('moodle/course:manageactivities', $context)) {
     echo get_string('miquiz_view_statistics_answeredquestions', 'miquiz').': '.$answered_abs.' '.$answered_rel.'<br/>';
 
     echo '<br/><b>'.get_string('miquiz_view_statistics_user', 'miquiz').'</b><br/>';
-    foreach($user_stats as $user_score){
+    foreach ($user_stats as $user_score) {
         $score_training = $user_score["score"]["training"]["total"];
         $score_duel = $user_score["score"]["duel"]["total"];
         $score_training_possible = $user_score["score"]["training"]["possible"];
@@ -127,12 +128,12 @@ if (has_capability('moodle/course:manageactivities', $context)) {
         $score = $score_training+$score_duel;
         $score_possible = $score_training_possible+$score_duel_possible;
 
-        $answeredQuestions_total = number_format($answeredQuestions_training_total+$answeredQuestions_duel_total,0);
-        $answeredQuestions_correct = number_format($answeredQuestions_training_correct+$answeredQuestions_duel_correct,0);
-        $answeredQuestions_wrong = number_format($answeredQuestions_total-$answeredQuestions_correct,0);
-        $rel_answeredQuestions_total = number_format($answeredQuestions_total/($answeredQuestions_total+$eps),2);
-        $rel_answeredQuestions_correct = number_format($answeredQuestions_correct/($answeredQuestions_total+$eps),2);
-        $rel_answeredQuestions_wrong = number_format($answeredQuestions_wrong/($answeredQuestions_total+$eps),2);
+        $answeredQuestions_total = number_format($answeredQuestions_training_total+$answeredQuestions_duel_total, 0);
+        $answeredQuestions_correct = number_format($answeredQuestions_training_correct+$answeredQuestions_duel_correct, 0);
+        $answeredQuestions_wrong = number_format($answeredQuestions_total-$answeredQuestions_correct, 0);
+        $rel_answeredQuestions_total = number_format($answeredQuestions_total/($answeredQuestions_total+$eps), 2);
+        $rel_answeredQuestions_correct = number_format($answeredQuestions_correct/($answeredQuestions_total+$eps), 2);
+        $rel_answeredQuestions_wrong = number_format($answeredQuestions_wrong/($answeredQuestions_total+$eps), 2);
 
         $answered_abs = "(".$answeredQuestions_total."/".$answeredQuestions_correct."/".$answeredQuestions_wrong.")";
         $answered_rel = "(".$rel_answeredQuestions_total."/".$rel_answeredQuestions_correct."/".$rel_answeredQuestions_wrong.")";
