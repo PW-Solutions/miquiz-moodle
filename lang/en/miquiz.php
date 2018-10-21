@@ -4,7 +4,10 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['modulename'] = 'MI-Quiz';
 $string['modulenameplural'] = 'MI-Quizzes';
-$string['modulename_help'] = 'Challenge your students in a ' . get_config('mod_miquiz', 'instancename') . ' duel.';
+
+//$instance_name ='';
+$instance_name = get_config('mod_miquiz', 'instancename');
+$string['modulename_help'] = 'Challenge your students in a ' . $instance_name . ' duel.';
 
 $string['miquiz_setting_instanceurl_title'] = 'URL for quiz instance';
 $string['miquiz_setting_instanceurl_helper'] = 'Please add the full url to the quiz instance';
@@ -51,7 +54,7 @@ $string['miquiz_view_score'] = 'Your score'; //Deine Punke
 $string['miquiz_view_statistics_answeredquestions'] = 'Answered questions absolute(total/correct/wrong), relative(total/correct/wrong)'; //Beantwortete Fragen (gesamt/richtig/falsch, absolut/relativ)
 $string['miquiz_view_statistics_totalscore'] = 'Score (achieved/maximum)'; //Punkte (erreicht/gesamt erreichbar)
 $string['miquiz_view_score'] = 'Your score training(achieved/maximum), duel(achieved/maximum)'; //Deine Punke
-$string['miquiz_view_openlink'] = 'Open ' . get_config('mod_miquiz', 'instancename'); //$string['modulename'] &ouml;ffnen
+$string['miquiz_view_openlink'] = 'Open ' . $instance_name; //$string['modulename'] &ouml;ffnen
 
 $string['description'] = 'Description';
 $string['task_sync_users_name'] = 'Sync quiz users with instance';
