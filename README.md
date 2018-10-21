@@ -1,5 +1,5 @@
 # MI-Quiz-Moodle-Plugin
-Activity module for Moodle that enables you to use already existing Moodle 
+Activity module for Moodle that enables you to use already existing Moodle
 structures like questions and courses to create quizzes in MI-Quiz.
 
 ## Install plugin in Moodle
@@ -9,8 +9,8 @@ TODO
 
 This repository comes with a ready to use docker configuration to test the plugin (without the connection to MI Quiz).
 1. Clone repository
-2. Create `.env` file: `cp .env.exmaple .env`
-3. Update `SERVER` variable in `.evn` file
+2. Create `.env` file: `cp .env.example .env`
+3. Update `SERVER` variable in `.env` file
 4. Start containers with `docker-compose up -d`
 
 **Important:** To perform the initial moodle installation with this plugin already imported, we
