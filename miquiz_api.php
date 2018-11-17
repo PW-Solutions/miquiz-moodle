@@ -145,13 +145,19 @@ class miquiz
                 substr($hash, 2, 2),
                 $hash
             ]);
-            $fileUrl = miquiz::uploadFile($filePath, $file->get_filename(), $file->get_mimetype());
+            if (!file_exists($filePath)) {
+                error_log('miquiz: could not find file: ' . $filePath . ' (MIME: ' . $file->get_mimetype() . ')');
+                continue;
+            }
+            $fileUrl = self::uploadFile($filePath, $file->get_filename(), $file->get_mimetype());
+            if (!empty($fileUrl)) {
             $string = str_replace('@@PLUGINFILE@@/' . rawurlencode($file->get_filename()), $fileUrl, $string);
+        }
         }
         return $string;
     }
 
-    public static function uploadFile($filepath, $filename, $mimetype)
+    private static function uploadFile($filepath, $filename, $mimetype)
     {
         $endpoint = 'api/upload';
         $fileData = [
@@ -162,6 +168,7 @@ class miquiz
         curl_setopt($crl, CURLOPT_POSTFIELDS, $fileData);
         $response = miquiz::api_send($endpoint, $crl);
         if (!isset($response['success']) || !$response['success']) {
+            error_log('miquiz: could not upload file ' . $filename);
             return null;
         }
         return $response['src'];
