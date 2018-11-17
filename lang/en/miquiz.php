@@ -42,11 +42,9 @@ $string['miquiz_create_error_betweenendstart'] = 'Test phase ending time has to 
 
 $string['miquiz_view_overview'] = 'Overview'; //&Uuml;bersicht
 $string['miquiz_view_shortname'] = 'Short name'; //Abk&uuml;rzung
-$string['miquiz_view_assesstimestart'] = 'Starts at'; //Aktiv ab
-$string['miquiz_view_assesstimefinish'] = 'Finishes at'; //Endet am
-$string['miquiz_view_timeuntilproductive'] = 'Productive after'; //Produktiv nach
 $string['miquiz_view_scoremode'] = 'Rating mode'; //Bewertungsmodus
 $string['miquiz_view_questions'] = 'Questions'; //Fragen
+$string['miquiz_view_numquestions'] = 'Number of questions'; //Anzahl Fragen
 $string['miquiz_view_user'] = 'Player'; //Mitspieler
 $string['miquiz_view_statistics'] = 'Statistics (Overview)'; //Statistiken
 $string['miquiz_view_statistics_user'] = 'Statistics (Players)';
@@ -58,6 +56,9 @@ $string['miquiz_view_openlink'] = 'Open ' . $instance_name; //$string['modulenam
 
 $string['description'] = 'Description';
 $string['task_sync_users_name'] = 'Sync quiz users with instance';
+
+$string['miquiz_cockpit_training'] = 'Training';
+$string['miquiz_cockpit_productive'] = 'Productive';
 
 $string['pluginname'] = 'MI-Quiz';
 $string['pluginadministration'] = 'MI-Quiz Plugin administration';

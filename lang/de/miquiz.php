@@ -42,11 +42,9 @@ $string['miquiz_create_error_betweenendstart'] = 'Das Enddatum der Testphase mus
 
 $string['miquiz_view_overview'] = '&Uuml;bersicht';
 $string['miquiz_view_shortname'] = 'Abk&uuml;rzung';
-$string['miquiz_view_assesstimestart'] = 'Aktiv ab';
-$string['miquiz_view_assesstimefinish'] = 'Endet am';
-$string['miquiz_view_timeuntilproductive'] = 'Produktiv nach';
 $string['miquiz_view_scoremode'] = 'Bewertungsmodus';
 $string['miquiz_view_questions'] = 'Fragen';
+$string['miquiz_view_numquestions'] = 'Anzahl Fragen';
 $string['miquiz_view_user'] = 'Mitspieler';
 $string['miquiz_view_statistics'] = 'Statistiken (&Uuml;bersicht)';
 $string['miquiz_view_statistics_user'] = 'Statistiken (Mitspieler)';
@@ -55,6 +53,9 @@ $string['miquiz_view_statistics_answeredquestions'] = 'Beantwortete Fragen absol
 $string['miquiz_view_statistics_totalscore'] = 'Punkte (erreicht/gesamt erreichbar)';
 $string['miquiz_view_score'] = 'Deine Punke Training(Erreicht/M&ouml;glich), Duel(Erreicht/M&ouml;glich)';
 $string['miquiz_view_openlink'] =  $instance_name . ' &ouml;ffnen';
+
+$string['miquiz_cockpit_training'] = 'Training';
+$string['miquiz_cockpit_productive'] = 'Produktiv';
 
 $string['description'] = 'Beschreibung';
 $string['task_sync_users_name'] = 'Synchronisiere Quiz-User mit Instanz';
