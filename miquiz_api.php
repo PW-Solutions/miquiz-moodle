@@ -151,8 +151,8 @@ class miquiz
             }
             $fileUrl = self::uploadFile($filePath, $file->get_filename(), $file->get_mimetype());
             if (!empty($fileUrl)) {
-            $string = str_replace('@@PLUGINFILE@@/' . rawurlencode($file->get_filename()), $fileUrl, $string);
-        }
+                $string = str_replace('@@PLUGINFILE@@/' . rawurlencode($file->get_filename()), $fileUrl, $string);
+            }
         }
         return $string;
     }
@@ -181,10 +181,33 @@ class miquiz
         return true;
     }
 
+    // Soft delete a category
     public static function delete($miquiz)
     {
         miquiz::deleteTasks($miquiz);
         $resp = miquiz::api_put("api/categories/" . $miquiz->miquizcategoryid, array("active" => false));
+        return true;
+    }
+
+    public static function forceDelete($miquiz)
+    {
+        if (empty($miquiz) || empty($miquiz->miquizcategoryid)) {
+            error_log('miquiz: forceDelelte failed. no categoryId found');
+            return false;
+        }
+        $categoryId = $miquiz->miquizcategoryid;
+        $resp = miquiz::api_delete('api/categories/' . $categoryId);
+        if (empty($resp) || !isset($resp['success'])) {
+            error_log("miquiz: forceDelelte failed (category: $categoryId)");
+            return false;
+        }
+
+        if (!$resp['success']) {
+            $error = $resp['error'];
+            error_log("miquiz: forceDelelte failed (category: $categoryId): $error");
+            return false;
+        }
+
         return true;
     }
 
