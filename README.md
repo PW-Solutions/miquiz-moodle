@@ -9,8 +9,8 @@ TODO
 
 This repository comes with a ready to use docker configuration to test the plugin (without the connection to MI Quiz).
 1. Clone repository
-2. Create `.env` file: `cp .env.exmaple .env`
-3. Update `SERVER` variable in `.evn` file
+2. Create `.env` file: `cp .env.example .env`
+3. Update `SERVER` variable in `.env` file
 4. Start containers with `docker-compose up -d`
 5. Login under `SERVER` and use default admin account: `admin`: `Admin123.`
 
