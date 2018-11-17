@@ -2,6 +2,7 @@
 
 require_once('../../config.php');
 require_once("lib.php");
+require_once("view_cockpit.php");
 
 $id = required_param('id', PARAM_INT);  // Course Module ID
 
@@ -26,20 +27,18 @@ echo $OUTPUT->header();
 echo '<h3>'.$miquiz->intro.'</h3></br>';
 echo '<form action="'.$url.'" target="_blanc"><input class="btn btn-primary" id="id_tomiquizbutton" type="submit" value="'.get_string('miquiz_view_openlink', 'miquiz').'"></form>';
 
-echo '<br/><b data-toggle="collapse" href="#overview_box">'.get_string('miquiz_view_overview', 'miquiz').'</b><br/>';
-echo '<div class="collapse in" id="overview_box">';
-echo get_string('miquiz_view_shortname', 'miquiz').': '.$miquiz->short_name.'<br/>';
-$date = new DateTime("", core_date::get_server_timezone_object());
-$date->setTimestamp($miquiz->assesstimestart);
-echo get_string('miquiz_view_assesstimestart', 'miquiz').': '.date_format($date, 'd.m.Y H:i').'<br/>';
-$date = new DateTime("", core_date::get_server_timezone_object());
-$date->setTimestamp($miquiz->timeuntilproductive);
-echo get_string('miquiz_view_timeuntilproductive', 'miquiz').': '.date_format($date, 'd.m.Y H:i').'<br/>';
-$date = new DateTime("", core_date::get_server_timezone_object());
-$date->setTimestamp($miquiz->assesstimefinish);
-echo get_string('miquiz_view_assesstimefinish', 'miquiz').': '.date_format($date, 'd.m.Y H:i').'<br/>';
-echo get_string('miquiz_view_scoremode', 'miquiz').': '.get_string('miquiz_create_scoremode_'.$miquiz->scoremode, 'miquiz').'<br/>';
-echo '</div>';
+cockpit::print_js();
+cockpit::print_css();
+
+echo '<br/><div class="container"><div class="row">
+<div class="col-sm-9">'.get_string('miquiz_view_shortname', 'miquiz').': '.$miquiz->short_name.'</div>
+<div class="col-sm-4">';
+cockpit::print_main($miquiz->assesstimestart, $miquiz->timeuntilproductive, $miquiz->assesstimefinish);
+echo '</div>
+<div class="col-sm-6">'.get_string('miquiz_view_scoremode', 'miquiz').': '.get_string('miquiz_create_scoremode_'.$miquiz->scoremode, 'miquiz').'</div>
+<div class="col-sm-6">Beantwortete Fragen:<br/>TODO chart</div>
+<div class="col-sm-6">'.get_string('miquiz_view_numquestions', 'miquiz').': '.count($DB->get_records('miquiz_questions', array('quizid' => $miquiz->id))).'</div>
+</div></div>';
 
 if (has_capability('moodle/course:manageactivities', $context)) {
     echo '<br/><b data-toggle="collapse" href="#questions_box">'.get_string('miquiz_view_questions', 'miquiz').'</b><br/>';
