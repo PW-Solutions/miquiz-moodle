@@ -13,6 +13,9 @@ function miquiz_add_instance($miquiz)
         $miquiz_ids = miquiz::create($miquiz);
     } catch (Exception $e) {
         echo $e->getMessage();
+        error_log('Error during quiz creation: ' . $e->getMessage());
+        error_log(print_r($miquiz, TRUE));
+        miquiz::forceDelete($miquiz);
         return;
     }
     $miquiz->miquizcategoryid = $miquiz_ids["catid"];

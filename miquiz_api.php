@@ -145,13 +145,19 @@ class miquiz
                 substr($hash, 2, 2),
                 $hash
             ]);
-            $fileUrl = miquiz::uploadFile($filePath, $file->get_filename(), $file->get_mimetype());
-            $string = str_replace('@@PLUGINFILE@@/' . rawurlencode($file->get_filename()), $fileUrl, $string);
+            if (!file_exists($filePath)) {
+                error_log('miquiz: could not find file: ' . $filePath . ' (MIME: ' . $file->get_mimetype() . ')');
+                continue;
+            }
+            $fileUrl = self::uploadFile($filePath, $file->get_filename(), $file->get_mimetype());
+            if (!empty($fileUrl)) {
+                $string = str_replace('@@PLUGINFILE@@/' . rawurlencode($file->get_filename()), $fileUrl, $string);
+            }
         }
         return $string;
     }
 
-    public static function uploadFile($filepath, $filename, $mimetype)
+    private static function uploadFile($filepath, $filename, $mimetype)
     {
         $endpoint = 'api/upload';
         $fileData = [
@@ -162,6 +168,7 @@ class miquiz
         curl_setopt($crl, CURLOPT_POSTFIELDS, $fileData);
         $response = miquiz::api_send($endpoint, $crl);
         if (!isset($response['success']) || !$response['success']) {
+            error_log('miquiz: could not upload file ' . $filename);
             return null;
         }
         return $response['src'];
@@ -174,10 +181,33 @@ class miquiz
         return true;
     }
 
+    // Soft delete a category
     public static function delete($miquiz)
     {
         miquiz::deleteTasks($miquiz);
         $resp = miquiz::api_put("api/categories/" . $miquiz->miquizcategoryid, array("active" => false));
+        return true;
+    }
+
+    public static function forceDelete($miquiz)
+    {
+        if (empty($miquiz) || empty($miquiz->miquizcategoryid)) {
+            error_log('miquiz: forceDelelte failed. no categoryId found');
+            return false;
+        }
+        $categoryId = $miquiz->miquizcategoryid;
+        $resp = miquiz::api_delete('api/categories/' . $categoryId);
+        if (empty($resp) || !isset($resp['success'])) {
+            error_log("miquiz: forceDelelte failed (category: $categoryId)");
+            return false;
+        }
+
+        if (!$resp['success']) {
+            $error = $resp['error'];
+            error_log("miquiz: forceDelelte failed (category: $categoryId): $error");
+            return false;
+        }
+
         return true;
     }
 
