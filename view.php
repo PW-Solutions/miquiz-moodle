@@ -26,7 +26,8 @@ echo $OUTPUT->header();
 echo '<h3>'.$miquiz->intro.'</h3></br>';
 echo '<form action="'.$url.'" target="_blanc"><input class="btn btn-primary" id="id_tomiquizbutton" type="submit" value="'.get_string('miquiz_view_openlink', 'miquiz').'"></form>';
 
-echo '<br/><b>'.get_string('miquiz_view_overview', 'miquiz').'</b><br/>';
+echo '<br/><b data-toggle="collapse" href="#overview_box">'.get_string('miquiz_view_overview', 'miquiz').'</b><br/>';
+echo '<div class="collapse in" id="overview_box">';
 echo get_string('miquiz_view_shortname', 'miquiz').': '.$miquiz->short_name.'<br/>';
 $date = new DateTime("", core_date::get_server_timezone_object());
 $date->setTimestamp($miquiz->assesstimestart);
@@ -38,9 +39,11 @@ $date = new DateTime("", core_date::get_server_timezone_object());
 $date->setTimestamp($miquiz->assesstimefinish);
 echo get_string('miquiz_view_assesstimefinish', 'miquiz').': '.date_format($date, 'd.m.Y H:i').'<br/>';
 echo get_string('miquiz_view_scoremode', 'miquiz').': '.get_string('miquiz_create_scoremode_'.$miquiz->scoremode, 'miquiz').'<br/>';
+echo '</div>';
 
 if (has_capability('moodle/course:manageactivities', $context)) {
-    echo '<br/><b>'.get_string('miquiz_view_questions', 'miquiz').'</b><br/>';
+    echo '<br/><b data-toggle="collapse" href="#questions_box">'.get_string('miquiz_view_questions', 'miquiz').'</b><br/>';
+    echo '<div class="collapse in" id="questions_box">';
 
     $reports = [];
     if (has_capability('moodle/course:manageactivities', $context)) {
@@ -69,7 +72,9 @@ if (has_capability('moodle/course:manageactivities', $context)) {
             $miquiz_question = $DB->get_record_sql('SELECT miquizquestionid FROM {miquiz_questions} WHERE questionid='. $question->id.' AND quizid='.$miquiz->id);
             echo '<li class="list-group-item">';
             $category = $DB->get_record('question_categories', array('id' => $question->category));
-            echo $question->name.' <span class="badge">'.$category->name.'</span><ul class="list-group">';
+            $link = "/question/preview.php?id=".$question->id."&courseid=".$category->id;
+            $popuphtml = 'target="popup" onclick="window.open(\''.$link.'\',\'popup\',\'width=600,height=600\'); return false;"';
+            echo '<a href="'.$link.'" '.$popuphtml.'>'.$question->name.'</a> <span class="badge">'.$category->name.'</span><ul class="list-group">';
             if (isset($reports[$miquiz_question->miquizquestionid])) {
                 foreach ($reports[$miquiz_question->miquizquestionid] as $report) {
                     echo '<li class="list-group-item"><u>'.$report['category'].'</u></br>';
@@ -81,10 +86,12 @@ if (has_capability('moodle/course:manageactivities', $context)) {
         }
     }
     echo '</ul>';
+    echo '</div>';
 }
 
 if (has_capability('moodle/course:manageactivities', $context)) {
-    echo '<br/><b>'.get_string('miquiz_view_statistics', 'miquiz').'</b><br/>';
+    echo '<br/><b data-toggle="collapse" href="#statisticsoverview_box">'.get_string('miquiz_view_statistics', 'miquiz').'</b><br/>';
+    echo '<div class="collapse in" id="statisticsoverview_box">';
     $score_training = 0;
     $score_duel = 0;
     $score_training_correct = 0;
@@ -113,8 +120,10 @@ if (has_capability('moodle/course:manageactivities', $context)) {
     $answered_rel = "(".$rel_answeredQuestions_total."/".$rel_answeredQuestions_correct."/".$rel_answeredQuestions_wrong.")";
 
     echo get_string('miquiz_view_statistics_answeredquestions', 'miquiz').': '.$answered_abs.' '.$answered_rel.'<br/>';
-
-    echo '<br/><b>'.get_string('miquiz_view_statistics_user', 'miquiz').'</b><br/>';
+    echo '</div>';
+    
+    echo '<br/><b data-toggle="collapse" href="#statisticsuser_box">'.get_string('miquiz_view_statistics_user', 'miquiz').'</b><br/>';
+    echo '<div class="collapse in" id="statisticsuser_box">';
     foreach ($user_stats as $user_score) {
         $score_training = $user_score["score"]["training"]["total"];
         $score_duel = $user_score["score"]["duel"]["total"];
@@ -144,6 +153,7 @@ if (has_capability('moodle/course:manageactivities', $context)) {
         echo '<li>'.get_string('miquiz_view_statistics_totalscore', 'miquiz').': '.$score.'/'.$score_possible.'</li>';
         echo "</ul></div>";
     }
+    echo '</div>';
 }
 
 echo $OUTPUT->footer();
