@@ -5,13 +5,19 @@ require_once("lib.php");
 
 class cockpit
 {
-    private static function format_date($a_date){
+    public function __construct($is_manager, $miquiz)
+    {        
+        $this->is_manager = $is_manager;
+        $this->miquiz = $miquiz;
+    }
+
+    private function format_date($a_date){
         $date = new DateTime("", core_date::get_server_timezone_object());
         $date->setTimestamp($a_date);
         return date_format($date, 'd.m.Y H:i');
     }
 
-    public static function print_main($start_date, $prod_date, $end_date)
+    public function print_status($start_date, $prod_date, $end_date)
     {        
         echo '<div id="timeline" style="padding-left:10px"></div>';
         echo "<script>
@@ -25,9 +31,9 @@ class cockpit
       
         tooltip_conf = \"{content: {message}, placement: 'left-center', classes: ['info'], targetClasses: ['it-has-a-tooltip'], offset: 1, delay: { show: 100, hide: 200}}\"
         tooltip_messages = {
-          cstart_message: '".cockpit::format_date($start_date)."',
-          cprod_message: '".cockpit::format_date($prod_date)."',
-          cend_message: '".cockpit::format_date($end_date)."'
+          cstart_message: '".$this->format_date($start_date)."',
+          cprod_message: '".$this->format_date($prod_date)."',
+          cend_message: '".$this->format_date($end_date)."'
         }
       
         line_offset = 10
@@ -127,15 +133,66 @@ class cockpit
         </script>";
     }
     
-    public static function print_js()
+    public function print_js()
+    { 
+      if($this->is_manager){
+        $score_training = 0;
+        $score_duel = 0;
+        $score_training_correct = 0;
+        $score_duel_correct = 0;
+        $user_stats = miquiz::api_get("api/categories/" . $this->miquiz->miquizcategoryid . "/user-stats");
+        $user_obj = miquiz::api_get("api/users");
+    
+        $resp = miquiz::api_get("api/categories/" . $this->miquiz->miquizcategoryid . "/stats");
+        $answeredQuestions_training_total = $resp["answeredQuestions"]["training"]["total"];
+        $answeredQuestions_training_correct = $resp["answeredQuestions"]["training"]["correct"];
+        $answeredQuestions_duel_total = $resp["answeredQuestions"]["duel"]["total"];
+        $answeredQuestions_duel_correct = $resp["answeredQuestions"]["duel"]["correct"];
+    
+        $answeredQuestions_total = number_format($answeredQuestions_training_total+$answeredQuestions_duel_total, 0);
+        $answeredQuestions_correct = number_format($answeredQuestions_training_correct+$answeredQuestions_duel_correct, 0);
+        $answeredQuestions_wrong = number_format($answeredQuestions_total-$answeredQuestions_correct, 0);
+    
+        $eps = pow(10000000, -1);
+        $rel_answeredQuestions_total = number_format($answeredQuestions_total/($answeredQuestions_total+$eps), 2);
+        $rel_answeredQuestions_correct = number_format($answeredQuestions_correct/($answeredQuestions_total+$eps), 2);
+        $rel_answeredQuestions_wrong = number_format($answeredQuestions_wrong/($answeredQuestions_total+$eps), 2);
+    
+        $answered_abs = "(".$answeredQuestions_total."/".$answeredQuestions_correct."/".$answeredQuestions_wrong.")";
+        $answered_rel = "(".$rel_answeredQuestions_total."/".$rel_answeredQuestions_correct."/".$rel_answeredQuestions_wrong.")";
+    
+        //TODO display relative answered questions
+        echo '<script>        
+        var data = [{
+					"label": "'.get_string('miquiz_cockpit_correct', 'miquiz').'",
+			        "value" : '.$answeredQuestions_correct.',
+			        "color": "green"
+		    	},{
+					"label": "'.get_string('miquiz_cockpit_incorrect', 'miquiz').'",
+					"value": '.$answeredQuestions_wrong.',
+					"color": "red"
+				}];
+        var chart = nv.models.pieChart()
+          .x(function(d) { return d.label })
+		      .y(function(d) { return d.value })
+		      .color(function(d) { return d.color })
+          .showLabels(true)
+		      .showLegend(false);
+        d3.select("#piechart")
+          .datum(data)
+          .call(chart);
+        nv.utils.windowResize(function() {
+            chart.update();
+          });
+        </script>';
+      }
+    }
+
+    public function print_header()
     {
         echo '<script type="text/javascript" src="https://cdn.rawgit.com/svgdotjs/svg.js/master/dist/svg.min.js"></script>';
         echo '<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>';
         echo '<script type="text/javascript" src="https://unpkg.com/v-tooltip"></script>';
-    }
-
-    public static function print_css()
-    {
         echo '<style>
         .tooltip {
           display: block !important;
@@ -243,5 +300,11 @@ class cockpit
           transition: opacity .15s;
         }
         </style>';
+
+        if($this->is_manager){
+          echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js"></script>';
+          echo '<script src="http://nvd3-community.github.io/nvd3/build/nv.d3.js" charset="utf-8"></script>';
+          echo '<link href="http://nvd3-community.github.io/nvd3/build/nv.d3.css" rel="stylesheet" type="text/css">';
+        }
     }
 }
