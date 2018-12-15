@@ -35,9 +35,9 @@ class cockpit
           cprod_message: '".$this->format_date($prod_date)."',
           cend_message: '".$this->format_date($end_date)."'
         }
-      
+              
         line_offset = 10
-        line_text = ['".get_string('miquiz_cockpit_training', 'miquiz')."', '".get_string('miquiz_cockpit_productive', 'miquiz')."']
+        line_text = ['".get_string('miquiz_status_training', 'miquiz')."', '".get_string('miquiz_status_productive', 'miquiz')."']
         line_stroke_attr = {color: '#111',
                             width: 3,
                             linecap: 'round'}

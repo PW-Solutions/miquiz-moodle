@@ -56,8 +56,11 @@ $string['miquiz_view_score'] = 'Deine Punke Training(Erreicht/M&ouml;glich), Due
 $string['miquiz_view_openlink'] =  $instance_name . ' &ouml;ffnen';
 $string['miquiz_view_nodata'] =  'Es sind noch keine Daten vorhanden.';
 
-$string['miquiz_cockpit_training'] = 'Training';
-$string['miquiz_cockpit_productive'] = 'Produktiv';
+$string['miquiz_status_inactive'] = 'Inaktiv';
+$string['miquiz_status_training'] = 'Training';
+$string['miquiz_status_productive'] = 'Produktiv';
+$string['miquiz_status_finished'] = 'Beendet';
+
 $string['miquiz_cockpit_correct'] = 'Richtig';
 $string['miquiz_cockpit_incorrect'] = 'Falsch';
 

@@ -60,8 +60,11 @@ $string['miquiz_view_nodata'] =  'No data available.'; // Es sind noch keine Dat
 $string['description'] = 'Description';
 $string['task_sync_users_name'] = 'Sync quiz users with instance';
 
-$string['miquiz_cockpit_training'] = 'Training';
-$string['miquiz_cockpit_productive'] = 'Productive';
+$string['miquiz_status_inactive'] = 'Inactive';
+$string['miquiz_status_training'] = 'Training';
+$string['miquiz_status_productive'] = 'Productive';
+$string['miquiz_status_finished'] = 'Finished';
+
 $string['miquiz_cockpit_correct'] = 'Correct';
 $string['miquiz_cockpit_incorrect'] = 'Incorrect';
 
