@@ -9,6 +9,8 @@ $string['modulenameplural'] = 'MI-Quizze';
 $instance_name = get_config('mod_miquiz', 'instancename');
 $string['modulename_help'] = 'Erstelle ein ' . $instance_name . ' Duell.';
 
+$string['miquiz_index_title'] = $instance_name .' Kurs &Uuml;bersicht';
+
 $string['miquiz_setting_instanceurl_title'] = 'URL zur Quiz-Instanz';
 $string['miquiz_setting_instanceurl_helper'] = 'Bitte die komplette URL zur Quiz-Instanz angeben, mit der dieses Plugin arbeiten soll';
 $string['miquiz_setting_apikey_title'] = 'API-Key zur  Quiz-Instanz';
@@ -46,16 +48,21 @@ $string['miquiz_view_scoremode'] = 'Bewertungsmodus';
 $string['miquiz_view_questions'] = 'Fragen';
 $string['miquiz_view_numquestions'] = 'Anzahl Fragen';
 $string['miquiz_view_user'] = 'Mitspieler';
-$string['miquiz_view_statistics'] = 'Statistiken (&Uuml;bersicht)';
 $string['miquiz_view_statistics_user'] = 'Statistiken (Mitspieler)';
 $string['miquiz_view_score'] = 'Deine Punke';
 $string['miquiz_view_statistics_answeredquestions'] = 'Beantwortete Fragen absolut(gesamt/richtig/falsch), relativ(gesamt/richtig/falsch)';
 $string['miquiz_view_statistics_totalscore'] = 'Punkte (erreicht/gesamt erreichbar)';
 $string['miquiz_view_score'] = 'Deine Punke Training(Erreicht/M&ouml;glich), Duel(Erreicht/M&ouml;glich)';
 $string['miquiz_view_openlink'] =  $instance_name . ' &ouml;ffnen';
+$string['miquiz_view_nodata'] =  'Es sind noch keine Daten vorhanden.';
 
-$string['miquiz_cockpit_training'] = 'Training';
-$string['miquiz_cockpit_productive'] = 'Produktiv';
+$string['miquiz_status_inactive'] = 'Inaktiv';
+$string['miquiz_status_training'] = 'Training';
+$string['miquiz_status_productive'] = 'Produktiv';
+$string['miquiz_status_finished'] = 'Beendet';
+
+$string['miquiz_cockpit_correct'] = 'Richtig';
+$string['miquiz_cockpit_incorrect'] = 'Falsch';
 
 $string['description'] = 'Beschreibung';
 $string['task_sync_users_name'] = 'Synchronisiere Quiz-User mit Instanz';

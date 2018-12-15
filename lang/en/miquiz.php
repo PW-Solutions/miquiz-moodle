@@ -9,6 +9,8 @@ $string['modulenameplural'] = 'MI-Quizzes';
 $instance_name = get_config('mod_miquiz', 'instancename');
 $string['modulename_help'] = 'Challenge your students in a ' . $instance_name . ' duel.';
 
+$string['miquiz_index_title'] = $instance_name .' Course Overview';
+
 $string['miquiz_setting_instanceurl_title'] = 'URL for quiz instance';
 $string['miquiz_setting_instanceurl_helper'] = 'Please add the full url to the quiz instance';
 $string['miquiz_setting_apikey_title'] = 'API key for quiz instance';
@@ -46,19 +48,25 @@ $string['miquiz_view_scoremode'] = 'Rating mode'; //Bewertungsmodus
 $string['miquiz_view_questions'] = 'Questions'; //Fragen
 $string['miquiz_view_numquestions'] = 'Number of questions'; //Anzahl Fragen
 $string['miquiz_view_user'] = 'Player'; //Mitspieler
-$string['miquiz_view_statistics'] = 'Statistics (Overview)'; //Statistiken
 $string['miquiz_view_statistics_user'] = 'Statistics (Players)';
 $string['miquiz_view_score'] = 'Your score'; //Deine Punke
 $string['miquiz_view_statistics_answeredquestions'] = 'Answered questions absolute(total/correct/wrong), relative(total/correct/wrong)'; //Beantwortete Fragen (gesamt/richtig/falsch, absolut/relativ)
 $string['miquiz_view_statistics_totalscore'] = 'Score (achieved/maximum)'; //Punkte (erreicht/gesamt erreichbar)
 $string['miquiz_view_score'] = 'Your score training(achieved/maximum), duel(achieved/maximum)'; //Deine Punke
 $string['miquiz_view_openlink'] = 'Open ' . $instance_name; //$string['modulename'] &ouml;ffnen
+$string['miquiz_view_nodata'] =  'No data available.'; // Es sind noch keine Daten vorhanden
+
 
 $string['description'] = 'Description';
 $string['task_sync_users_name'] = 'Sync quiz users with instance';
 
-$string['miquiz_cockpit_training'] = 'Training';
-$string['miquiz_cockpit_productive'] = 'Productive';
+$string['miquiz_status_inactive'] = 'Inactive';
+$string['miquiz_status_training'] = 'Training';
+$string['miquiz_status_productive'] = 'Productive';
+$string['miquiz_status_finished'] = 'Finished';
+
+$string['miquiz_cockpit_correct'] = 'Correct';
+$string['miquiz_cockpit_incorrect'] = 'Incorrect';
 
 $string['pluginname'] = 'MI-Quiz';
 $string['pluginadministration'] = 'MI-Quiz Plugin administration';

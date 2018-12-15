@@ -6,6 +6,7 @@ require_once("view_cockpit.php");
 
 $id = required_param('id', PARAM_INT);  // Course Module ID
 
+// check permissions and retrieve context
 $url = new moodle_url('/mod/miquiz/view.php', array('id'=>$id));
 $PAGE->set_url($url);
 if (!$cm = get_coursemodule_from_id('miquiz', $id)) {
@@ -21,38 +22,39 @@ require_login($course, false, $cm);
 
 $url = get_config('mod_miquiz', 'instanceurl');
 $context = context_module::instance($cm->id);
+$is_manager =  has_capability('moodle/course:manageactivities', $context);  //https://docs.moodle.org/dev/Roles
 
 echo $OUTPUT->header();
 
 echo '<h3>'.$miquiz->intro.'</h3></br>';
 echo '<form action="'.$url.'" target="_blanc"><input class="btn btn-primary" id="id_tomiquizbutton" type="submit" value="'.get_string('miquiz_view_openlink', 'miquiz').'"></form>';
 
-cockpit::print_js();
-cockpit::print_css();
-
+$cp = new cockpit($is_manager, $miquiz);
+$cp->print_header();
 echo '<br/><div class="container"><div class="row">
 <div class="col-sm-9">'.get_string('miquiz_view_shortname', 'miquiz').': '.$miquiz->short_name.'</div>
 <div class="col-sm-4">';
-cockpit::print_main($miquiz->assesstimestart, $miquiz->timeuntilproductive, $miquiz->assesstimefinish);
+$cp->print_status($miquiz->assesstimestart, $miquiz->timeuntilproductive, $miquiz->assesstimefinish);
 echo '</div>
-<div class="col-sm-6">'.get_string('miquiz_view_scoremode', 'miquiz').': '.get_string('miquiz_create_scoremode_'.$miquiz->scoremode, 'miquiz').'</div>
-<div class="col-sm-6">Beantwortete Fragen:<br/>TODO chart</div>
-<div class="col-sm-6">'.get_string('miquiz_view_numquestions', 'miquiz').': '.count($DB->get_records('miquiz_questions', array('quizid' => $miquiz->id))).'</div>
+<div class="col-sm-6">'.get_string('miquiz_view_scoremode', 'miquiz').': '.get_string('miquiz_create_scoremode_'.$miquiz->scoremode, 'miquiz').'</div>';
+if ($is_manager){
+    echo '<div class="col-sm-6">Beantwortete Fragen:<br/><svg id="piechart"></svg></div>';
+}
+echo '<div class="col-sm-6">'.get_string('miquiz_view_numquestions', 'miquiz').': '.count($DB->get_records('miquiz_questions', array('quizid' => $miquiz->id))).'</div>
 </div></div>';
+$cp->print_js();
 
-if (has_capability('moodle/course:manageactivities', $context)) {
+if ($is_manager) {
     echo '<br/><b data-toggle="collapse" href="#questions_box">'.get_string('miquiz_view_questions', 'miquiz').'</b><br/>';
     echo '<div class="collapse in" id="questions_box">';
 
     $reports = [];
-    if (has_capability('moodle/course:manageactivities', $context)) {
-        $resp = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/reports");
-        foreach ($resp as $report) {
-            if (!isset($reports[$report["questionId"]])) {
-                $reports[$report["questionId"]] = [];
-            }
-            $reports[$report["questionId"]][] = $report;
+    $resp = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/reports");
+    foreach ($resp as $report) {
+        if (!isset($reports[$report["questionId"]])) {
+            $reports[$report["questionId"]] = [];
         }
+        $reports[$report["questionId"]][] = $report;
     }
 
     $quiz_questions = $DB->get_records('miquiz_questions', array('quizid' => $miquiz->id));
@@ -88,41 +90,14 @@ if (has_capability('moodle/course:manageactivities', $context)) {
     echo '</div>';
 }
 
-if (has_capability('moodle/course:manageactivities', $context)) {
-    echo '<br/><b data-toggle="collapse" href="#statisticsoverview_box">'.get_string('miquiz_view_statistics', 'miquiz').'</b><br/>';
-    echo '<div class="collapse in" id="statisticsoverview_box">';
-    $score_training = 0;
-    $score_duel = 0;
-    $score_training_correct = 0;
-    $score_duel_correct = 0;
+if ($is_manager) {
     $user_stats = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/user-stats");
-    $user_obj = miquiz::api_get("api/users");
-
-    //teacher area
-    //https://docs.moodle.org/dev/Roles
-    $resp = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/stats");
-    $answeredQuestions_training_total = $resp["answeredQuestions"]["training"]["total"];
-    $answeredQuestions_training_correct = $resp["answeredQuestions"]["training"]["correct"];
-    $answeredQuestions_duel_total = $resp["answeredQuestions"]["duel"]["total"];
-    $answeredQuestions_duel_correct = $resp["answeredQuestions"]["duel"]["correct"];
-
-    $answeredQuestions_total = number_format($answeredQuestions_training_total+$answeredQuestions_duel_total, 0);
-    $answeredQuestions_correct = number_format($answeredQuestions_training_correct+$answeredQuestions_duel_correct, 0);
-    $answeredQuestions_wrong = number_format($answeredQuestions_total-$answeredQuestions_correct, 0);
-
-    $eps = pow(10000000, -1);
-    $rel_answeredQuestions_total = number_format($answeredQuestions_total/($answeredQuestions_total+$eps), 2);
-    $rel_answeredQuestions_correct = number_format($answeredQuestions_correct/($answeredQuestions_total+$eps), 2);
-    $rel_answeredQuestions_wrong = number_format($answeredQuestions_wrong/($answeredQuestions_total+$eps), 2);
-
-    $answered_abs = "(".$answeredQuestions_total."/".$answeredQuestions_correct."/".$answeredQuestions_wrong.")";
-    $answered_rel = "(".$rel_answeredQuestions_total."/".$rel_answeredQuestions_correct."/".$rel_answeredQuestions_wrong.")";
-
-    echo get_string('miquiz_view_statistics_answeredquestions', 'miquiz').': '.$answered_abs.' '.$answered_rel.'<br/>';
-    echo '</div>';
     
     echo '<br/><b data-toggle="collapse" href="#statisticsuser_box">'.get_string('miquiz_view_statistics_user', 'miquiz').'</b><br/>';
     echo '<div class="collapse in" id="statisticsuser_box">';
+    if(count($user_stats)==0)
+        echo get_string('miquiz_view_nodata', 'miquiz');
+
     foreach ($user_stats as $user_score) {
         $score_training = $user_score["score"]["training"]["total"];
         $score_duel = $user_score["score"]["duel"]["total"];
