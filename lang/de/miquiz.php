@@ -9,6 +9,8 @@ $string['modulenameplural'] = 'MI-Quizze';
 $instance_name = get_config('mod_miquiz', 'instancename');
 $string['modulename_help'] = 'Erstelle ein ' . $instance_name . ' Duell.';
 
+$string['miquiz_index_title'] = $instance_name .' Kurs &Uuml;bersicht';
+
 $string['miquiz_setting_instanceurl_title'] = 'URL zur Quiz-Instanz';
 $string['miquiz_setting_instanceurl_helper'] = 'Bitte die komplette URL zur Quiz-Instanz angeben, mit der dieses Plugin arbeiten soll';
 $string['miquiz_setting_apikey_title'] = 'API-Key zur  Quiz-Instanz';
