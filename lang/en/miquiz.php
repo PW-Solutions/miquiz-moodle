@@ -10,6 +10,8 @@ $instance_name = get_config('mod_miquiz', 'instancename');
 $string['modulename_help'] = 'Challenge your students in a ' . $instance_name . ' duel.';
 
 $string['miquiz_index_title'] = $instance_name .' Course Overview';
+$string['miquiz_index_table_status'] = 'Status';
+$string['miquiz_index_reports'] = 'Number of reports'; //Anzahl Reports
 
 $string['miquiz_setting_instanceurl_title'] = 'URL for quiz instance';
 $string['miquiz_setting_instanceurl_helper'] = 'Please add the full url to the quiz instance';
@@ -43,6 +45,7 @@ $string['miquiz_create_error_endbeforestart'] = 'Quiz end date date has to be la
 $string['miquiz_create_error_betweenendstart'] = 'Test phase ending time has to be between quiz start and end date.';
 
 $string['miquiz_view_overview'] = 'Overview'; //&Uuml;bersicht
+$string['miquiz_view_name'] = 'Name';
 $string['miquiz_view_shortname'] = 'Short name'; //Abk&uuml;rzung
 $string['miquiz_view_scoremode'] = 'Rating mode'; //Bewertungsmodus
 $string['miquiz_view_questions'] = 'Questions'; //Fragen
@@ -65,6 +68,7 @@ $string['miquiz_status_training'] = 'Training';
 $string['miquiz_status_productive'] = 'Productive';
 $string['miquiz_status_finished'] = 'Finished';
 
+$string['miquiz_cockpit_total'] = 'Total';
 $string['miquiz_cockpit_correct'] = 'Correct';
 $string['miquiz_cockpit_incorrect'] = 'Incorrect';
 

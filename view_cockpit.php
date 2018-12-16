@@ -20,7 +20,7 @@ class cockpit
     public function print_status($start_date, $prod_date, $end_date)
     {        
         echo '<div id="timeline" style="padding-left:10px"></div>';
-        echo "<script>
+        echo "<script type='text/javascript'>
         //config
         dot_pos = [20, 70, 120]
         circle_size = 20
@@ -162,7 +162,7 @@ class cockpit
         $answered_rel = "(".$rel_answeredQuestions_total."/".$rel_answeredQuestions_correct."/".$rel_answeredQuestions_wrong.")";
     
         //TODO display relative answered questions
-        echo '<script>        
+        echo '<script type="text/javascript">        
         var data = [{
 					"label": "'.get_string('miquiz_cockpit_correct', 'miquiz').'",
 			        "value" : '.$answeredQuestions_correct.',
