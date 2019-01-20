@@ -111,7 +111,8 @@ class miquiz
 
             $questionDescription = miquiz::addImage($question->questiontext, $context->id, 'question', 'questiontext', $question->id);
 
-            $resp = miquiz::api_post("api/questions", ["description" => ["text" => $questionDescription],
+            $resp = miquiz::api_post("api/questions", ["externalId" => $question->id,
+                                                   "description" => ["text" => $questionDescription],
                                                    "possibilities" => $json_possibilities,
                                                    "comment" => ["text" => $question->generalfeedback],
                                                    "status" => "active",
