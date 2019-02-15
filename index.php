@@ -66,5 +66,31 @@ $PAGE->set_url($url);
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('miquiz_index_title', 'miquiz'));
-print_r($miquizzes);
+
+echo '<table id="datatable" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">';
+echo '<thead><tr>';
+$rows = [get_string('miquiz_view_name', 'miquiz'), get_string('miquiz_create_assesstimestart', 'miquiz'), get_string('miquiz_create_assesstimefinish', 'miquiz'), 
+        get_string('miquiz_view_numquestions', 'miquiz'), get_string('miquiz_index_reports', 'miquiz'), get_string('miquiz_index_table_status', 'miquiz'), 
+        get_string('miquiz_view_numquestions', 'miquiz'), get_string('miquiz_cockpit_correct', 'miquiz'), get_string('miquiz_cockpit_incorrect', 'miquiz')];
+foreach($rows as $row)
+    echo '<th class="th-sm">'.$row.'</th>';
+echo '</thead><tbody>';
+
+foreach($miquizzes as $row) {
+    echo '<tr>';
+    echo '<td>'.$row['name'].'</td>';
+    echo '<td>'.gmdate("Y.m.d H:i:s", $row['assesstimestart']).'</td>';
+    echo '<td>'.gmdate("Y.m.d H:i:s", $row['assesstimefinish']).'</td>';
+    echo '<td>'.$row['num_questions'].'</td>';
+    echo '<td>'.$row['num_questions_with_reports'].'</td>';
+    echo '<td>'.$row['status'].'</td>';
+    echo '<td>'.$row['answeredQuestions_total'].'</td>';
+    echo '<td>'.$row['answeredQuestions_correct'].'</td>';
+    echo '<td>'.$row['answeredQuestions_wrong'].'</td>';
+    echo '</tr>';
+}
+echo '</tbody></table>';
+echo '<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>';
+echo '<script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>';
+$PAGE->requires->js_amd_inline('$("#datatable").DataTable();');
 echo $OUTPUT->footer();

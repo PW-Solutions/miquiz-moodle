@@ -10,6 +10,7 @@ $instance_name = get_config('mod_miquiz', 'instancename');
 $string['modulename_help'] = 'Erstelle ein ' . $instance_name . ' Duell.';
 
 $string['miquiz_index_title'] = $instance_name .' Kurs &Uuml;bersicht';
+$string['miquiz_index_reports'] = 'Anzahl Reports';
 
 $string['miquiz_setting_instanceurl_title'] = 'URL zur Quiz-Instanz';
 $string['miquiz_setting_instanceurl_helper'] = 'Bitte die komplette URL zur Quiz-Instanz angeben, mit der dieses Plugin arbeiten soll';
@@ -61,6 +62,7 @@ $string['miquiz_status_training'] = 'Training';
 $string['miquiz_status_productive'] = 'Produktiv';
 $string['miquiz_status_finished'] = 'Beendet';
 
+$string['miquiz_cockpit_total'] = 'Insgesamt';
 $string['miquiz_cockpit_correct'] = 'Richtig';
 $string['miquiz_cockpit_incorrect'] = 'Falsch';
 
