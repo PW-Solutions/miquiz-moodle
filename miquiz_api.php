@@ -33,7 +33,6 @@ class miquiz
 
     public static function api_send($endpoint, $crl, $config=array())
     {
-        /*
         $reply = curl_exec($crl);
 
         if ($reply === false) {
@@ -59,15 +58,6 @@ class miquiz
         }
 
         curl_close($crl);
-        */
-
-        if(startsWith($endpoint, 'api/categories/download')){
-            $reply = "a,b,c";
-        }else if(startsWith($endpoint, 'api/categories/') && miquiz::endsWith($endpoint, '/stats')){
-            $reply = '{"answeredQuestions": {"training": {"total": 10, "correct": 1}, "duel": {"total": 11, "correct": 5}}}';  // mock
-        } else {
-            $reply = "{}";  // mock
-        }
 
         if (!empty($config['return_raw']))
             return $reply;
