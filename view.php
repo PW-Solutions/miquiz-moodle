@@ -20,14 +20,22 @@ if (!$miquiz = $DB->get_record('miquiz', array('id'=> $cm->instance))) {
 }
 require_login($course, false, $cm);
 
-$url = get_config('mod_miquiz', 'instanceurl');
+$miquizurl = get_config('mod_miquiz', 'instanceurl');
 $context = context_module::instance($cm->id);
 $is_manager =  has_capability('moodle/course:manageactivities', $context);  //https://docs.moodle.org/dev/Roles
+
+if ($is_manager && isset($_GET['download'])) {
+    // perform export    
+    header('Content-Type: application/csv');
+    header('Content-disposition: filename="export.csv"');
+    echo miquiz::api_get("api/categories/download?categories=".$miquiz->miquizcategoryid, ['return_raw' => true]);
+    die();
+}
 
 echo $OUTPUT->header();
 
 echo '<h3>'.$miquiz->intro.'</h3></br>';
-echo '<form action="'.$url.'" target="_blanc"><input class="btn btn-primary" id="id_tomiquizbutton" type="submit" value="'.get_string('miquiz_view_openlink', 'miquiz').'"></form>';
+echo '<form action="'.$miquizurl.'" target="_blanc"><input class="btn btn-primary" id="id_tomiquizbutton" type="submit" value="'.get_string('miquiz_view_openlink', 'miquiz').'"></form>';
 
 $cp = new cockpit($is_manager, $miquiz);
 $cp->print_header();
@@ -42,6 +50,8 @@ if ($is_manager){
 }
 echo '<div class="col-sm-6">'.get_string('miquiz_view_numquestions', 'miquiz').': '.count($DB->get_records('miquiz_questions', array('quizid' => $miquiz->id))).'</div>
 </div></div>';
+if ($is_manager)
+    echo '<a href="'.$url.'&download"><i class="icon fa fa-download fa-fw " aria-hidden="true" aria-label=""></i> '.get_string('miquiz_index_download', 'miquiz').'</a>';
 $cp->print_js();
 
 if ($is_manager) {
@@ -58,7 +68,6 @@ if ($is_manager) {
     }
 
     $quiz_questions = $DB->get_records('miquiz_questions', array('quizid' => $miquiz->id));
-    echo '<ul class="list-group">';
     if (count($quiz_questions) > 0) {
         $question_ids = "";
         foreach ($quiz_questions as $quiz_question) {
@@ -69,24 +78,43 @@ if ($is_manager) {
         }
         $questions = $DB->get_records_sql('SELECT * FROM {question} q WHERE '. $question_ids);
 
+        $questionsbycategory = array();
         foreach ($questions as $question) {
-            $miquiz_question = $DB->get_record_sql('SELECT miquizquestionid FROM {miquiz_questions} WHERE questionid='. $question->id.' AND quizid='.$miquiz->id);
-            echo '<li class="list-group-item">';
             $category = $DB->get_record('question_categories', array('id' => $question->category));
-            $link = "/question/preview.php?id=".$question->id."&courseid=".$category->id;
-            $popuphtml = 'target="popup" onclick="window.open(\''.$link.'\',\'popup\',\'width=600,height=600\'); return false;"';
-            echo '<a href="'.$link.'" '.$popuphtml.'>'.$question->name.'</a> <span class="badge">'.$category->name.'</span><ul class="list-group">';
-            if (isset($reports[$miquiz_question->miquizquestionid])) {
-                foreach ($reports[$miquiz_question->miquizquestionid] as $report) {
-                    echo '<li class="list-group-item"><u>'.$report['category'].'</u></br>';
-                    echo $report['message'];
-                    echo '</br><i>'.$report['author'].'</i></li>';
+            if(!array_key_exists($category->name, $questionsbycategory))
+                $questionsbycategory[$category->name] = [$question];
+            else
+                array_push($questionsbycategory[$category->name], $question);
+        }
+        asort($questionsbycategory);
+        foreach ($questionsbycategory as $catname => $questions) {
+            if (count($questions) == 0)
+                continue;
+
+            $category = $DB->get_record('question_categories', array('id' => $questions[0]->category));
+            echo '<span class="badge">'.$category->name.'</span>';
+            
+            asort($questions);
+            echo '<ul class="list-group">';
+            foreach ($questions as $question) {
+                $miquiz_question = $DB->get_record_sql('SELECT miquizquestionid FROM {miquiz_questions} WHERE questionid='. $question->id.' AND quizid='.$miquiz->id);
+            
+                echo '<li class="list-group-item">';
+                $link = "/question/preview.php?id=".$question->id."&courseid=".$category->id;
+                $popuphtml = 'target="popup" onclick="window.open(\''.$link.'\',\'popup\',\'width=600,height=600\'); return false;"';
+                echo '<a href="'.$link.'" '.$popuphtml.'>'.$question->name.'</a><ul class="list-group">';
+                if (isset($reports[$miquiz_question->miquizquestionid])) {
+                    foreach ($reports[$miquiz_question->miquizquestionid] as $report) {
+                        echo '<li class="list-group-item"><u>'.$report['category'].'</u></br>';
+                        echo $report['message'];
+                        echo '</br><i>'.$report['author'].'</i></li>';
+                    }
                 }
+                echo "</ul></li>";
             }
-            echo "</ul></li>";
+            echo '</ul>';
         }
     }
-    echo '</ul>';
     echo '</div>';
 }
 
