@@ -17,6 +17,11 @@ $res = $DB->get_records_sql($sql);
 
 require_course_login($course, true, get_coursemodule_from_id('miquiz',$res[array_keys($res)[0]]->id, 0, false, MUST_EXIST));
 
+//check if user has permissions to administrate course
+$context = context_module::instance($course->id);
+$is_manager =  has_capability('moodle/course:manageactivities', $context);
+if(!$is_manager) die();
+
 $miquizzes = [];
 foreach($res as $a_cm_entry){
     $a_cm = get_coursemodule_from_id('miquiz', $a_cm_entry->id, 0, false, MUST_EXIST);
@@ -57,8 +62,27 @@ foreach($res as $a_cm_entry){
         'answeredQuestions_total' => $answeredQuestions_total,
         'answeredQuestions_correct' => $answeredQuestions_correct,
         'answeredQuestions_wrong' => $answeredQuestions_wrong,
-
+        'miquizcategoryid' => $miquiz->miquizcategoryid,
     ];
+}
+
+if (isset($_GET['download_categories'])) {
+    // perform export
+    $data = $_GET['download_categories'];
+    foreach (explode(",", $data) as $miquizcategoryid) {
+        $found = False;
+        foreach($miquizzes as $row) {
+            if($row['miquizcategoryid'] == $miquizcategoryid){
+                $found = true;
+            }
+        } 
+        if(!$found)
+            die();
+    }
+    header('Content-Type: application/csv');
+    header('Content-disposition: filename="export.csv"');
+    echo miquiz::api_get("api/categories/download?categories=".$data, ['return_raw' => true]);
+    die();
 }
 
 $url = new moodle_url('/mod/miquiz/index.php', array('id'=>$id));
@@ -69,7 +93,7 @@ echo $OUTPUT->heading(get_string('miquiz_index_title', 'miquiz'));
 
 echo '<table id="datatable" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">';
 echo '<thead><tr>';
-$rows = [get_string('miquiz_view_name', 'miquiz'), get_string('miquiz_create_assesstimestart', 'miquiz'), get_string('miquiz_create_assesstimefinish', 'miquiz'), 
+$rows = ['<i class="icon fa fa-download fa-fw " aria-hidden="true" aria-label=""></i>', get_string('miquiz_view_name', 'miquiz'), get_string('miquiz_create_assesstimestart', 'miquiz'), get_string('miquiz_create_assesstimefinish', 'miquiz'), 
         get_string('miquiz_view_numquestions', 'miquiz'), get_string('miquiz_index_reports', 'miquiz'), get_string('miquiz_index_table_status', 'miquiz'), 
         get_string('miquiz_view_numquestions', 'miquiz'), get_string('miquiz_cockpit_correct', 'miquiz'), get_string('miquiz_cockpit_incorrect', 'miquiz')];
 foreach($rows as $row)
@@ -78,7 +102,8 @@ echo '</thead><tbody>';
 
 foreach($miquizzes as $row) {
     echo '<tr>';
-    echo '<td>'.$row['name'].'</td>';
+    echo '<td><input type="checkbox" name="add2download" value="'.$row['miquizcategoryid'].'" size="64"></td>';
+    echo '<td><a href="view.php?id='.$row['id'].'">'.$row['name'].'</a></td>';
     echo '<td>'.gmdate("Y.m.d H:i:s", $row['assesstimestart']).'</td>';
     echo '<td>'.gmdate("Y.m.d H:i:s", $row['assesstimefinish']).'</td>';
     echo '<td>'.$row['num_questions'].'</td>';
@@ -90,7 +115,18 @@ foreach($miquizzes as $row) {
     echo '</tr>';
 }
 echo '</tbody></table>';
+
+echo '<a href="#" onclick="generateAndFollowDownloadLink();"><i class="icon fa fa-download fa-fw " aria-hidden="true" aria-label=""></i> '.get_string('miquiz_index_download', 'miquiz').'</a>';
+
 echo '<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>';
 echo '<script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>';
 $PAGE->requires->js_amd_inline('$("#datatable").DataTable();');
+$downloadjs = 'generateAndFollowDownloadLink = function(){
+    var downloadids = Array(); 
+    $("input:checkbox[name=add2download]:checked").each(function(){
+        downloadids.push($(this).val());
+    }); 
+    window.location = "'.$url.'&download_categories="+downloadids;
+};';
+$PAGE->requires->js_amd_inline($downloadjs);
 echo $OUTPUT->footer();
