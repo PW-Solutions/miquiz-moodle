@@ -20,9 +20,11 @@ as Moodle tries to get the config value from the database before any tables are 
 
 ### Connect with MI-Quiz development workspace
 
-Default host: dev.mi-quiz (Moodle plugin settings)
-Add the host in `/etc/hosts`
+Default host: http://host.docker.internal:8000 (Moodle plugin settings)
 
+If you use another port for MI-Quiz in your docker port, change it in the moodle plugin settings.
+*Important*: If you use Docker on Linux, you need to add the host ip in the `/etc/hosts` file yourself (see
+[open issue](https://github.com/docker/for-linux/issues/264)).
 
 # TODOs
 - clean up code

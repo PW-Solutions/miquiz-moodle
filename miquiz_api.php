@@ -40,7 +40,7 @@ class miquiz
             throw new Exception('Curl error: ' . curl_error($crl));
         }
         $info = curl_getinfo($crl);
-        if ($info['http_code'] != 200 && $info['http_code'] != 201 && $info['http_code'] != 204) {
+        if (!in_array($info['http_code'], [200, 201, 204])) {
             $error_ob = [
                 "url" => $info['url'],
                 'http_code' => $info['http_code'],
@@ -48,7 +48,14 @@ class miquiz
             if ($info['http_code'] == 422) {  # print response if api was not used properly
                 $error_ob['reply'] = $reply;
             }
-            throw new Exception('mi-quiz api error: ' . json_encode($error_ob, true) . "\n");
+            if ($info['http_code'] == 401) {
+                $error_ob['reply'] = $reply;
+                $error_ob['info'] = 'Please check the provided API key in settings';
+            }
+            if ($info['http_code'] == 403) {
+                $error_ob['reply'] = $reply;
+            }
+            throw new Exception('MI-Quiz API Error: ' . json_encode($error_ob, true) . "\n");
         }
 
         curl_close($crl);
@@ -103,11 +110,12 @@ class miquiz
 
 
         $context = context_course::instance($COURSE->id);
-        $moduleid = miquiz::get_module_id();
-        $resp = miquiz::api_post("api/categories", array("parent" => $moduleid,
-                                                         "active" => false,
-                                                         "fullName" => $miquiz->name,
-                                                         "name" => $miquiz->short_name));
+        $categoryObject = [
+            'active' => false,
+            'fullName' => $miquiz->name,
+            'name' => $miquiz->short_name,
+        ];
+        $resp = miquiz::api_post('api/categories', $categoryObject);
         $catid = (int)$resp['id'];
         $miquiz->miquizcategoryid = $catid;
 
@@ -133,6 +141,8 @@ class miquiz
 
             $questionDescription = miquiz::addImage($question->questiontext, $context->id, 'question', 'questiontext', $question->id);
 
+            // TODO: check if question with $question->id is already in miquiz_questions (field: questionid). If so, make a put with the miquizquestionid
+            // Attention: this will overwrite the question in miquiz. Maybe we should add check and if question is different, we create it as new
             $resp = miquiz::api_post("api/questions", ["externalId" => $question->id,
                                                    "description" => ["text" => $questionDescription],
                                                    "possibilities" => $json_possibilities,
@@ -199,6 +209,7 @@ class miquiz
 
     public static function update($miquiz)
     {
+        // TODO: sync questions with category
         global $DB;
         miquiz::scheduleTasks($miquiz);
         return true;
@@ -336,17 +347,6 @@ class miquiz
             ]
         ];
         miquiz::api_post("api/tasks", ["data" => $task]);
-    }
-
-    public static function get_module_id()
-    {
-        $resp = miquiz::api_get("api/modules");
-        foreach ($resp as $cat) {
-            if ($cat["name"] == get_config('mod_miquiz', 'modulename')) {
-                return (int)$cat['id'];
-            }
-        }
-        return -1;
     }
 
     public static function sync_users($miquiz)

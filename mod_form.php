@@ -117,31 +117,16 @@ class mod_miquiz_mod_form extends moodleform_mod
      **/
     public function validation($data, $files)
     {
-        global $DB;
         $errors = parent::validation($data, $files);
 
-        if ($this->current->instance) {
-            $activities = $DB->get_records("miquiz", array("short_name" => $data["short_name"]));
-            if (!empty($activities)) {
-                $activity = array_pop($activities);
-            }
-        }
+        $this->local_validation($errors, $data, $files);
+        $this->external_validation($errors, $data, $files);
 
-        # check categories in miquiz
-        $moduleid = miquiz::get_module_id();
-        $categories = miquiz::api_get("api/categories");
-        $exists_in_miquiz = false;
-        foreach ($categories as $category) {
-            if ($category["name"] === $data["short_name"]) {
-                $exists_in_miquiz = !isset($activity) || strval($category['id']) !== $activity->miquizcategoryid;
-                break;
-            }
-        }
+        return $errors;
+    }
 
-        if ($exists_in_miquiz) {
-            $errors['short_name'] = get_string('miquiz_create_error_unique', 'miquiz');
-        }
-
+    private function local_validation(&$errors, $data, $files)
+    {
         if ($data['assesstimestart'] >= $data['assesstimefinish']) {
             $errors['assesstimefinish'] = get_string('miquiz_create_error_endbeforestart', 'miquiz');
         }
@@ -162,8 +147,31 @@ class mod_miquiz_mod_form extends moodleform_mod
         if (!empty($data['usepassword']) && empty($data['password'])) {
             $errors['password'] = get_string('emptypassword', 'lesson');
         }
+    }
 
-        return $errors;
+    private function external_validation(&$errors, $data, $files)
+    {
+        global $DB;
+        if ($this->current->instance) {
+            $activities = $DB->get_records("miquiz", array("short_name" => $data["short_name"]));
+            if (!empty($activities)) {
+                $activity = array_pop($activities);
+            }
+        }
+
+        # check categories in miquiz
+        $categories = miquiz::api_get("api/categories");
+        $exists_in_miquiz = false;
+        foreach ($categories as $category) {
+            if ($category["name"] === $data["short_name"]) {
+                $exists_in_miquiz = !isset($activity) || strval($category['id']) !== $activity->miquizcategoryid;
+                break;
+            }
+        }
+
+        if ($exists_in_miquiz) {
+            $errors['short_name'] = get_string('miquiz_create_error_unique', 'miquiz');
+        }
     }
 
     /**
