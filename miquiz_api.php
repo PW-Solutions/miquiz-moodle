@@ -30,7 +30,7 @@ class miquiz
             throw new Exception('Curl error: ' . curl_error($crl));
         }
         $info = curl_getinfo($crl);
-        if ($info['http_code'] != 200 && $info['http_code'] != 201 && $info['http_code'] != 204) {
+        if (!in_array($info['http_code'], [200, 201, 204])) {
             $error_ob = [
                 "url" => $info['url'],
                 'http_code' => $info['http_code'],
@@ -38,7 +38,14 @@ class miquiz
             if ($info['http_code'] == 422) {  # print response if api was not used properly
                 $error_ob['reply'] = $reply;
             }
-            throw new Exception('mi-quiz api error: ' . json_encode($error_ob, true) . "\n");
+            if ($info['http_code'] == 401) {
+                $error_ob['reply'] = $reply;
+                $error_ob['info'] = 'Please check the provided API key in settings';
+        }
+            if ($info['http_code'] == 403) {
+                $error_ob['reply'] = $reply;
+            }
+            throw new Exception('MI-Quiz API Error: ' . json_encode($error_ob, true) . "\n");
         }
 
         curl_close($crl);
