@@ -22,8 +22,18 @@ class miquiz
         return $crl;
     }
 
-    public static function api_send($endpoint, $crl)
+    public static function endsWith($string, $endString) 
+    { 
+        $len = strlen($endString); 
+        if ($len == 0) { 
+            return true; 
+        } 
+        return (substr($string, -$len) === $endString); 
+    }     
+
+    public static function api_send($endpoint, $crl, $config=array())
     {
+        /*
         $reply = curl_exec($crl);
 
         if ($reply === false) {
@@ -42,37 +52,49 @@ class miquiz
         }
 
         curl_close($crl);
+        */
+
+        if(startsWith($endpoint, 'api/categories/download')){
+            $reply = "a,b,c";
+        }else if(startsWith($endpoint, 'api/categories/') && miquiz::endsWith($endpoint, '/stats')){
+            $reply = '{"answeredQuestions": {"training": {"total": 10, "correct": 1}, "duel": {"total": 11, "correct": 5}}}';  // mock
+        } else {
+            $reply = "{}";  // mock
+        }
+
+        if (!empty($config['return_raw']))
+            return $reply;
         return json_decode($reply, true);
     }
 
-    public static function api_get($endpoint)
+    public static function api_get($endpoint, $config=array())
     {
         $crl = miquiz::api_get_base_crl($endpoint);
         curl_setopt($crl, CURLOPT_HTTPGET, true);
-        return miquiz::api_send($endpoint, $crl);
+        return miquiz::api_send($endpoint, $crl, $config);
     }
 
-    public static function api_post($endpoint, $data=array())
+    public static function api_post($endpoint, $data=array(), $config=array())
     {
         $crl = miquiz::api_get_base_crl($endpoint);
         curl_setopt($crl, CURLOPT_CUSTOMREQUEST, "POST");
         curl_setopt($crl, CURLOPT_POSTFIELDS, json_encode($data));
-        return miquiz::api_send($endpoint, $crl);
+        return miquiz::api_send($endpoint, $crl, $config);
     }
 
-    public static function api_put($endpoint, $data=array())
+    public static function api_put($endpoint, $data=array(), $config=array())
     {
         $crl = miquiz::api_get_base_crl($endpoint);
         curl_setopt($crl, CURLOPT_CUSTOMREQUEST, "PUT");
         curl_setopt($crl, CURLOPT_POSTFIELDS, json_encode($data));
-        return miquiz::api_send($endpoint, $crl);
+        return miquiz::api_send($endpoint, $crl, $config);
     }
 
-    public static function api_delete($endpoint)
+    public static function api_delete($endpoint, $config=array())
     {
         $crl = miquiz::api_get_base_crl($endpoint);
         curl_setopt($crl, CURLOPT_CUSTOMREQUEST, "DELETE");
-        return miquiz::api_send($endpoint, $crl);
+        return miquiz::api_send($endpoint, $crl, $config);
     }
 
     public static function create($miquiz)
