@@ -41,7 +41,7 @@ class miquiz
             if ($info['http_code'] == 401) {
                 $error_ob['reply'] = $reply;
                 $error_ob['info'] = 'Please check the provided API key in settings';
-        }
+            }
             if ($info['http_code'] == 403) {
                 $error_ob['reply'] = $reply;
             }
@@ -88,11 +88,12 @@ class miquiz
 
 
         $context = context_course::instance($COURSE->id);
-        $moduleid = miquiz::get_module_id();
-        $resp = miquiz::api_post("api/categories", array("parent" => $moduleid,
-                                                         "active" => false,
-                                                         "fullName" => $miquiz->name,
-                                                         "name" => $miquiz->short_name));
+        $categoryObject = [
+            'active' => false,
+            'fullName' => $miquiz->name,
+            'name' => $miquiz->short_name,
+        ];
+        $resp = miquiz::api_post('api/categories', $categoryObject);
         $catid = (int)$resp['id'];
         $miquiz->miquizcategoryid = $catid;
 
@@ -324,17 +325,6 @@ class miquiz
             ]
         ];
         miquiz::api_post("api/tasks", ["data" => $task]);
-    }
-
-    public static function get_module_id()
-    {
-        $resp = miquiz::api_get("api/modules");
-        foreach ($resp as $cat) {
-            if ($cat["name"] == get_config('mod_miquiz', 'modulename')) {
-                return (int)$cat['id'];
-            }
-        }
-        return -1;
     }
 
     public static function sync_users($miquiz)
