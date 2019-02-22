@@ -111,6 +111,8 @@ class miquiz
 
             $questionDescription = miquiz::addImage($question->questiontext, $context->id, 'question', 'questiontext', $question->id);
 
+            // TODO: check if question with $question->id is already in miquiz_questions (field: questionid). If so, make a put with the miquizquestionid
+            // Attention: this will overwrite the question in miquiz. Maybe we should add check and if question is different, we create it as new
             $resp = miquiz::api_post("api/questions", ["externalId" => $question->id,
                                                    "description" => ["text" => $questionDescription],
                                                    "possibilities" => $json_possibilities,
@@ -177,6 +179,7 @@ class miquiz
 
     public static function update($miquiz)
     {
+        // TODO: sync questions with category
         global $DB;
         miquiz::scheduleTasks($miquiz);
         return true;

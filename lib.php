@@ -8,6 +8,7 @@ function miquiz_add_instance($miquiz)
 {
     global $DB, $CFG;
 
+
     $miquiz->timemodified = time();
     try {
         $miquiz_ids = miquiz::create($miquiz);
