@@ -128,35 +128,55 @@ if ($is_manager) {
     if(count($user_stats)==0)
         echo get_string('miquiz_view_nodata', 'miquiz');
 
+    $userdata = [];
     foreach ($user_stats as $user_score) {
-        $score_training = $user_score["score"]["training"]["total"];
-        $score_duel = $user_score["score"]["duel"]["total"];
-        $score_training_possible = $user_score["score"]["training"]["possible"];
-        $score_duel_possible = $user_score["score"]["duel"]["possible"];
-        $answeredQuestions_training_total = $user_score["answeredQuestions"]["training"]["total"];
-        $answeredQuestions_training_correct = $user_score["answeredQuestions"]["training"]["correct"];
-        $answeredQuestions_duel_total = $user_score["answeredQuestions"]["duel"]["total"];
-        $answeredQuestions_duel_correct = $user_score["answeredQuestions"]["duel"]["correct"];
+        $a_data = [
+            "score_training" => $user_score["score"]["training"]["total"],
+            "score_duel" => $user_score["score"]["duel"]["total"],
+            "score_training_possible" => $user_score["score"]["training"]["possible"],
+            "score_duel_possible" => $user_score["score"]["duel"]["possible"],
+            "answeredQuestions_training_total" => $user_score["answeredQuestions"]["training"]["total"],
+            "answeredQuestions_training_correct" => $user_score["answeredQuestions"]["training"]["correct"],
+            "answeredQuestions_duel_total" => $user_score["answeredQuestions"]["duel"]["total"],
+            "answeredQuestions_duel_correct" => $user_score["answeredQuestions"]["duel"]["correct"],
 
-        $score = $score_training+$score_duel;
-        $score_possible = $score_training_possible+$score_duel_possible;
+            "score"=> $score_training+$score_duel,
+            "score_possible" => $score_training_possible+$score_duel_possible,
 
-        $answeredQuestions_total = number_format($answeredQuestions_training_total+$answeredQuestions_duel_total, 0);
-        $answeredQuestions_correct = number_format($answeredQuestions_training_correct+$answeredQuestions_duel_correct, 0);
-        $answeredQuestions_wrong = number_format($answeredQuestions_total-$answeredQuestions_correct, 0);
-        $rel_answeredQuestions_total = number_format($answeredQuestions_total/($answeredQuestions_total+$eps), 2);
-        $rel_answeredQuestions_correct = number_format($answeredQuestions_correct/($answeredQuestions_total+$eps), 2);
-        $rel_answeredQuestions_wrong = number_format($answeredQuestions_wrong/($answeredQuestions_total+$eps), 2);
-
-        $answered_abs = "(".$answeredQuestions_total."/".$answeredQuestions_correct."/".$answeredQuestions_wrong.")";
-        $answered_rel = "(".$rel_answeredQuestions_total."/".$rel_answeredQuestions_correct."/".$rel_answeredQuestions_wrong.")";
-
+            "answeredQuestions_total" => number_format($answeredQuestions_training_total+$answeredQuestions_duel_total, 0),
+            "answeredQuestions_correct" => number_format($answeredQuestions_training_correct+$answeredQuestions_duel_correct, 0),
+            "answeredQuestions_wrong" => number_format($answeredQuestions_total-$answeredQuestions_correct, 0),
+            "rel_answeredQuestions_total" => number_format($answeredQuestions_total/($answeredQuestions_total+$eps), 2),
+            "rel_answeredQuestions_correct" => number_format($answeredQuestions_correct/($answeredQuestions_total+$eps), 2),
+            "rel_answeredQuestions_wrong" => number_format($answeredQuestions_wrong/($answeredQuestions_total+$eps), 2),
+        ];
         $username = miquiz::get_username($user_score["userId"], $user_obj);
-        echo '<div class="well"><u>'.$username.'</u><ul>';
-        echo '<li>'.get_string('miquiz_view_statistics_answeredquestions', 'miquiz').': '.$answered_abs.' '.$answered_rel.'</li>';
-        echo '<li>'.get_string('miquiz_view_statistics_totalscore', 'miquiz').': '.$score.'/'.$score_possible.'</li>';
-        echo "</ul></div>";
+        $userdata[$username] = $a_data;
     }
+    asort($userdata);
+
+    echo '<table id="userdatatable" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">';
+    echo '<thead><tr>';
+    $rows = [get_string('miquiz_view_statistics_username', 'miquiz'), get_string('miquiz_view_statistics_answeredquestionsabs', 'miquiz'), get_string('miquiz_view_statistics_answeredquestionsrel', 'miquiz'), get_string('miquiz_view_statistics_totalscore', 'miquiz')];
+    foreach($rows as $row)
+        echo '<th class="th-sm">'.$row.'</th>';
+    echo '</thead><tbody>'; 
+
+    foreach ($userdata as $username => $a_data) {
+        $answered_abs = "(".$a_data['answeredQuestions_total']."/".$a_data['answeredQuestions_correct']."/".$a_data['answeredQuestions_wrong'].")";
+        $answered_rel = "(".$a_data['rel_answeredQuestions_total']."/".$a_data['rel_answeredQuestions_correct']."/".$a_data['rel_answeredQuestions_wrong'].")";
+
+        echo '<tr>';
+        echo '<td>'.$username.'</td>';
+        echo '<td>'.$answered_abs.'</td>';
+        echo '<td>'.$answered_rel.'</td>';
+        echo '<td>'.$a_data['score'].'/'.$a_data['score_possible'].'</td>';
+        echo '</tr>';
+    }
+    echo '</tbody></table>';
+    echo '<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>';
+    echo '<script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>';
+    $PAGE->requires->js_amd_inline('$("#userdatatable").DataTable();');
     echo '</div>';
 }
 
