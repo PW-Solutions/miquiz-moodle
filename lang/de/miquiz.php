@@ -11,6 +11,7 @@ $string['modulename_help'] = 'Erstelle ein ' . $instance_name . ' Duell.';
 
 $string['miquiz_index_title'] = $instance_name .' Kurs &Uuml;bersicht';
 $string['miquiz_index_reports'] = 'Anzahl Reports';
+$string['miquiz_index_download'] = 'Herunterladen';
 
 $string['miquiz_setting_instanceurl_title'] = 'URL zur Quiz-Instanz';
 $string['miquiz_setting_instanceurl_helper'] = 'Bitte die komplette URL zur Quiz-Instanz angeben, mit der dieses Plugin arbeiten soll';

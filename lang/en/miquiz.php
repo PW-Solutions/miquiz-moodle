@@ -12,6 +12,7 @@ $string['modulename_help'] = 'Challenge your students in a ' . $instance_name . 
 $string['miquiz_index_title'] = $instance_name .' Course Overview';
 $string['miquiz_index_table_status'] = 'Status';
 $string['miquiz_index_reports'] = 'Number of reports'; //Anzahl Reports
+$string['miquiz_index_download'] = 'Download';
 
 $string['miquiz_setting_instanceurl_title'] = 'URL for quiz instance';
 $string['miquiz_setting_instanceurl_helper'] = 'Please add the full url to the quiz instance';
