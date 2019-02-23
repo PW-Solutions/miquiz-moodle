@@ -79,7 +79,7 @@ if (isset($_GET['download_categories'])) {
         if(!$found)
             die();
     }
-    header('Content-Type: application/csv');
+    header('Content-Type: text/csv');
     header('Content-disposition: filename="export.csv"');
     echo miquiz::api_get("api/categories/download?categories=".$data, ['return_raw' => true]);
     die();
@@ -126,6 +126,10 @@ $downloadjs = 'generateAndFollowDownloadLink = function(){
     $("input:checkbox[name=add2download]:checked").each(function(){
         downloadids.push($(this).val());
     }); 
+    if(downloadids.length == 0){
+        alert("'.get_string('miquiz_index_noquizselected', 'miquiz').'"); 
+        return;
+    }   
     window.location = "'.$url.'&download_categories="+downloadids;
 };';
 $PAGE->requires->js_amd_inline($downloadjs);

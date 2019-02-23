@@ -26,7 +26,7 @@ $is_manager =  has_capability('moodle/course:manageactivities', $context);  //ht
 
 if ($is_manager && isset($_GET['download'])) {
     // perform export    
-    header('Content-Type: application/csv');
+    header('Content-Type: text/csv');
     header('Content-disposition: filename="export.csv"');
     echo miquiz::api_get("api/categories/download?categories=".$miquiz->miquizcategoryid, ['return_raw' => true]);
     die();
