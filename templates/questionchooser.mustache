@@ -54,7 +54,7 @@
         margin-top: 5px;
     }
 </style>
-<input type="text" id="questionsearch" size="15" onkeyup="updatequestionview(null);" placeholder="{{i18n_miquiz_create_questions_search}}"></input> 
+<input type="text" id="questionsearch" size="15" onkeyup="updatequestionview(undefined);" placeholder="{{i18n_miquiz_create_questions_search}}"></input> 
 <ul class="questionul">
 {{#categories}}
 <li><div class="questiondiv"><span class="caret"></span><label class="questionlabel"><input type="checkbox" onclick="updatequestionview(this);" class="categorycheckbox"> {{category_name}}</label></div><ul class="nested">
@@ -77,8 +77,8 @@ for (i=0; i<toggler.length; i++) {
         this.classList.toggle("caret-down");
     });
 }
-updatequestionview = function(el){                
-    if(el!=null){
+updatequestionview = function(el, init){
+    if(el!=undefined){
         if(el.classList.contains("categorycheckbox")){
             var subquestions = el.parentElement.parentElement.parentElement.querySelectorAll(".questioncheckbox");
             for (i=0; i<subquestions.length; i++){
@@ -93,10 +93,16 @@ updatequestionview = function(el){
     }
     var searchText = document.getElementById("questionsearch").value.toLowerCase();
     var questioninputs = document.querySelectorAll(".questioncheckbox");
-    var questionids = [];
+    var questionids = [];    
+    if(init) {
+        questionids = document.querySelector("input[name=questions]").value.split(',');
+    }
     for (i=0; i<questioninputs.length; i++){
         if(questioninputs[i].checked)
             questionids.push(parseInt(questioninputs[i].value));
+        else if(init && questionids.includes(questioninputs[i].value)){
+            questioninputs[i].checked = true;
+        }
         if(searchText != "" && !questioninputs[i].parentElement.innerText.toLowerCase().includes(searchText))
             questioninputs[i].parentElement.parentElement.style.display="none";
         else
@@ -105,5 +111,5 @@ updatequestionview = function(el){
     document.getElementById("questionsstatus").innerText = "{{i18n_miquiz_create_questions_selected}}".replace("${numquestions}", questionids.length);
     document.querySelector("input[name=questions]").value = questionids;
 }
-updatequestionview(null);            
+updatequestionview(undefined, true);            
 </script>
