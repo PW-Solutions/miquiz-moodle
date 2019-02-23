@@ -62,22 +62,146 @@ class mod_miquiz_mod_form extends moodleform_mod
         $this->standard_intro_elements(get_string('description', 'miquiz'));
 
         if ($this->_instance == '') {    
-            $mform->addElement('header', 'modstandardelshdr', get_string("miquiz_create_questions", "miquiz"));
+            $mform->addElement('header', 'modstandardelshdr', get_string("miquiz_create_questions", "miquiz").'<i class="icon fa fa-exclamation-circle text-danger fa-fw " aria-hidden="true" title="Required" aria-label="Required"></i>');
+            $mform->setExpanded('modstandardelshdr');
+
             // https://docs.moodle.org/dev/Question_database_structure
             $context = context_course::instance($COURSE->id);
             $categories = $DB->get_records('question_categories', array('contextid' => $context->id));
             $question_choice = array();
+            $customel = '
+            <style>
+            /* Remove default bullets */
+            ul, #myUL {
+                list-style-type: none;
+            }
+
+            /* Remove margins and padding from the parent ul */
+            #myUL {
+                margin: 0;
+                padding: 0;
+            }
+
+            /* Style the caret/arrow */
+            .caret {
+                cursor: pointer;
+                user-select: none; /* Prevent text selection */
+            }
+
+            /* Create the caret/arrow with a unicode, and style it */
+            .caret::before {
+                content: "\25B6";
+                color: gray;
+                display: inline-block;
+                margin-right: 6px;
+            }
+
+            /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+            .caret-down::before {
+                transform: rotate(90deg); 
+            }
+
+            /* Hide the nested list */
+            .nested {
+                display: none;
+            }
+
+            /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+            .active {
+                display: block;
+            }
+
+            .questioncheckbox {
+                padding-bottom: 0px;
+                margin-top: 2px;
+            }
+
+            .categorycheckbox {
+                padding-bottom: 0px;
+                margin-top: 2px;
+            }           
+
+            .questionlabel {
+                display: flex;
+                align-items: center;
+                margin-bottom: 0;
+            }
+
+            .questiondiv {
+                display: flex;
+                align-items: end;
+            }
+
+            .questionul {
+                padding-left:0;
+                margin-top: 5px;
+            }
+            </style>
+            <input type="text" id="questionsearch" size="15" onkeyup="updatequestionview(null);" placeholder="'.get_string("miquiz_create_questions_search", "miquiz").'"></input> 
+            <ul class="questionul">';
             foreach ($categories as $category) {
                 $questions = $DB->get_records('question', array('category' => $category->id));
+                $customel .= '<li><div class="questiondiv"><span class="caret"></span><label class="questionlabel"><input type="checkbox" onclick="updatequestionview(this);" class="categorycheckbox"> '.$category->name.'</label></div><ul class="nested">';
                 foreach ($questions as $question) {
                     if ($question->qtype =='multichoice') {
-                        $question_choice[$question->id] = $question->name.' ('.$category->name.')';
+                        $customel .= '<li><div class="questiondiv"><label class="questionlabel"><input type="checkbox" class="questioncheckbox" onclick="updatequestionview(this);" value="'.$question->id.'"> '.$question->name.'</label>';
+
+                        $link = "/question/preview.php?id=".$question->id."&courseid=".$category->id;
+                        $popuphtml = 'target="popup" onclick="window.open(\''.$link.'\',\'popup\',\'width=600,height=600\'); return false;"';
+                        $customel .= '<a href="'.$link.'" '.$popuphtml.' style="cursor: pointer;"><i class="icon fa fa-search-plus fa-fw iconsmall" aria-hidden="true" title="Preview" aria-label="Preview"></i></a></div></li>';
                     }
                 }
+                $customel .= '</ul></li>';
             }
-            $select = $mform->addElement('select', 'questions', get_string("miquiz_create_questions", "miquiz"), $question_choice);
-            $select->setMultiple(true);
-            $mform->addRule('questions', null, 'required', null, 'client');
+            $customel .= '</ul>
+            <div id="questionsstatus"></div>
+            <script>
+            var toggler = document.getElementsByClassName("caret");
+            var i;
+            for (i=0; i<toggler.length; i++) {
+                toggler[i].addEventListener("click", function() {
+                    this.parentElement.parentElement.querySelector(".nested").classList.toggle("active");
+                    this.classList.toggle("caret-down");
+                });
+            }
+
+            updatequestionview = function(el){                
+                if(el!=null){
+                    if(el.classList.contains("categorycheckbox")){
+                        var subquestions = el.parentElement.parentElement.parentElement.querySelectorAll(".questioncheckbox");
+                        for (i=0; i<subquestions.length; i++){
+                            subquestions[i].checked=el.checked;
+                        }
+                    } else if(el.classList.contains("questioncheckbox")){
+                        var catinput = el.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector(".categorycheckbox");
+                        if(!el.checked && catinput.checked){
+                            catinput.checked = false;
+                        }
+                    }
+                }
+
+                var searchText = document.getElementById("questionsearch").value.toLowerCase();
+                var questioninputs = document.querySelectorAll(".questioncheckbox");
+                var questionids = [];
+                for (i=0; i<questioninputs.length; i++){
+                    if(questioninputs[i].checked)
+                        questionids.push(parseInt(questioninputs[i].value));
+
+                    if(searchText != "" && !questioninputs[i].parentElement.innerText.toLowerCase().includes(searchText))
+                        questioninputs[i].parentElement.style.display="none";
+                    else
+                        questioninputs[i].parentElement.style.display="block";
+                }
+                document.getElementById("questionsstatus").innerText = "'.get_string("miquiz_create_questions_selected", "miquiz").'".replace("${numquestions}", questionids.length);
+                document.querySelector("input[name=questions]").value = questionids;
+            }
+            updatequestionview(null);            
+            </script>';
+            $fields = array(
+                $mform->createElement('html', $customel),
+                $mform->createElement('hidden', 'questions', ''));
+            $mform->addGroup($fields, 'questiong', '', '', false);
+            $mform->setType('questions', PARAM_NOTAGS);
         }
         
         $this->standard_coursemodule_elements();
@@ -124,6 +248,10 @@ class mod_miquiz_mod_form extends moodleform_mod
 
         $this->local_validation($errors, $data, $files);
         $this->external_validation($errors, $data, $files);
+
+        if ($data['questions'] == "") {
+            $errors['questiong'] = get_string('miquiz_create_questions_error', 'miquiz');
+        }
 
         return $errors;
     }
