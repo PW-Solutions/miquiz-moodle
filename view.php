@@ -46,9 +46,13 @@ echo '<br/><div class="container"><div class="row">
 <div class="col-sm-4">';
 $cp->print_status($miquiz->assesstimestart, $miquiz->timeuntilproductive, $miquiz->assesstimefinish);
 echo '</div>
-<div class="col-sm-6">'.get_string('miquiz_view_scoremode', 'miquiz').': '.get_string('miquiz_create_scoremode_'.$miquiz->scoremode, 'miquiz').'</div>';
+<div class="col-sm-6">'.get_string('miquiz_view_scoremode', 'miquiz').': '.get_string('miquiz_create_scoremode_'.$miquiz->scoremode, 'miquiz');
+if($miquiz->statsonlyforfinishedgames){
+    echo ' ('.get_string('miquiz_view_statsonlyforfinishedgames', 'miquiz').')';
+}
+echo '</div>';
 if ($is_manager){
-    echo '<div class="col-sm-6">Beantwortete Fragen:<br/><svg id="piechart"></svg></div>';
+    echo '<div class="col-sm-6">'.get_string('miquiz_view_answeredquestions', 'miquiz').':<br/><svg id="piechart"></svg></div>';
 }
 echo '<div class="col-sm-6">'.get_string('miquiz_view_numquestions', 'miquiz').': '.count($DB->get_records('miquiz_questions', array('quizid' => $miquiz->id))).'</div>
 </div></div>';

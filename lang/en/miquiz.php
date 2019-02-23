@@ -5,7 +5,6 @@ defined('MOODLE_INTERNAL') || die();
 $string['modulename'] = 'MI-Quiz';
 $string['modulenameplural'] = 'MI-Quizzes';
 
-//$instance_name ='';
 $instance_name = get_config('mod_miquiz', 'instancename');
 $string['modulename_help'] = 'Challenge your students in a ' . $instance_name . ' duel.';
 
@@ -45,6 +44,8 @@ $string['miquiz_create_assesstimefinish'] = 'Quiz Stop Date';
 $string['miquiz_create_error_unique'] = 'Has to be unique.';
 $string['miquiz_create_error_endbeforestart'] = 'Quiz end date date has to be later than quiz start date.';
 $string['miquiz_create_error_betweenendstart'] = 'Test phase ending time has to be between quiz start and end date.';
+$string['miquiz_create_statsonlyforfinishedgames'] = 'Consider only finished games in statistics.';
+$string['miquiz_create_statsonlyforfinishedgames_help'] = 'If this flag is set, only finished games are considered in the statistics. This includes the rating and calculation of answered questions.';
 
 $string['miquiz_view_overview'] = 'Overview'; //&Uuml;bersicht
 $string['miquiz_view_name'] = 'Name';
@@ -60,9 +61,11 @@ $string['miquiz_view_statistics_answeredquestionsrel'] = 'Answered questions rel
 $string['miquiz_view_statistics_username'] = 'Username'; //Nutzername
 $string['miquiz_view_statistics_totalscore'] = 'Score (achieved/maximum)'; //Punkte (erreicht/gesamt erreichbar)
 $string['miquiz_view_score'] = 'Your score training(achieved/maximum), duel(achieved/maximum)'; //Deine Punke
+$string['miquiz_view_answeredquestions'] = 'Answered questions'; //Beantwortete Fragen
+$string['miquiz_view_statsonlyforfinishedgames'] = 'Finished games only'; //Nur beendete Spiele
+
 $string['miquiz_view_openlink'] = 'Open ' . $instance_name; //$string['modulename'] &ouml;ffnen
 $string['miquiz_view_nodata'] =  'No data available.'; // Es sind noch keine Daten vorhanden
-
 
 $string['description'] = 'Description';
 $string['task_sync_users_name'] = 'Sync quiz users with instance';

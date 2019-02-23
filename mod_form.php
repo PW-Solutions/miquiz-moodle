@@ -51,6 +51,8 @@ class mod_miquiz_mod_form extends moodleform_mod
             $options[3]  = get_string('miquiz_create_scoremode_3', 'miquiz');
             $options[4]  = get_string('miquiz_create_scoremode_4', 'miquiz');
             $mform->addElement('select', 'scoremode', get_string('miquiz_create_scoremode', 'miquiz'), $options);
+            $mform->addElement('advcheckbox', 'statsonlyforfinishedgames', get_string('miquiz_create_statsonlyforfinishedgames', 'miquiz'));
+            $mform->addHelpButton('statsonlyforfinishedgames', 'miquiz_create_statsonlyforfinishedgames', 'miquiz');
         }
 
         $mform->addElement('date_time_selector', 'assesstimestart', get_string('miquiz_create_assesstimestart', 'miquiz'));
@@ -59,7 +61,8 @@ class mod_miquiz_mod_form extends moodleform_mod
 
         $this->standard_intro_elements(get_string('description', 'miquiz'));
 
-        if ($this->_instance == '') {
+        if ($this->_instance == '') {    
+            $mform->addElement('header', 'modstandardelshdr', get_string("miquiz_create_questions", "miquiz"));
             // https://docs.moodle.org/dev/Question_database_structure
             $context = context_course::instance($COURSE->id);
             $categories = $DB->get_records('question_categories', array('contextid' => $context->id));
@@ -76,7 +79,7 @@ class mod_miquiz_mod_form extends moodleform_mod
             $select->setMultiple(true);
             $mform->addRule('questions', null, 'required', null, 'client');
         }
-
+        
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
     }

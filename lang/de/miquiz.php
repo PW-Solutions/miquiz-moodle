@@ -44,6 +44,9 @@ $string['miquiz_create_assesstimefinish'] = 'Quiz Enddatum';
 $string['miquiz_create_error_unique'] = 'Diese Abk&uuml;rzung muss einmalig sein.';
 $string['miquiz_create_error_endbeforestart'] = 'Das Quiz Enddatum muss später als das Quiz Startdatum sein.';
 $string['miquiz_create_error_betweenendstart'] = 'Das Enddatum der Testphase muss zwischen dem Quiz Start- und Enddatum sein.';
+$string['miquiz_create_statsonlyforfinishedgames'] = 'Nur beendete Spiele in Statistiken ber&uuml;cksichtigen.';
+$string['miquiz_create_statsonlyforfinishedgames_help'] = 'Wenn diese Option aktiv ist werden in den Statistiken nur beendete Spiele ber&uuml;cksichtigt. Dies umfasst unter Anderem die Punktvergabe und die Berechnung der beantworten Fragen.';
+
 
 $string['miquiz_view_overview'] = '&Uuml;bersicht';
 $string['miquiz_view_shortname'] = 'Abk&uuml;rzung';
@@ -58,6 +61,9 @@ $string['miquiz_view_statistics_answeredquestionsabs'] = 'Beantwortete Fragen ab
 $string['miquiz_view_statistics_answeredquestionsrel'] = 'Beantwortete Fragen relativ(gesamt/richtig/falsch)';
 $string['miquiz_view_statistics_totalscore'] = 'Punkte (erreicht/gesamt erreichbar)';
 $string['miquiz_view_score'] = 'Deine Punke Training(Erreicht/M&ouml;glich), Duel(Erreicht/M&ouml;glich)';
+$string['miquiz_view_answeredquestions'] = 'Beantwortete Fragen';
+$string['miquiz_view_statsonlyforfinishedgames'] = 'Nur beendete Spiele';
+
 $string['miquiz_view_openlink'] =  $instance_name . ' &ouml;ffnen';
 $string['miquiz_view_nodata'] =  'Es sind noch keine Daten vorhanden.';
 

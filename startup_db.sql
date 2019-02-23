@@ -6732,7 +6732,8 @@ CREATE TABLE `mdl_miquiz` (
   `timeuntilproductive` bigint(10) NOT NULL DEFAULT 0,
   `short_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `scoremode` bigint(10) NOT NULL DEFAULT 0,
-  `miquizcategoryid` bigint(10) NOT NULL DEFAULT 0,
+  `miquizcategoryid` bigint(10) NOT NULL DEFAULT 0,  
+  `statsonlyforfinishedgames` smallint(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`),
   KEY `mdl_miqu_cou_ix` (`course`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED COMMENT='Defines miquiz';
