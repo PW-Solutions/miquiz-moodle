@@ -91,35 +91,39 @@ $PAGE->set_url($url);
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('miquiz_index_title', 'miquiz'));
 
-echo '<table id="datatable" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">';
-echo '<thead><tr>';
-$rows = ['<i class="icon fa fa-download fa-fw " aria-hidden="true" aria-label=""></i>', get_string('miquiz_view_name', 'miquiz'), get_string('miquiz_create_assesstimestart', 'miquiz'), get_string('miquiz_create_assesstimefinish', 'miquiz'), 
-        get_string('miquiz_view_numquestions', 'miquiz'), get_string('miquiz_index_reports', 'miquiz'), get_string('miquiz_index_table_status', 'miquiz'), 
-        get_string('miquiz_view_numquestions', 'miquiz'), get_string('miquiz_cockpit_correct', 'miquiz'), get_string('miquiz_cockpit_incorrect', 'miquiz')];
-foreach($rows as $row)
-    echo '<th class="th-sm">'.$row.'</th>';
-echo '</thead><tbody>';
+$quiz_table_headings = [['name' => '<i class="icon fa fa-download fa-fw " aria-hidden="true" aria-label=""></i>'], 
+                        ['name' => get_string('miquiz_view_name', 'miquiz')], 
+                        ['name' => get_string('miquiz_create_assesstimestart', 'miquiz')], 
+                        ['name' => get_string('miquiz_create_assesstimefinish', 'miquiz')], 
+                        ['name' => get_string('miquiz_view_numquestions', 'miquiz')], 
+                        ['name' => get_string('miquiz_index_reports', 'miquiz')], 
+                        ['name' => get_string('miquiz_index_table_status', 'miquiz')], 
+                        ['name' => get_string('miquiz_view_numquestions', 'miquiz')], 
+                        ['name' => get_string('miquiz_cockpit_correct', 'miquiz')], 
+                        ['name' => get_string('miquiz_cockpit_incorrect', 'miquiz')]];
 
+$quiz_table_body = [];    
 foreach($miquizzes as $row) {
-    echo '<tr>';
-    echo '<td><input type="checkbox" name="add2download" value="'.$row['miquizcategoryid'].'" size="64"></td>';
-    echo '<td><a href="view.php?id='.$row['id'].'">'.$row['name'].'</a></td>';
-    echo '<td>'.gmdate("Y.m.d H:i:s", $row['assesstimestart']).'</td>';
-    echo '<td>'.gmdate("Y.m.d H:i:s", $row['assesstimefinish']).'</td>';
-    echo '<td>'.$row['num_questions'].'</td>';
-    echo '<td>'.$row['num_questions_with_reports'].'</td>';
-    echo '<td>'.$row['status'].'</td>';
-    echo '<td>'.$row['answeredQuestions_total'].'</td>';
-    echo '<td>'.$row['answeredQuestions_correct'].'</td>';
-    echo '<td>'.$row['answeredQuestions_wrong'].'</td>';
-    echo '</tr>';
+    array_push($quiz_table_body, array(
+        "miquizcategoryid" => $row['miquizcategoryid'],
+        "id" => $row['id'],
+        "name" => $row['name'],
+        "assesstimestart" => gmdate("Y.m.d H:i:s", $row['assesstimestart']),
+        "assesstimefinish" => gmdate("Y.m.d H:i:s", $row['assesstimefinish']),
+        "num_questions" => $row['num_questions'],
+        "num_questions_with_reports" => $row['num_questions_with_reports'],
+        "status" => $row['status'],
+        "answeredQuestions_total" => $row['answeredQuestions_total'],
+        "answeredQuestions_correct" => $row['answeredQuestions_correct'],
+        "answeredQuestions_wrong" => $row['answeredQuestions_wrong']
+    ));
 }
-echo '</tbody></table>';
 
-echo '<a href="#" onclick="generateAndFollowDownloadLink();"><i class="icon fa fa-download fa-fw " aria-hidden="true" aria-label=""></i> '.get_string('miquiz_index_download', 'miquiz').'</a>';
+echo $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/index', array(
+    'quiz_table_headings' => $quiz_table_headings,
+    'quiz_table_body' => $quiz_table_body,
+    'i18n_miquiz_index_download' => get_string('miquiz_index_download', 'miquiz')));
 
-echo '<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>';
-echo '<script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>';
 $PAGE->requires->js_amd_inline('$("#datatable").DataTable();');
 $downloadjs = 'generateAndFollowDownloadLink = function(){
     var downloadids = Array(); 

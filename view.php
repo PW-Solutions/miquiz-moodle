@@ -34,8 +34,6 @@ if ($is_manager && isset($_GET['download'])) {
 
 echo $OUTPUT->header();
 
-// $m = new Mustache_Engine;
-// echo $m->render('Hello {{planet}}', ['planet' => 'World!']); // "Hello World!"
 echo '<h3>'.$miquiz->intro.'</h3></br>';
 echo '<form action="'.$miquizurl.'" target="_blanc"><input class="btn btn-primary" id="id_tomiquizbutton" type="submit" value="'.get_string('miquiz_view_openlink', 'miquiz').'"></form>';
 
