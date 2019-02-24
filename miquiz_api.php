@@ -87,10 +87,13 @@ class miquiz
         return miquiz::api_send($endpoint, $crl, $config);
     }
 
-    public static function api_delete($endpoint, $config=array())
+    public static function api_delete($endpoint, $data = [], $config=array())
     {
         $crl = miquiz::api_get_base_crl($endpoint);
         curl_setopt($crl, CURLOPT_CUSTOMREQUEST, "DELETE");
+        if (!empty($data)) {
+            curl_setopt($crl, CURLOPT_POSTFIELDS, json_encode($data));
+        }
         return miquiz::api_send($endpoint, $crl, $config);
     }
 
@@ -146,19 +149,23 @@ class miquiz
         return $miQuizQuestion;
     }
 
-    private static function getMiQuizQuestionId($questionId)
+    private static function getMiQuizQuestionId($questionId, $activityId = null)
     {
-        $miQuizQuestionIds = miquiz::getMiQuizQuestionIds([$questionId]);
+        $miQuizQuestionIds = miquiz::getMiQuizQuestionIds([$questionId], $activityId);
         if (empty($miQuizQuestionIds)) {
             return;
         }
         return array_values($miQuizQuestionIds)[0];
     }
 
-    private static function getMiQuizQuestionIds($questionIds)
+    private static function getMiQuizQuestionIds($questionIds, $activityId = null)
     {
         global $DB;
-        $existingQuestions = $DB->get_records_list('miquiz_questions', 'questionid', $questionIds);
+        $select = 'questionid IN (' . implode(',', $questionIds) . ')';
+        if (!is_null($activityId)) {
+            $select .= ' AND quizid = ' . $activityId;
+        }
+        $existingQuestions = $DB->get_records_select('miquiz_questions', $select);
 
         if (empty($existingQuestions)) {
             return;
@@ -263,7 +270,7 @@ class miquiz
         $existingQuestionIds = miquiz::getQuestionIdsForMiQuizId($miquiz->id);
         $newQuestionIds = explode(',', $miquiz->questions);
 
-        $questionIdsToAdd = array_diff($questionIdsAfterUpdate, $existingQuestionIds);
+        $questionIdsToAdd = array_diff($newQuestionIds, $existingQuestionIds);
         $questionsToAdd = miquiz::getQuestionsById($questionIdsToAdd);
         $mappedMiQuizQuestionIds = [];
         foreach ($questionsToAdd as $questionId) {
@@ -271,8 +278,8 @@ class miquiz
             $mappedMiQuizQuestionIds[$questionId] = $miQuizQuestion['id'];
         }
 
-        $questionIdsToRemove = array_diff($existingQuestionIds, $questionIdsAfterUpdate);
-        $miQuestionIdsToRemove = miquiz::getMiQuizQuestionIds($questionIdsToRemove);
+        $questionIdsToRemove = array_diff($existingQuestionIds, $newQuestionIds);
+        $miQuestionIdsToRemove = miquiz::getMiQuizQuestionIds($questionIdsToRemove, $miquiz->id);
         $removeRelationshipPayload = [
             'data' => array_map(function ($questionId) {
                 return [
@@ -281,7 +288,7 @@ class miquiz
                 ];
             }, $miQuestionIdsToRemove),
         ];
-        $response = miquiz::api_post('categories/' . $miQuizCategoryId . '/relationships/questions', $removeRelationshipPayload);
+        $response = miquiz::api_delete('api/categories/' . $miQuizCategoryId . '/relationships/questions', $removeRelationshipPayload);
 
         miquiz::scheduleTasks($miquiz);
 
@@ -303,7 +310,7 @@ class miquiz
     {
         $questions = miquiz::getQuestionsForMiQuizId($miquizId);
         $questionIds = array_map(function ($question) {
-            return $question->id;
+            return (int) $question->questionid;
         }, $questions);
         return $questionIds;
     }
