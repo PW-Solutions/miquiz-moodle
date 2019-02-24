@@ -2,7 +2,6 @@
 
 require_once('../../config.php');
 require_once("lib.php");
-require_once("view_cockpit.php");
 
 $id = required_param('id', PARAM_INT);  // Course Module ID
 
