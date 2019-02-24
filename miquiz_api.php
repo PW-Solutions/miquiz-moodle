@@ -22,14 +22,14 @@ class miquiz
         return $crl;
     }
 
-    public static function endsWith($string, $endString) 
-    { 
-        $len = strlen($endString); 
-        if ($len == 0) { 
-            return true; 
-        } 
-        return (substr($string, -$len) === $endString); 
-    }     
+    public static function endsWith($string, $endString)
+    {
+        $len = strlen($endString);
+        if ($len == 0) {
+            return true;
+        }
+        return (substr($string, -$len) === $endString);
+    }
 
     public static function api_send($endpoint, $crl, $config=array())
     {
@@ -96,10 +96,6 @@ class miquiz
 
     public static function create($miquiz)
     {
-        global $DB, $COURSE;
-
-
-        $context = context_course::instance($COURSE->id);
         $categoryObject = [
             'active' => false,
             'fullName' => $miquiz->name,
@@ -109,44 +105,106 @@ class miquiz
         $resp = miquiz::api_post('api/categories', $categoryObject);
         $catid = (int)$resp['id'];
         $miquiz->miquizcategoryid = $catid;
-
-        //get questions from moodle
-        $question_ids = $miquiz->questions;
-        $query_question_ids = "";
-        foreach ($question_ids as $question_id) {
-            if ($query_question_ids != "") {
-                $query_question_ids .= " OR ";
-            }
-            $query_question_ids .="id=".$question_id;
-        }
-        $questions = $DB->get_records_sql('SELECT * FROM {question} q WHERE '. $query_question_ids);
+        $questionIds = explode(',', $miquiz->questions);
+        $questions = miquiz::getQuestionsById($questionIds);
 
         $miquiz_qids = [];
         foreach ($questions as $question) {
-            $possibilities = $DB->get_records('question_answers', array('question' => $question->id));
-            $json_possibilities = [];
-            foreach ($possibilities as $possibility) {
-                $possibilityDescription = miquiz::addImage($possibility->answer, $context->id, 'question', 'answer', $possibility->id);
-                $json_possibilities[] = ["description" => $possibilityDescription, "isCorrect" => ((float)$possibility->fraction) > 0];
-            }
-
-            $questionDescription = miquiz::addImage($question->questiontext, $context->id, 'question', 'questiontext', $question->id);
-
-            // TODO: check if question with $question->id is already in miquiz_questions (field: questionid). If so, make a put with the miquizquestionid
-            // Attention: this will overwrite the question in miquiz. Maybe we should add check and if question is different, we create it as new
-            $resp = miquiz::api_post("api/questions", ["externalId" => $question->id,
-                                                   "description" => ["text" => $questionDescription],
-                                                   "possibilities" => $json_possibilities,
-                                                   "comment" => ["text" => $question->generalfeedback],
-                                                   "status" => "active",
-                                                   "timeToAnswer" => get_question_answeringtime($question->id),
-                                                   "categories" => [["id" => $catid]]]);
-            $miquiz_qids[$question->id] = (int)$resp["question"]["id"];
+            $miQuizQuestion = miquiz::getOrCreateMiQuizQuestion($question, $catid);
+            $miquiz_qids[$question->id] = $miQuizQuestion['id'];
         }
 
         miquiz::scheduleTasks($miquiz);
 
         return ['catid' => $catid, 'qids' => $miquiz_qids];
+    }
+
+    private static function getQuestionsById($questionIds)
+    {
+        global $DB;
+        $filteredQuestionIds = array_filter($questionIds, function ($questionId) {
+            return !empty($questionId) && is_numeric($questionId);
+        });
+        if (empty($filteredQuestionIds)) {
+            return [];
+        }
+        return $DB->get_records_list('question', 'id', $filteredQuestionIds);
+    }
+
+    private static function getOrCreateMiQuizQuestion($question, $miQuizCategoryId)
+    {
+        $miQuizQuestionId = miquiz::getMiQuizQuestionId($question->id);
+        $questionData = miquiz::getQuestionData($question, $miQuizCategoryId);
+        if (is_null($miQuizQuestionId)) {
+            $miQuizQuestion = miquiz::createMiQuizQuestion($questionData);
+        } else {
+            // Attention: this will overwrite the question in miquiz. Maybe we should add check and if question is different, we create it as new
+            // Difficulty: images are included in moodle question and not in mi quiz question -> comparison complex. Maybe timestamps?
+            $miQuizQuestion = miquiz::updateMiQuizQuestion($questionData, $miQuizQuestionId);
+        }
+        $miQuizQuestion['id'] = (int) $miQuizQuestion['id'];
+        return $miQuizQuestion;
+    }
+
+    private static function getMiQuizQuestionId($questionId)
+    {
+        $miQuizQuestionIds = miquiz::getMiQuizQuestionIds([$questionId]);
+        if (empty($miQuizQuestionIds)) {
+            return;
+        }
+        return array_values($miQuizQuestionIds)[0];
+    }
+
+    private static function getMiQuizQuestionIds($questionIds)
+    {
+        global $DB;
+        $existingQuestions = $DB->get_records_list('miquiz_questions', 'questionid', $questionIds);
+
+        if (empty($existingQuestions)) {
+            return;
+        }
+        return array_map(function ($question) {
+            return $question->miquizquestionid;
+        }, $existingQuestions);
+    }
+
+    private static function getQuestionData($question, $miQuizCategoryId)
+    {
+        global $DB, $COURSE;
+        $context = context_course::instance($COURSE->id);
+
+        $possibilities = $DB->get_records('question_answers', ['question' => $question->id]);
+        $json_possibilities = [];
+        foreach ($possibilities as $possibility) {
+            $possibilityDescription = miquiz::addImage($possibility->answer, $context->id, 'question', 'answer', $possibility->id);
+            $json_possibilities[] = [
+                'description' => $possibilityDescription,
+                'isCorrect' => ((float) $possibility->fraction) > 0,
+            ];
+        }
+
+        $questionDescription = miquiz::addImage($question->questiontext, $context->id, 'question', 'questiontext', $question->id);
+
+        return [
+            'description' => ['text' => $questionDescription],
+            'possibilities' => $json_possibilities,
+            'comment' => ['text' => $question->generalfeedback],
+            'status' => 'active',
+            'timeToAnswer' => get_question_answeringtime($question->id),
+            'categories' => [['id' => $miQuizCategoryId]],
+        ];
+    }
+
+    private static function createMiQuizQuestion($questionData)
+    {
+        $response = miquiz::api_post('api/questions', $questionData);
+        return $response['question'];
+    }
+
+    private static function updateMiQuizQuestion($questionData, $miQuizQuestionId)
+    {
+        $response = miquiz::api_put('api/questions/' . $miQuizQuestionId, $questionData);
+        return $response['question'];
     }
 
     public static function addImage($string, $contextId, $component, $filearea, $objectId)
@@ -200,10 +258,54 @@ class miquiz
 
     public static function update($miquiz)
     {
-        // TODO: sync questions with category
-        global $DB;
+        $miQuizCategoryId = $miquiz->miquizcategoryid;
+
+        $existingQuestionIds = miquiz::getQuestionIdsForMiQuizId($miquiz->id);
+        $newQuestionIds = explode(',', $miquiz->questions);
+
+        $questionIdsToAdd = array_diff($questionIdsAfterUpdate, $existingQuestionIds);
+        $questionsToAdd = miquiz::getQuestionsById($questionIdsToAdd);
+        $mappedMiQuizQuestionIds = [];
+        foreach ($questionsToAdd as $questionId) {
+            $miQuizQuestion = miquiz::getOrCreateMiQuizQuestion($question, $miQuizCategoryId);
+            $mappedMiQuizQuestionIds[$questionId] = $miQuizQuestion['id'];
+        }
+
+        $questionIdsToRemove = array_diff($existingQuestionIds, $questionIdsAfterUpdate);
+        $miQuestionIdsToRemove = miquiz::getMiQuizQuestionIds($questionIdsToRemove);
+        $removeRelationshipPayload = [
+            'data' => array_map(function ($questionId) {
+                return [
+                    'type' => 'questions',
+                    'id' => $questionId,
+                ];
+            }, $miQuestionIdsToRemove),
+        ];
+        $response = miquiz::api_post('categories/' . $miQuizCategoryId . '/relationships/questions', $removeRelationshipPayload);
+
         miquiz::scheduleTasks($miquiz);
-        return true;
+
+        return [
+            'addedQuestionIds' => $questionIdsToAdd,
+            'removedQuestionIds' => $questionIdsToRemove,
+            'miQuizQuestionIds' => $mappedMiQuizQuestionIds,
+        ];
+    }
+
+    private static function getQuestionsForMiQuizId($miquizId)
+    {
+        global $DB;
+
+        return $DB->get_records('miquiz_questions', ['quizid' => $miquizId]);
+    }
+
+    public static function getQuestionIdsForMiQuizId($miquizId)
+    {
+        $questions = miquiz::getQuestionsForMiQuizId($miquizId);
+        $questionIds = array_map(function ($question) {
+            return $question->id;
+        }, $questions);
+        return $questionIds;
     }
 
     // Soft delete a category
@@ -229,7 +331,7 @@ class miquiz
 
         if (!$resp['success']) {
             $error = $resp['error'];
-            error_log("miquiz: forceDelelte failed (category: $categoryId): $error");
+            error_log("miquiz: forceDelete failed (category: $categoryId): $error");
             return false;
         }
 
