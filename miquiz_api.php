@@ -260,7 +260,7 @@ class miquiz
     {
         $miQuizCategoryId = $miquiz->miquizcategoryid;
 
-        $existingQuestionIds = miquiz::getQuestionIdsForMiQuiz($miquiz);
+        $existingQuestionIds = miquiz::getQuestionIdsForMiQuizId($miquiz->id);
         $newQuestionIds = explode(',', $miquiz->questions);
 
         $questionIdsToAdd = array_diff($questionIdsAfterUpdate, $existingQuestionIds);
@@ -292,16 +292,16 @@ class miquiz
         ];
     }
 
-    private static function getQuestionsForMiQuiz($miquiz)
+    private static function getQuestionsForMiQuizId($miquizId)
     {
         global $DB;
 
-        return $DB->get_record('miquiz_questions', ['quizid' => $miquiz->id]);
+        return $DB->get_records('miquiz_questions', ['quizid' => $miquizId]);
     }
 
-    private static function getQuestionIdsForMiQuiz($miquiz)
+    public static function getQuestionIdsForMiQuizId($miquizId)
     {
-        $questions = miquiz::getQuestionsForMiQuiz($miquiz);
+        $questions = miquiz::getQuestionsForMiQuizId($miquizId);
         $questionIds = array_map(function ($question) {
             return $question->id;
         }, $questions);
