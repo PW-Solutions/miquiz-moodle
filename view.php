@@ -26,7 +26,7 @@ $is_manager =  has_capability('moodle/course:manageactivities', $context);  //ht
 if ($is_manager && isset($_GET['download'])) {
     // perform export    
     header('Content-Type: text/csv');
-    header('Content-disposition: filename="export.csv"');
+    header('Content-disposition: filename="export_'.time() .'.csv"');
     echo miquiz::api_get("api/categories/download?categories=".$miquiz->miquizcategoryid, ['return_raw' => true]);
     die();
 }
@@ -154,7 +154,17 @@ $rel_answeredQuestions_wrong = number_format($answeredQuestions_wrong/($answered
 $answered_abs = "(".$answeredQuestions_total."/".$answeredQuestions_correct."/".$answeredQuestions_wrong.")";
 $answered_rel = "(".$rel_answeredQuestions_total."/".$rel_answeredQuestions_correct."/".$rel_answeredQuestions_wrong.")";
 
-$now = new DateTime("now");
+$now = time();
+$is_notyetstarted = $is_training = $is_productive = $is_finished = false;
+if($miquiz->assesstimestart > $now){
+    $is_notyetstarted = true;
+} elseif($miquiz->timeuntilproductive > $now){
+    $is_training = true;
+} elseif($miquiz->assesstimefinish > $now){
+    $is_productive = true;
+} else{
+    $is_finished = true;
+}
 
 echo $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/view', array(
     'is_manager' => $is_manager,
@@ -168,14 +178,15 @@ echo $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/view', arra
     'assesstimestart' => $miquiz->assesstimestart,
     'timeuntilproductive' => $miquiz->timeuntilproductive,
     'assesstimefinish' => $miquiz->assesstimefinish,
-    'is_notyetstarted' => $miquiz->assesstimestart < $now,
-    'is_training' => $miquiz->timeuntilproductive < $now,
-    'is_productive' => $miquiz->assesstimefinish < $now,
-    'is_finished' => !($miquiz->assesstimestart < $now || $miquiz->timeuntilproductive < $now || $miquiz->assesstimefinish < $now),
+    'is_notyetstarted' => $is_notyetstarted,
+    'is_training' => $is_training,
+    'is_productive' =>  $is_productive,
+    'is_finished' => $is_finished,
     'i18n_miquiz_view_scoremode' => get_string('miquiz_view_scoremode', 'miquiz'),
     'i18n_miquiz_create_scoremode' => get_string('miquiz_create_scoremode_'.$miquiz->scoremode, 'miquiz'),
-    'statsonlyforfinishedgames' => $miquiz->statsonlyforfinishedgames,
+    'statsonlyforfinishedgames' => $miquiz->statsonlyforfinishedgames,    
     'i18n_miquiz_view_statsonlyforfinishedgames' => get_string('miquiz_view_statsonlyforfinishedgames', 'miquiz'),
+    'i18n_miquiz_view_answeredquestions' => get_string('miquiz_view_answeredquestions', 'miquiz'),
     'i18n_miquiz_view_numquestions' => get_string('miquiz_view_numquestions', 'miquiz'),
     'i18n_miquiz_view_numquestions' => get_string('miquiz_view_numquestions', 'miquiz'),
     'numquestions' => count($DB->get_records('miquiz_questions', array('quizid' => $miquiz->id))),
