@@ -61,44 +61,44 @@ class mod_miquiz_mod_form extends moodleform_mod
 
         $this->standard_intro_elements(get_string('description', 'miquiz'));
 
-        if ($this->_instance == '') {
-            $mform->addElement('header', 'modstandardelshdr', get_string("miquiz_create_questions", "miquiz").'<i class="icon fa fa-exclamation-circle text-danger fa-fw " aria-hidden="true" title="Required" aria-label="Required"></i>');
-            $mform->setExpanded('modstandardelshdr');
+        $mform->addElement('header', 'modstandardelshdr', get_string("miquiz_create_questions", "miquiz").'<i class="icon fa fa-exclamation-circle text-danger fa-fw " aria-hidden="true" title="Required" aria-label="Required"></i>');
+        $mform->setExpanded('modstandardelshdr');
 
-            // https://docs.moodle.org/dev/Question_database_structure
-            $context = context_course::instance($COURSE->id);
-            $categories = $DB->get_records('question_categories', array('contextid' => $context->id));
-            $questionchooser_categories = array();
-            foreach ($categories as $category) {
-                $questions = $DB->get_records('question', array('category' => $category->id));
-                $question_dtos = array();
-                foreach ($questions as $question) {
-                    if ($question->qtype =='multichoice') {
-                        array_push($question_dtos, array(
-                            "question_id" => $question->id,
-                            "question_name" => $question->name
-                        ));
-                    }
+        // https://docs.moodle.org/dev/Question_database_structure
+        $context = context_course::instance($COURSE->id);
+        $categories = $DB->get_records('question_categories', array('contextid' => $context->id));
+        $questionchooser_categories = array();
+        foreach ($categories as $category) {
+            $questions = $DB->get_records('question', array('category' => $category->id));
+            $question_dtos = array();
+            foreach ($questions as $question) {
+                if ($question->qtype =='multichoice') {
+                    array_push($question_dtos, array(
+                        "question_id" => $question->id,
+                        "question_name" => $question->name
+                    ));
                 }
-                $cat_dto = array(
-                    "category_id" => $category->id,
-                    "category_name" => $category->name,
-                    "questions" => $question_dtos
-                );
             }
-
-            $customel_rendered = $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/questionchooser', array(
-                $questionchooser_categories,
-                "i18n_miquiz_create_questions_search" => get_string("miquiz_create_questions_search", "miquiz"),
-                "i18n_miquiz_create_questions_selected" => get_string("miquiz_create_questions_selected", "miquiz"),
-                "categories" => $cat_dto
-            ));
-            $fields = array(
-                $mform->createElement('hidden', 'questions', ''),            
-                $mform->createElement('html', $customel_rendered));
-            $mform->addGroup($fields, 'questiong', '', '', false);
-            $mform->setType('questions', PARAM_NOTAGS);
+            $cat_dto = array(
+                "category_id" => $category->id,
+                "category_name" => $category->name,
+                "questions" => $question_dtos
+            );
         }
+
+        $customel_rendered = $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/questionchooser', array(
+            $questionchooser_categories,
+            "i18n_miquiz_create_questions_search" => get_string("miquiz_create_questions_search", "miquiz"),
+            "i18n_miquiz_create_questions_selected" => get_string("miquiz_create_questions_selected", "miquiz"),
+            "categories" => $cat_dto
+        ));
+        $questionIds = $this->_instance === '' ? '' : implode(',', miquiz::getQuestionIdsForMiQuizId($this->_instance));
+        // $questionIds = '';
+        $fields = array(
+            $mform->createElement('hidden', 'questions', $questionIds),
+            $mform->createElement('html', $customel_rendered));
+        $mform->addGroup($fields, 'questiong', '', '', false);
+        $mform->setType('questions', PARAM_NOTAGS);
 
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
