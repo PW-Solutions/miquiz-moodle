@@ -99,13 +99,13 @@
 </style>
 
 <br/><div class="container"><div class="row">
-<div class="col-sm-9">{{i18n_miquiz_view_shortname}}: {{short_name}}</div>
+<div class="col-sm-9"><h4><b>{{i18n_miquiz_view_shortname}}</b>: {{short_name}}</h4></div>
 <div class="col-sm-4">
 
 <div id="timeline" style="padding-left:10px"></div>
 <script type='text/javascript'>
 //config
-dot_pos = [20, 70, 120];
+dot_pos = [20, 70+50, 120+50*2];
 circle_size = 20;
 dot_attr = {fill: '#eee',
             stroke: '#111',
@@ -194,13 +194,13 @@ var app = new Vue({
 </script>
 
 </div>
-<div class="col-sm-6">{{i18n_miquiz_view_scoremode}}: {{i18n_miquiz_create_scoremode}}
+<div class="col-sm-6" style="text-align:center;"><b>{{i18n_miquiz_view_scoremode}}</b> <br/> {{i18n_miquiz_create_scoremode}}
 {{#statsonlyforfinishedgames}} ({{i18n_miquiz_view_statsonlyforfinishedgames}}){{/statsonlyforfinishedgames}}
 </div>
 {{#is_manager}}
-    <div class="col-sm-6">{{i18n_miquiz_view_answeredquestions}}:<br/><svg id="piechart"></svg></div>
+    <div class="col-sm-6" style="text-align:center;padding-top:10px;"><b>{{i18n_miquiz_view_answeredquestions}}</b><br/><svg id="piechart"></svg></div>
 {{/is_manager}}
-<div class="col-sm-6">{{i18n_miquiz_view_numquestions}}: {{numquestions}}</div>
+<div class="col-sm-6" style="text-align:center;"><b>{{i18n_miquiz_view_numquestions}}</b></br> {{numquestions}}</div>
 </div></div>
 {{#is_manager}}
 <a href="{{url}}&download"><i class="icon fa fa-download fa-fw " aria-hidden="true" aria-label=""></i> {{i18n_miquiz_index_download}}</a>
