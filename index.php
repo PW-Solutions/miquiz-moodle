@@ -80,7 +80,7 @@ if (isset($_GET['download_categories'])) {
             die();
     }
     header('Content-Type: text/csv');
-    header('Content-disposition: filename="export.csv"');
+    header('Content-disposition: filename="export_'.time() .'.csv"');
     echo miquiz::api_get("api/categories/download?categories=".$data, ['return_raw' => true]);
     die();
 }
