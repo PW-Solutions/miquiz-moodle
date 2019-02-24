@@ -66,6 +66,7 @@ $string['miquiz_view_statistics_totalscore'] = 'Score (achieved/maximum)'; //Pun
 $string['miquiz_view_score'] = 'Your score training(achieved/maximum), duel(achieved/maximum)'; //Deine Punke
 $string['miquiz_view_answeredquestions'] = 'Answered questions'; //Beantwortete Fragen
 $string['miquiz_view_statsonlyforfinishedgames'] = 'Finished games only'; //Nur beendete Spiele
+$string['miquiz_view_nodata'] =  'No data available.'; // Es sind noch keine Daten vorhanden
 
 $string['miquiz_view_openlink'] = 'Open ' . $instance_name; //$string['modulename'] &ouml;ffnen
 

@@ -66,6 +66,7 @@ $string['miquiz_view_statistics_totalscore'] = 'Punkte (erreicht/gesamt erreichb
 $string['miquiz_view_score'] = 'Deine Punke Training(Erreicht/M&ouml;glich), Duel(Erreicht/M&ouml;glich)';
 $string['miquiz_view_answeredquestions'] = 'Beantwortete Fragen';
 $string['miquiz_view_statsonlyforfinishedgames'] = 'Nur beendete Spiele';
+$string['miquiz_view_nodata'] =  'Es sind noch keine Daten vorhanden.';
 
 $string['miquiz_view_openlink'] =  $instance_name . ' &ouml;ffnen';
 
