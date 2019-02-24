@@ -94,8 +94,8 @@ class mod_miquiz_mod_form extends moodleform_mod
                 "categories" => $cat_dto
             ));
             $fields = array(
-                $mform->createElement('html', $customel_rendered),
-                $mform->createElement('hidden', 'questions', ''));
+                $mform->createElement('hidden', 'questions', ''),            
+                $mform->createElement('html', $customel_rendered));
             $mform->addGroup($fields, 'questiong', '', '', false);
             $mform->setType('questions', PARAM_NOTAGS);
         }
