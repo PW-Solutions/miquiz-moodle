@@ -24,7 +24,7 @@ $context = context_module::instance($cm->id);
 $is_manager =  has_capability('moodle/course:manageactivities', $context);  //https://docs.moodle.org/dev/Roles
 
 if ($is_manager && isset($_GET['download'])) {
-    // perform export    
+    // perform export
     header('Content-Type: text/csv');
     header('Content-disposition: filename="export_'.time() .'.csv"');
     echo miquiz::api_get("api/categories/download?categories=".$miquiz->miquizcategoryid, ['return_raw' => true]);
@@ -75,14 +75,14 @@ if (count($quiz_questions) > 0) {
             if (isset($reports[$miquiz_question->miquizquestionid])) {
                 foreach ($reports[$miquiz_question->miquizquestionid] as $report) {
                     array_push($reports_dto, array(
-                        'report_category' =>$report['category'],                
+                        'report_category' =>$report['category'],
                         'report_message' =>$report['message'],
                         'report_author' => $report['author']
                     ));
                 }
             }
             array_push($questions_dto, array(
-                'question_id' =>$question->id,                
+                'question_id' =>$question->id,
                 'question_name' =>$question->name,
                 'reports' => $reports_dto
             ));
@@ -93,6 +93,27 @@ if (count($quiz_questions) > 0) {
         ));
     }
 }
+
+$score_training = 0;
+$score_duel = 0;
+$score_training_correct = 0;
+$score_duel_correct = 0;
+$user_stats = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/user-stats");
+$user_obj = miquiz::api_get("api/users");
+$resp = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/stats");
+$answeredQuestions_training_total = $resp["answeredQuestions"]["training"]["total"];
+$answeredQuestions_training_correct = $resp["answeredQuestions"]["training"]["correct"];
+$answeredQuestions_duel_total = $resp["answeredQuestions"]["duel"]["total"];
+$answeredQuestions_duel_correct = $resp["answeredQuestions"]["duel"]["correct"];
+$answeredQuestions_total = number_format($answeredQuestions_training_total+$answeredQuestions_duel_total, 0);
+$answeredQuestions_correct = number_format($answeredQuestions_training_correct+$answeredQuestions_duel_correct, 0);
+$answeredQuestions_wrong = number_format($answeredQuestions_total-$answeredQuestions_correct, 0);
+$eps = pow(10000000, -1);
+$rel_answeredQuestions_total = number_format($answeredQuestions_total/($answeredQuestions_total+$eps), 2);
+$rel_answeredQuestions_correct = number_format($answeredQuestions_correct/($answeredQuestions_total+$eps), 2);
+$rel_answeredQuestions_wrong = number_format($answeredQuestions_wrong/($answeredQuestions_total+$eps), 2);
+$answered_abs = "(".$answeredQuestions_total."/".$answeredQuestions_correct."/".$answeredQuestions_wrong.")";
+$answered_rel = "(".$rel_answeredQuestions_total."/".$rel_answeredQuestions_correct."/".$rel_answeredQuestions_wrong.")";
 
 $user_stats = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/user-stats");
 $userdata = [];
@@ -106,8 +127,8 @@ foreach ($user_stats as $user_score) {
         "answeredQuestions_training_correct" => $user_score["answeredQuestions"]["training"]["correct"],
         "answeredQuestions_duel_total" => $user_score["answeredQuestions"]["duel"]["total"],
         "answeredQuestions_duel_correct" => $user_score["answeredQuestions"]["duel"]["correct"],
-        "score"=> $score_training+$score_duel,
-        "score_possible" => $score_training_possible+$score_duel_possible,
+        "score"=> $score_training + $score_duel,
+        "score_possible" => $user_score["score"]["training"]["possible"] + $user_score["score"]["duel"]["possible"],
         "answeredQuestions_total" => number_format($answeredQuestions_training_total+$answeredQuestions_duel_total, 0),
         "answeredQuestions_correct" => number_format($answeredQuestions_training_correct+$answeredQuestions_duel_correct, 0),
         "answeredQuestions_wrong" => number_format($answeredQuestions_total-$answeredQuestions_correct, 0),
@@ -132,28 +153,6 @@ foreach ($userdata as $username => $a_data) {
 
     ));
 }
-
-$score_training = 0;
-$score_duel = 0;
-$score_training_correct = 0;
-$score_duel_correct = 0;
-$user_stats = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/user-stats");
-$user_obj = miquiz::api_get("api/users");
-$resp = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/stats");
-$answeredQuestions_training_total = $resp["answeredQuestions"]["training"]["total"];
-$answeredQuestions_training_correct = $resp["answeredQuestions"]["training"]["correct"];
-$answeredQuestions_duel_total = $resp["answeredQuestions"]["duel"]["total"];
-$answeredQuestions_duel_correct = $resp["answeredQuestions"]["duel"]["correct"];
-$answeredQuestions_total = number_format($answeredQuestions_training_total+$answeredQuestions_duel_total, 0);
-$answeredQuestions_correct = number_format($answeredQuestions_training_correct+$answeredQuestions_duel_correct, 0);
-$answeredQuestions_wrong = number_format($answeredQuestions_total-$answeredQuestions_correct, 0);
-$eps = pow(10000000, -1);
-$rel_answeredQuestions_total = number_format($answeredQuestions_total/($answeredQuestions_total+$eps), 2);
-$rel_answeredQuestions_correct = number_format($answeredQuestions_correct/($answeredQuestions_total+$eps), 2);
-$rel_answeredQuestions_wrong = number_format($answeredQuestions_wrong/($answeredQuestions_total+$eps), 2);
-$answered_abs = "(".$answeredQuestions_total."/".$answeredQuestions_correct."/".$answeredQuestions_wrong.")";
-$answered_rel = "(".$rel_answeredQuestions_total."/".$rel_answeredQuestions_correct."/".$rel_answeredQuestions_wrong.")";
-
 $now = time();
 $is_notyetstarted = $is_training = $is_productive = $is_finished = false;
 if($miquiz->assesstimestart > $now){
@@ -184,7 +183,7 @@ echo $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/view', arra
     'is_finished' => $is_finished,
     'i18n_miquiz_view_scoremode' => get_string('miquiz_view_scoremode', 'miquiz'),
     'i18n_miquiz_create_scoremode' => get_string('miquiz_create_scoremode_'.$miquiz->scoremode, 'miquiz'),
-    'statsonlyforfinishedgames' => $miquiz->statsonlyforfinishedgames,    
+    'statsonlyforfinishedgames' => $miquiz->statsonlyforfinishedgames,
     'i18n_miquiz_view_statsonlyforfinishedgames' => get_string('miquiz_view_statsonlyforfinishedgames', 'miquiz'),
     'i18n_miquiz_view_answeredquestions' => get_string('miquiz_view_answeredquestions', 'miquiz'),
     'i18n_miquiz_view_numquestions' => get_string('miquiz_view_numquestions', 'miquiz'),
