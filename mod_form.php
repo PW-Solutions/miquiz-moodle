@@ -44,16 +44,16 @@ class mod_miquiz_mod_form extends moodleform_mod
         $mform->addRule('short_name', get_string('maximumchars', '', 10), 'maxlength', 10, 'client');
 
         if ($this->_instance == '') {
-            $options=array(); //use string keys as keys since conversion to numbers more complicated
+            $options = []; //use string keys as keys since conversion to numbers more complicated
             $options[0]  = get_string('miquiz_create_scoremode_0', 'miquiz');
             $options[1]  = get_string('miquiz_create_scoremode_1', 'miquiz');
             $options[2]  = get_string('miquiz_create_scoremode_2', 'miquiz');
             $options[3]  = get_string('miquiz_create_scoremode_3', 'miquiz');
             $options[4]  = get_string('miquiz_create_scoremode_4', 'miquiz');
             $mform->addElement('select', 'scoremode', get_string('miquiz_create_scoremode', 'miquiz'), $options);
-            $mform->addElement('advcheckbox', 'statsonlyforfinishedgames', get_string('miquiz_create_statsonlyforfinishedgames', 'miquiz'));
-            $mform->addHelpButton('statsonlyforfinishedgames', 'miquiz_create_statsonlyforfinishedgames', 'miquiz');
         }
+        $mform->addElement('advcheckbox', 'statsonlyforfinishedgames', get_string('miquiz_create_statsonlyforfinishedgames', 'miquiz'));
+        $mform->addHelpButton('statsonlyforfinishedgames', 'miquiz_create_statsonlyforfinishedgames', 'miquiz');
 
         $mform->addElement('date_time_selector', 'assesstimestart', get_string('miquiz_create_assesstimestart', 'miquiz'));
         $mform->addElement('date_time_selector', 'timeuntilproductive', get_string('miquiz_create_timeuntilproductive', 'miquiz'));

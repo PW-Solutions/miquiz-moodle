@@ -161,6 +161,9 @@ class miquiz
     private static function getMiQuizQuestionIds($questionIds, $activityId = null)
     {
         global $DB;
+        if (empty($questionIds)) {
+            return [];
+        }
         $select = 'questionid IN (' . implode(',', $questionIds) . ')';
         if (!is_null($activityId)) {
             $select .= ' AND quizid = ' . $activityId;
@@ -168,7 +171,7 @@ class miquiz
         $existingQuestions = $DB->get_records_select('miquiz_questions', $select);
 
         if (empty($existingQuestions)) {
-            return;
+            return [];
         }
         return array_map(function ($question) {
             return $question->miquizquestionid;
@@ -280,15 +283,17 @@ class miquiz
 
         $questionIdsToRemove = array_diff($existingQuestionIds, $newQuestionIds);
         $miQuestionIdsToRemove = miquiz::getMiQuizQuestionIds($questionIdsToRemove, $miquiz->id);
-        $removeRelationshipPayload = [
-            'data' => array_map(function ($questionId) {
-                return [
-                    'type' => 'questions',
-                    'id' => $questionId,
-                ];
-            }, $miQuestionIdsToRemove),
-        ];
-        $response = miquiz::api_delete('api/categories/' . $miQuizCategoryId . '/relationships/questions', $removeRelationshipPayload);
+        if (!empty($miQuestionIdsToRemove)) {
+            $removeRelationshipPayload = [
+                'data' => array_map(function ($questionId) {
+                    return [
+                        'type' => 'questions',
+                        'id' => $questionId,
+                    ];
+                }, $miQuestionIdsToRemove),
+            ];
+            $response = miquiz::api_delete('api/categories/' . $miQuizCategoryId . '/relationships/questions', $removeRelationshipPayload);
+        }
 
         miquiz::scheduleTasks($miquiz);
 
@@ -391,12 +396,12 @@ class miquiz
             self::scheduleTaskForCategory($categoryId, $stateTimestamps[$state], $stateConfig);
         }
 
-        // Set category name
-        $nameConfig = [
+        $stateIndependentConfig = [
             'fullName' => $miquiz->name,
             'name' => $miquiz->short_name,
+            'stats_only_for_finished_games' => $miquiz->statsonlyforfinishedgames,
         ];
-        self::scheduleTaskForCategory($categoryId, $currentTime - 1, $nameConfig);
+        self::scheduleTaskForCategory($categoryId, $currentTime - 1, $stateIndependentConfig);
     }
 
     private static function getStateAtTimestamp($stateTimestamps, $timestamp)
