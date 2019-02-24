@@ -391,12 +391,12 @@ class miquiz
             self::scheduleTaskForCategory($categoryId, $stateTimestamps[$state], $stateConfig);
         }
 
-        // Set category name
-        $nameConfig = [
+        $stateIndependentConfig = [
             'fullName' => $miquiz->name,
             'name' => $miquiz->short_name,
+            'stats_only_for_finished_games' => $miquiz->statsonlyforfinishedgames,
         ];
-        self::scheduleTaskForCategory($categoryId, $currentTime - 1, $nameConfig);
+        self::scheduleTaskForCategory($categoryId, $currentTime - 1, $stateIndependentConfig);
     }
 
     private static function getStateAtTimestamp($stateTimestamps, $timestamp)
