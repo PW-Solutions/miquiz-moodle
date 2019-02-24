@@ -2,7 +2,6 @@
 
 require_once('../../config.php');
 require_once("lib.php");
-require_once("view_cockpit.php");
 
 $id = required_param('id', PARAM_INT);  // Course Module ID
 
@@ -34,152 +33,172 @@ if ($is_manager && isset($_GET['download'])) {
 
 echo $OUTPUT->header();
 
-echo '<h3>'.$miquiz->intro.'</h3></br>';
-echo '<form action="'.$miquizurl.'" target="_blanc"><input class="btn btn-primary" id="id_tomiquizbutton" type="submit" value="'.get_string('miquiz_view_openlink', 'miquiz').'"></form>';
-
-$cp = new cockpit($is_manager, $miquiz);
-$cp->print_header();
-echo '<br/><div class="container"><div class="row">
-<div class="col-sm-9">'.get_string('miquiz_view_shortname', 'miquiz').': '.$miquiz->short_name.'</div>
-<div class="col-sm-4">';
-$cp->print_status($miquiz->assesstimestart, $miquiz->timeuntilproductive, $miquiz->assesstimefinish);
-echo '</div>
-<div class="col-sm-6">'.get_string('miquiz_view_scoremode', 'miquiz').': '.get_string('miquiz_create_scoremode_'.$miquiz->scoremode, 'miquiz');
-if($miquiz->statsonlyforfinishedgames){
-    echo ' ('.get_string('miquiz_view_statsonlyforfinishedgames', 'miquiz').')';
-}
-echo '</div>';
-if ($is_manager){
-    echo '<div class="col-sm-6">'.get_string('miquiz_view_answeredquestions', 'miquiz').':<br/><svg id="piechart"></svg></div>';
-}
-echo '<div class="col-sm-6">'.get_string('miquiz_view_numquestions', 'miquiz').': '.count($DB->get_records('miquiz_questions', array('quizid' => $miquiz->id))).'</div>
-</div></div>';
-if ($is_manager)
-    echo '<a href="'.$url.'&download"><i class="icon fa fa-download fa-fw " aria-hidden="true" aria-label=""></i> '.get_string('miquiz_index_download', 'miquiz').'</a>';
-$cp->print_js();
-
-if ($is_manager) {
-    echo '<br/><b data-toggle="collapse" href="#questions_box">'.get_string('miquiz_view_questions', 'miquiz').'</b><br/>';
-    echo '<div class="collapse in" id="questions_box">';
-
-    $reports = [];
-    $resp = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/reports");
-    foreach ($resp as $report) {
-        if (!isset($reports[$report["questionId"]])) {
-            $reports[$report["questionId"]] = [];
-        }
-        $reports[$report["questionId"]][] = $report;
+$categories_dto = array();
+$reports = [];
+$resp = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/reports");
+foreach ($resp as $report) {
+    if (!isset($reports[$report["questionId"]])) {
+        $reports[$report["questionId"]] = [];
     }
+    $reports[$report["questionId"]][] = $report;
+}
 
-    $quiz_questions = $DB->get_records('miquiz_questions', array('quizid' => $miquiz->id));
-    if (count($quiz_questions) > 0) {
-        $question_ids = "";
-        foreach ($quiz_questions as $quiz_question) {
-            if ($question_ids != "") {
-                $question_ids .= " OR ";
-            }
-            $question_ids .="id=".$quiz_question->questionid;
+$quiz_questions = $DB->get_records('miquiz_questions', array('quizid' => $miquiz->id));
+if (count($quiz_questions) > 0) {
+    $question_ids = "";
+    foreach ($quiz_questions as $quiz_question) {
+        if ($question_ids != "") {
+            $question_ids .= " OR ";
         }
-        $questions = $DB->get_records_sql('SELECT * FROM {question} q WHERE '. $question_ids);
+        $question_ids .="id=".$quiz_question->questionid;
+    }
+    $questions = $DB->get_records_sql('SELECT * FROM {question} q WHERE '. $question_ids);
 
-        $questionsbycategory = array();
+    $questionsbycategory = array();
+    foreach ($questions as $question) {
+        $category = $DB->get_record('question_categories', array('id' => $question->category));
+        if(!array_key_exists($category->name, $questionsbycategory))
+            $questionsbycategory[$category->name] = [$question];
+        else
+            array_push($questionsbycategory[$category->name], $question);
+    }
+    asort($questionsbycategory);
+    foreach ($questionsbycategory as $catname => $questions) {
+        if (count($questions) == 0)
+            continue;
+
+        $category = $DB->get_record('question_categories', array('id' => $questions[0]->category));
+        $questions_dto = array();
         foreach ($questions as $question) {
-            $category = $DB->get_record('question_categories', array('id' => $question->category));
-            if(!array_key_exists($category->name, $questionsbycategory))
-                $questionsbycategory[$category->name] = [$question];
-            else
-                array_push($questionsbycategory[$category->name], $question);
-        }
-        asort($questionsbycategory);
-        foreach ($questionsbycategory as $catname => $questions) {
-            if (count($questions) == 0)
-                continue;
-
-            $category = $DB->get_record('question_categories', array('id' => $questions[0]->category));
-            echo '<span class="badge">'.$category->name.'</span>';
-            
-            asort($questions);
-            echo '<ul class="list-group">';
-            foreach ($questions as $question) {
-                $miquiz_question = $DB->get_record_sql('SELECT miquizquestionid FROM {miquiz_questions} WHERE questionid='. $question->id.' AND quizid='.$miquiz->id);
-            
-                echo '<li class="list-group-item">';
-                $link = "/question/preview.php?id=".$question->id."&courseid=".$category->id;
-                $popuphtml = 'target="popup" onclick="window.open(\''.$link.'\',\'popup\',\'width=600,height=600\'); return false;"';
-                echo '<a href="'.$link.'" '.$popuphtml.'>'.$question->name.'</a><ul class="list-group">';
-                if (isset($reports[$miquiz_question->miquizquestionid])) {
-                    foreach ($reports[$miquiz_question->miquizquestionid] as $report) {
-                        echo '<li class="list-group-item"><u>'.$report['category'].'</u></br>';
-                        echo $report['message'];
-                        echo '</br><i>'.$report['author'].'</i></li>';
-                    }
+            $miquiz_question = $DB->get_record_sql('SELECT miquizquestionid FROM {miquiz_questions} WHERE questionid='. $question->id.' AND quizid='.$miquiz->id);
+            $reports_dto = array();
+            if (isset($reports[$miquiz_question->miquizquestionid])) {
+                foreach ($reports[$miquiz_question->miquizquestionid] as $report) {
+                    array_push($reports_dto, array(
+                        'report_category' =>$report['category'],                
+                        'report_message' =>$report['message'],
+                        'report_author' => $report['author']
+                    ));
                 }
-                echo "</ul></li>";
             }
-            echo '</ul>';
+            array_push($questions_dto, array(
+                'question_id' =>$question->id,                
+                'question_name' =>$question->name,
+                'reports' => $reports_dto
+            ));
         }
+        array_push($categories_dto, array(
+            'category_name' => $category->name,
+            'questions' => $questions_dto
+        ));
     }
-    echo '</div>';
 }
 
+$user_stats = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/user-stats");
+$userdata = [];
+foreach ($user_stats as $user_score) {
+    $a_data = [
+        "score_training" => $user_score["score"]["training"]["total"],
+        "score_duel" => $user_score["score"]["duel"]["total"],
+        "score_training_possible" => $user_score["score"]["training"]["possible"],
+        "score_duel_possible" => $user_score["score"]["duel"]["possible"],
+        "answeredQuestions_training_total" => $user_score["answeredQuestions"]["training"]["total"],
+        "answeredQuestions_training_correct" => $user_score["answeredQuestions"]["training"]["correct"],
+        "answeredQuestions_duel_total" => $user_score["answeredQuestions"]["duel"]["total"],
+        "answeredQuestions_duel_correct" => $user_score["answeredQuestions"]["duel"]["correct"],
+        "score"=> $score_training+$score_duel,
+        "score_possible" => $score_training_possible+$score_duel_possible,
+        "answeredQuestions_total" => number_format($answeredQuestions_training_total+$answeredQuestions_duel_total, 0),
+        "answeredQuestions_correct" => number_format($answeredQuestions_training_correct+$answeredQuestions_duel_correct, 0),
+        "answeredQuestions_wrong" => number_format($answeredQuestions_total-$answeredQuestions_correct, 0),
+        "rel_answeredQuestions_total" => number_format($answeredQuestions_total/($answeredQuestions_total+$eps), 2),
+        "rel_answeredQuestions_correct" => number_format($answeredQuestions_correct/($answeredQuestions_total+$eps), 2),
+        "rel_answeredQuestions_wrong" => number_format($answeredQuestions_wrong/($answeredQuestions_total+$eps), 2),
+    ];
+    $username = miquiz::get_username($user_score["userId"], $user_obj);
+    $userdata[$username] = $a_data;
+}
+asort($userdata);
+$user_stats_dto = array();
+foreach ($userdata as $username => $a_data) {
+    $answered_abs = "(".$a_data['answeredQuestions_total']."/".$a_data['answeredQuestions_correct']."/".$a_data['answeredQuestions_wrong'].")";
+    $answered_rel = "(".$a_data['rel_answeredQuestions_total']."/".$a_data['rel_answeredQuestions_correct']."/".$a_data['rel_answeredQuestions_wrong'].")";
+    array_push($user_stats_dto, array(
+        "username" => $username,
+        "answered_abs" => $answered_abs,
+        "answered_rel" => $answered_rel,
+        "score" => $a_data['score'],
+        "score_possible" => $a_data['score_possible'],
+
+    ));
+}
+
+$score_training = 0;
+$score_duel = 0;
+$score_training_correct = 0;
+$score_duel_correct = 0;
+$user_stats = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/user-stats");
+$user_obj = miquiz::api_get("api/users");
+$resp = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/stats");
+$answeredQuestions_training_total = $resp["answeredQuestions"]["training"]["total"];
+$answeredQuestions_training_correct = $resp["answeredQuestions"]["training"]["correct"];
+$answeredQuestions_duel_total = $resp["answeredQuestions"]["duel"]["total"];
+$answeredQuestions_duel_correct = $resp["answeredQuestions"]["duel"]["correct"];
+$answeredQuestions_total = number_format($answeredQuestions_training_total+$answeredQuestions_duel_total, 0);
+$answeredQuestions_correct = number_format($answeredQuestions_training_correct+$answeredQuestions_duel_correct, 0);
+$answeredQuestions_wrong = number_format($answeredQuestions_total-$answeredQuestions_correct, 0);
+$eps = pow(10000000, -1);
+$rel_answeredQuestions_total = number_format($answeredQuestions_total/($answeredQuestions_total+$eps), 2);
+$rel_answeredQuestions_correct = number_format($answeredQuestions_correct/($answeredQuestions_total+$eps), 2);
+$rel_answeredQuestions_wrong = number_format($answeredQuestions_wrong/($answeredQuestions_total+$eps), 2);
+$answered_abs = "(".$answeredQuestions_total."/".$answeredQuestions_correct."/".$answeredQuestions_wrong.")";
+$answered_rel = "(".$rel_answeredQuestions_total."/".$rel_answeredQuestions_correct."/".$rel_answeredQuestions_wrong.")";
+
+$now = new DateTime("now");
+
+echo $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/view', array(
+    'is_manager' => $is_manager,
+    'intro' => $miquiz->intro,
+    'miquizurl' => $miquizurl,
+    'i18n_miquiz_view_openlink' => get_string('miquiz_view_openlink', 'miquiz'),
+    'i18n_miquiz_view_shortname' => get_string('miquiz_view_shortname', 'miquiz'),
+    'short_name' => $miquiz->short_name,
+    'i18n_miquiz_status_training' => get_string('miquiz_status_training', 'miquiz'),
+    'i18n_miquiz_status_productive' => get_string('miquiz_status_productive', 'miquiz'),
+    'assesstimestart' => $miquiz->assesstimestart,
+    'timeuntilproductive' => $miquiz->timeuntilproductive,
+    'assesstimefinish' => $miquiz->assesstimefinish,
+    'is_notyetstarted' => $miquiz->assesstimestart < $now,
+    'is_training' => $miquiz->timeuntilproductive < $now,
+    'is_productive' => $miquiz->assesstimefinish < $now,
+    'is_finished' => !($miquiz->assesstimestart < $now || $miquiz->timeuntilproductive < $now || $miquiz->assesstimefinish < $now),
+    'i18n_miquiz_view_scoremode' => get_string('miquiz_view_scoremode', 'miquiz'),
+    'i18n_miquiz_create_scoremode' => get_string('miquiz_create_scoremode_'.$miquiz->scoremode, 'miquiz'),
+    'statsonlyforfinishedgames' => $miquiz->statsonlyforfinishedgames,
+    'i18n_miquiz_view_statsonlyforfinishedgames' => get_string('miquiz_view_statsonlyforfinishedgames', 'miquiz'),
+    'i18n_miquiz_view_numquestions' => get_string('miquiz_view_numquestions', 'miquiz'),
+    'i18n_miquiz_view_numquestions' => get_string('miquiz_view_numquestions', 'miquiz'),
+    'numquestions' => count($DB->get_records('miquiz_questions', array('quizid' => $miquiz->id))),
+    'url' => $url,
+    'i18n_miquiz_index_download' => get_string('miquiz_index_download', 'miquiz'),
+    'i18n_miquiz_cockpit_correct' => get_string('miquiz_cockpit_correct', 'miquiz'),
+    'i18_nmiquiz_cockpit_incorrect' => get_string('miquiz_cockpit_incorrect', 'miquiz'),
+    'answeredQuestions_correct' => $answeredQuestions_correct,
+    'answeredQuestions_wrong' => $answeredQuestions_wrong,
+    'i18n_miquiz_view_questions' => get_string('miquiz_view_questions', 'miquiz'),
+    'categories' => $categories_dto,
+    'i18n_miquiz_view_statistics_user' => get_string('miquiz_view_statistics_user', 'miquiz'),
+    'i18n_miquiz_view_statistics_username' => get_string('miquiz_view_statistics_username', 'miquiz'),
+    'i18n_miquiz_view_statistics_answeredquestionsabs' => get_string('miquiz_view_statistics_answeredquestionsabs', 'miquiz'),
+    'i18n_miquiz_view_statistics_answeredquestionsrel' => get_string('miquiz_view_statistics_answeredquestionsrel', 'miquiz'),
+    'i18n_miquiz_view_statistics_totalscore' => get_string('miquiz_view_statistics_totalscore', 'miquiz'),
+    'user_stats' => $user_stats_dto
+));
+
 if ($is_manager) {
-    $user_stats = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/user-stats");
-
-    echo '<br/><b data-toggle="collapse" href="#statisticsuser_box">'.get_string('miquiz_view_statistics_user', 'miquiz').'</b><br/>';
-    echo '<div class="collapse in" id="statisticsuser_box">';
-    if(count($user_stats)==0)
-        echo get_string('miquiz_view_nodata', 'miquiz');
-
-    $userdata = [];
-    foreach ($user_stats as $user_score) {
-        $a_data = [
-            "score_training" => $user_score["score"]["training"]["total"],
-            "score_duel" => $user_score["score"]["duel"]["total"],
-            "score_training_possible" => $user_score["score"]["training"]["possible"],
-            "score_duel_possible" => $user_score["score"]["duel"]["possible"],
-            "answeredQuestions_training_total" => $user_score["answeredQuestions"]["training"]["total"],
-            "answeredQuestions_training_correct" => $user_score["answeredQuestions"]["training"]["correct"],
-            "answeredQuestions_duel_total" => $user_score["answeredQuestions"]["duel"]["total"],
-            "answeredQuestions_duel_correct" => $user_score["answeredQuestions"]["duel"]["correct"],
-
-            "score"=> $score_training+$score_duel,
-            "score_possible" => $score_training_possible+$score_duel_possible,
-
-            "answeredQuestions_total" => number_format($answeredQuestions_training_total+$answeredQuestions_duel_total, 0),
-            "answeredQuestions_correct" => number_format($answeredQuestions_training_correct+$answeredQuestions_duel_correct, 0),
-            "answeredQuestions_wrong" => number_format($answeredQuestions_total-$answeredQuestions_correct, 0),
-            "rel_answeredQuestions_total" => number_format($answeredQuestions_total/($answeredQuestions_total+$eps), 2),
-            "rel_answeredQuestions_correct" => number_format($answeredQuestions_correct/($answeredQuestions_total+$eps), 2),
-            "rel_answeredQuestions_wrong" => number_format($answeredQuestions_wrong/($answeredQuestions_total+$eps), 2),
-        ];
-        $username = miquiz::get_username($user_score["userId"], $user_obj);
-        $userdata[$username] = $a_data;
-    }
-    asort($userdata);
-
-    echo '<table id="userdatatable" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">';
-    echo '<thead><tr>';
-    $rows = [get_string('miquiz_view_statistics_username', 'miquiz'), get_string('miquiz_view_statistics_answeredquestionsabs', 'miquiz'), get_string('miquiz_view_statistics_answeredquestionsrel', 'miquiz'), get_string('miquiz_view_statistics_totalscore', 'miquiz')];
-    foreach($rows as $row)
-        echo '<th class="th-sm">'.$row.'</th>';
-    echo '</thead><tbody>'; 
-
-    foreach ($userdata as $username => $a_data) {
-        $answered_abs = "(".$a_data['answeredQuestions_total']."/".$a_data['answeredQuestions_correct']."/".$a_data['answeredQuestions_wrong'].")";
-        $answered_rel = "(".$a_data['rel_answeredQuestions_total']."/".$a_data['rel_answeredQuestions_correct']."/".$a_data['rel_answeredQuestions_wrong'].")";
-
-        echo '<tr>';
-        echo '<td>'.$username.'</td>';
-        echo '<td>'.$answered_abs.'</td>';
-        echo '<td>'.$answered_rel.'</td>';
-        echo '<td>'.$a_data['score'].'/'.$a_data['score_possible'].'</td>';
-        echo '</tr>';
-    }
-    echo '</tbody></table>';
     echo '<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>';
     echo '<script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>';
     $PAGE->requires->js_amd_inline('$("#userdatatable").DataTable();');
-    echo '</div>';
 }
 
 echo $OUTPUT->footer();
