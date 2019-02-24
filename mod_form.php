@@ -61,7 +61,7 @@ class mod_miquiz_mod_form extends moodleform_mod
 
         $this->standard_intro_elements(get_string('description', 'miquiz'));
 
-        if ($this->_instance == '') {    
+        if ($this->_instance == '') {
             $mform->addElement('header', 'modstandardelshdr', get_string("miquiz_create_questions", "miquiz").'<i class="icon fa fa-exclamation-circle text-danger fa-fw " aria-hidden="true" title="Required" aria-label="Required"></i>');
             $mform->setExpanded('modstandardelshdr');
 
@@ -99,7 +99,7 @@ class mod_miquiz_mod_form extends moodleform_mod
             $mform->addGroup($fields, 'questiong', '', '', false);
             $mform->setType('questions', PARAM_NOTAGS);
         }
-        
+
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
     }
