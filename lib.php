@@ -58,15 +58,14 @@ function miquiz_update_instance($miquiz)
     }
 
     if (!empty($updateResponse['addedQuestionIds'])) {
-        $questionIdsToAdd = $updateResponse['addedQuestionIds'];
-        foreach ($questionIdsToAdd as $questionId) {
+        foreach ($updateResponse['addedQuestionIds'] as $questionId) {
             $questionToAdd = [
                 'quizid' => $miquiz->id,
                 'questionid' => $questionId,
-                'miquizquestionid' => $miquiz_ids["qids"][$questionId],
+                'miquizquestionid' => $updateResponse['miQuizQuestionIds'][$questionId],
                 'timecreated' => time()
             ];
-            $DB->insert_record('miquiz_questions', $added_question);
+            $DB->insert_record('miquiz_questions', $questionToAdd);
         }
     }
 

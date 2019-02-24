@@ -268,14 +268,14 @@ class miquiz
         $miQuizCategoryId = $miquiz->miquizcategoryid;
 
         $existingQuestionIds = miquiz::getQuestionIdsForMiQuizId($miquiz->id);
-        $newQuestionIds = explode(',', $miquiz->questions);
+        $newQuestionIds = array_map(function ($id) { return (int) $id; }, explode(',', $miquiz->questions));
 
         $questionIdsToAdd = array_diff($newQuestionIds, $existingQuestionIds);
         $questionsToAdd = miquiz::getQuestionsById($questionIdsToAdd);
         $mappedMiQuizQuestionIds = [];
-        foreach ($questionsToAdd as $questionId) {
+        foreach ($questionsToAdd as $question) {
             $miQuizQuestion = miquiz::getOrCreateMiQuizQuestion($question, $miQuizCategoryId);
-            $mappedMiQuizQuestionIds[$questionId] = $miQuizQuestion['id'];
+            $mappedMiQuizQuestionIds[$question->id] = $miQuizQuestion['id'];
         }
 
         $questionIdsToRemove = array_diff($existingQuestionIds, $newQuestionIds);
