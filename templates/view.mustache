@@ -192,15 +192,16 @@ var app = new Vue({
   data: tooltip_messages
 });
 </script>
-
 </div>
+
 <div class="col-sm-6" style="text-align:center;"><b>{{i18n_miquiz_view_scoremode}}</b> <br/> {{i18n_miquiz_create_scoremode}}
 {{#statsonlyforfinishedgames}} ({{i18n_miquiz_view_statsonlyforfinishedgames}}){{/statsonlyforfinishedgames}}
 </div>
+<div class="col-sm-6" style="text-align:center;;padding-top:10px;"><b>{{i18n_miquiz_view_numquestions}}</b><br/> {{numquestions}}</div>
 {{#is_manager}}
-    <div class="col-sm-6" style="text-align:center;padding-top:10px;"><b>{{i18n_miquiz_view_answeredquestions}}</b><br/><svg id="piechart"></svg></div>
+    <div class="col-sm-6" style="text-align:center;padding-top:10px;" id="piechartbox"><b>{{i18n_miquiz_view_answeredquestions}}</b><br/></div>
 {{/is_manager}}
-<div class="col-sm-6" style="text-align:center;"><b>{{i18n_miquiz_view_numquestions}}</b></br> {{numquestions}}</div>
+
 </div></div>
 {{#is_manager}}
 <a href="{{url}}&download"><i class="icon fa fa-download fa-fw " aria-hidden="true" aria-label=""></i> {{i18n_miquiz_index_download}}</a>
@@ -211,27 +212,34 @@ var app = new Vue({
 <link href="https://cdn.jsdelivr.net/npm/nvd3@1.8.6/build/nv.d3.min.css" rel="stylesheet" type="text/css">
 
 <script type="text/javascript">
-var data = [{
-			"label": "{{i18n_miquiz_cockpit_correct}}",
-	        "value" : {{answeredQuestions_correct}},
-	        "color": "green"
-    	},{
-			"label": "{{i18_nmiquiz_cockpit_incorrect}}",
-			"value": {{answeredQuestions_wrong}},
-			"color": "red"
-		}];
-var chart = nv.models.pieChart()
-  .x(function(d) { return d.label })
-      .y(function(d) { return d.value })
-      .color(function(d) { return d.color })
-  .showLabels(true)
-      .showLegend(false);
-d3.select("#piechart")
-  .datum(data)
-  .call(chart);
-nv.utils.windowResize(function() {
-    chart.update();
-  });
+if({{answeredQuestions_correct}}+{{answeredQuestions_wrong}} > 0){
+  document.querySelector("#piechartbox").innerHTML+='<svg id="piechart"></svg>';
+  
+  var data = [{
+        "label": "{{i18n_miquiz_cockpit_correct}}",
+            "value" : {{answeredQuestions_correct}},
+            "color": "green"
+        },{
+        "label": "{{i18_nmiquiz_cockpit_incorrect}}",
+        "value": {{answeredQuestions_wrong}},
+        "color": "red"
+      }];
+  var chart = nv.models.pieChart()
+    .x(function(d) { return d.label })
+        .y(function(d) { return d.value })
+        .color(function(d) { return d.color })
+    .showLabels(true)
+        .showLegend(false);
+  d3.select("#piechart")
+    .datum(data)
+    .call(chart);
+  nv.utils.windowResize(function() {
+      chart.update();
+    });
+} else {
+  document.querySelector("#piechartbox").innerHTML+="<div>{{i18n_miquiz_view_nodata}}</div>";
+  console.log('hi');
+}
 </script>
 
 {{#is_manager}}
