@@ -18,6 +18,11 @@ This repository comes with a ready to use docker configuration to test the plugi
 have to temporary comment out the lines in `lang\{en|de}\miquiz.php` where `get_config` is called,
 as Moodle tries to get the config value from the database before any tables are created.
 
+### Cron
+There is no cron-job configured in the docker image (yet). To perform the Moodle cron job, execute
+`docker exec -it moodle_moodle_1 php htdocs/admin/cli/cron.php`. This is necessary to sync users
+of activities with miquiz.
+
 ### Connect with MI-Quiz development workspace
 
 Default host: http://host.docker.internal:8000 (Moodle plugin settings)
