@@ -471,7 +471,8 @@ class miquiz
         $activity_users = $DB->get_records('miquiz_users', array('quizid' => $miquiz->id));
 
         //create users not existing in mi-quiz
-        $miquiz_user = miquiz::api_get("api/users");
+        // TODO: do not compare with loginprovider, as api/users only returns users for the current loginprovider
+        $miquiz_user = miquiz::api_get("api/users?fields[users]=id,externalLogin,externalProvider");
         $miquiz_user_dirty = false;
         foreach ($enrolled as $a_user) {
             if (defined('CLI_SCRIPT') && CLI_SCRIPT === true) {
@@ -513,7 +514,7 @@ class miquiz
 
         // call again to get ids for new users
         if ($miquiz_user_dirty) {
-            $miquiz_user = miquiz::api_get("api/users");
+            $miquiz_user = miquiz::api_get("api/users?fields[users]=id,externalLogin,externalProvider");
         }
 
         //create non existing user links
@@ -565,13 +566,10 @@ class miquiz
     public static function get_user_id($username, $user_obj=null)
     {
         if (is_null($user_obj)) {
-            $user_obj = miquiz::api_get("api/users");
-        }
-        foreach ($user_obj as $a_miquiz_user) {
-            if ($a_miquiz_user["externalLogin"] == $username &&
-               $a_miquiz_user["externalProvider"] == get_config('mod_miquiz', 'loginprovider')) {
-                return $a_miquiz_user["id"];
+            $user_obj = miquiz::api_get("api/users?fields[users]=id&filter[externalLogin]=$username");
             }
+        if (count($user_obj) > 0 && isset($user_obj[0]['id'])) {
+            return $user_obj[0]['id'];
         }
         return -1;
     }
@@ -579,14 +577,11 @@ class miquiz
     public static function get_username($id, $user_obj=null)
     {
         if (is_null($user_obj)) {
-            $user_obj = miquiz::api_get("api/users");
-        }
-
-        foreach ($user_obj as $a_miquiz_user) {
-            if ($a_miquiz_user["id"] == $id) {
-                return $a_miquiz_user["externalLogin"];
+            $user_obj = miquiz::api_get("api/users?fields[users]=externalLogin&filter[id]=$id");
             }
+        if (count($user_obj) > 0 && isset($user_obj[0]['externalLogin'])) {
+            return $user_obj[0]['externalLogin'];
         }
-        return "";
+        return '';
     }
 }

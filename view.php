@@ -99,7 +99,7 @@ $score_duel = 0;
 $score_training_correct = 0;
 $score_duel_correct = 0;
 $user_stats = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/user-stats");
-$user_obj = miquiz::api_get("api/users");
+$user_obj = miquiz::api_get("api/users?fields[users]=id,externalLogin,externalProvider");
 $resp = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/stats");
 $answeredQuestions_training_total = $resp["answeredQuestions"]["training"]["total"];
 $answeredQuestions_training_correct = $resp["answeredQuestions"]["training"]["correct"];
