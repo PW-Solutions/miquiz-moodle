@@ -115,7 +115,6 @@ $rel_answeredQuestions_wrong = number_format($answeredQuestions_wrong/($answered
 $answered_abs = "(".$answeredQuestions_total."/".$answeredQuestions_correct."/".$answeredQuestions_wrong.")";
 $answered_rel = "(".$rel_answeredQuestions_total."/".$rel_answeredQuestions_correct."/".$rel_answeredQuestions_wrong.")";
 
-$user_stats = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/user-stats");
 $userdata = [];
 foreach ($user_stats as $user_score) {
     $a_data = [
