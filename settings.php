@@ -16,23 +16,6 @@ if ($hassiteconfig) {
         'No Key Defined',
         PARAM_TEXT
     ));
-    // TODO: should come from miquiz
-    $settings->add(new admin_setting_configtext(
-        'mod_miquiz/loginprovider',
-        get_string('miquiz_setting_loginprovider_title', 'miquiz'),
-        get_string('miquiz_setting_loginprovider_helper', 'miquiz'),
-        'default',
-        PARAM_TEXT
-    ));
-
-    // TODO: should stay in miquiz
-    $settings->add(new admin_setting_configtext(
-        'mod_miquiz/modulename',
-        get_string('miquiz_setting_modulename_title', 'miquiz'),
-        get_string('miquiz_setting_modulename_helper', 'miquiz'),
-        'Moodle',
-        PARAM_TEXT
-    ));
 
     $settings->add(new admin_setting_configtext(
         'mod_miquiz/instancename',

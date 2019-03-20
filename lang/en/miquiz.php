@@ -18,10 +18,6 @@ $string['miquiz_setting_instanceurl_title'] = 'URL for quiz instance';
 $string['miquiz_setting_instanceurl_helper'] = 'Please add the full url to the quiz instance';
 $string['miquiz_setting_apikey_title'] = 'API key for quiz instance';
 $string['miquiz_setting_apikey_helper'] = 'The API key is necessary to make a connection to the quiz instance.';
-$string['miquiz_setting_loginprovider_title'] = 'Login provider';
-$string['miquiz_setting_loginprovider_helper'] = 'The login provider determines, how the user logs into the quiz instance.';
-$string['miquiz_setting_modulename_title'] = 'Module name';
-$string['miquiz_setting_modulename_helper'] = 'Name of the module in the quiz instance that groups all the Moodle content.';
 $string['miquiz_setting_instancename_title'] = 'Instance name';
 $string['miquiz_setting_instancename_helper'] = 'Name of the quiz instance how it is used in Moodle';
 $string['miquiz_setting_questiontimetag_title'] = 'Tag name for time to answer';
@@ -68,7 +64,7 @@ $string['miquiz_view_answeredquestions'] = 'Answered questions'; //Beantwortete 
 $string['miquiz_view_statsonlyforfinishedgames'] = 'Finished games only'; //Nur beendete Spiele
 $string['miquiz_view_nodata'] =  'No data available.'; // Es sind noch keine Daten vorhanden
 
-$string['miquiz_view_openlink'] = 'Open ' . $instance_name; //$string['modulename'] &ouml;ffnen
+$string['miquiz_view_openlink'] = 'Open ' . $instance_name; //&ouml;ffnen
 
 $string['description'] = 'Description';
 $string['task_sync_users_name'] = 'Sync quiz users with instance';

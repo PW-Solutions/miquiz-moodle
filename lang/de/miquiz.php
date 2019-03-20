@@ -16,12 +16,8 @@ $string['miquiz_index_noquizselected'] = 'Bitte w&auml;hlen sie mindestens ein Q
 
 $string['miquiz_setting_instanceurl_title'] = 'URL zur Quiz-Instanz';
 $string['miquiz_setting_instanceurl_helper'] = 'Bitte die komplette URL zur Quiz-Instanz angeben, mit der dieses Plugin arbeiten soll';
-$string['miquiz_setting_apikey_title'] = 'API-Key zur  Quiz-Instanz';
+$string['miquiz_setting_apikey_title'] = 'API-Key zur Quiz-Instanz';
 $string['miquiz_setting_apikey_helper'] = 'Der API-Key ist notwendig, um eine Verbindung zu der Quiz-Instanz aufbauen zu können.';
-$string['miquiz_setting_loginprovider_title'] = 'Login-Provider';
-$string['miquiz_setting_loginprovider_helper'] = 'Der Login-Provider legt fest, wie die User sich in der Quiz-Instanz einloggen.';
-$string['miquiz_setting_modulename_title'] = 'Modulname';
-$string['miquiz_setting_modulename_helper'] = 'Name des Modules in der Quiz-Instanz, in der alle Moodle-Inhalte gruppiert werden.';
 $string['miquiz_setting_instancename_title'] = 'Instanzname';
 $string['miquiz_setting_instancename_helper'] = 'Name der Quiz-Instanz, wie er in Moodle verwendet wird.';
 $string['miquiz_setting_questiontimetag_title'] = 'Tagname für Beantwortungszeit';

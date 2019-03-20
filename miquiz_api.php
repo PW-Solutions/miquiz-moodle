@@ -470,36 +470,32 @@ class miquiz
         //sync with db
         $activity_users = $DB->get_records('miquiz_users', array('quizid' => $miquiz->id));
 
-        //create users not existing in mi-quiz
-        // TODO: do not compare with loginprovider, as api/users only returns users for the current loginprovider
-        $miquiz_user = miquiz::api_get("api/users?fields[users]=id,externalLogin,externalProvider");
-        $miquiz_user_dirty = false;
-        foreach ($enrolled as $a_user) {
+        // Create users not existing in mi-quiz
+        $miquiz_users = miquiz::api_get('api/users?fields[users]=id,externalLogin');
+        $miquiz_users_dirty = false;
+        foreach ($enrolled as $user) {
+            $username = $user->username;
             if (defined('CLI_SCRIPT') && CLI_SCRIPT === true) {
-                cli_write("    $a_user->username");
+                cli_write("    $username");
             } else {
-                echo " $a_user->username";
+                echo " $username";
             }
             $found = false;
-            foreach ($miquiz_user as $a_miquiz_user) {
-                if ($a_miquiz_user["externalLogin"] == $a_user->username &&
-                   $a_miquiz_user["externalProvider"] == get_config('mod_miquiz', 'loginprovider')) {
+            foreach ($miquiz_users as $miquiz_user) {
+                if ($miquiz_user['externalLogin'] === $username) {
                     $found = true;
                     break;
                 }
             }
             if (!$found) {
                 try {
-                    $resp = miquiz::api_post("api/users", array("login" => get_config('mod_miquiz', 'loginprovider') . '_' . $a_user->username,
-                                                            "role" => "standard",
-                                                            "externalProvider" => get_config('mod_miquiz', 'loginprovider'),
-                                                            "externalLogin" => $a_user->username));
+                    $resp = miquiz::api_post('api/users', ['externalLogin' => $username]);
                     if (defined('CLI_SCRIPT') && CLI_SCRIPT === true) {
                         cli_write(" synced\n");
                     } else {
                         echo " synced<br>";
                     }
-                    $miquiz_user_dirty = true;
+                    $miquiz_users_dirty = true;
                 } catch (Exception $e) {
                     echo $e->getMessage();
                 }
@@ -513,8 +509,8 @@ class miquiz
         }
 
         // call again to get ids for new users
-        if ($miquiz_user_dirty) {
-            $miquiz_user = miquiz::api_get("api/users?fields[users]=id,externalLogin,externalProvider");
+        if ($miquiz_users_dirty) {
+            $miquiz_users = miquiz::api_get("api/users?fields[users]=id,externalLogin");
         }
 
         //create non existing user links
@@ -553,7 +549,7 @@ class miquiz
         // send patch to miquiz to update user links
         $user_patch = array();
         foreach ($enrolled as $a_user) {
-            $a_user_id = miquiz::get_user_id($a_user->username, $miquiz_user);
+            $a_user_id = miquiz::get_user_id($a_user->username, $miquiz_users);
             $user_patch[] = ["type" => "users", "id" => (string)$a_user_id];
         }
         $resp = miquiz::api_post(

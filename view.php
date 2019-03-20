@@ -99,7 +99,7 @@ $score_duel = 0;
 $score_training_correct = 0;
 $score_duel_correct = 0;
 $user_stats = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/user-stats");
-$user_obj = miquiz::api_get("api/users?fields[users]=id,externalLogin,externalProvider");
+$user_obj = miquiz::api_get("api/users?fields[users]=id,externalLogin");
 $resp = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/stats");
 $answeredQuestions_training_total = $resp["answeredQuestions"]["training"]["total"];
 $answeredQuestions_training_correct = $resp["answeredQuestions"]["training"]["correct"];
@@ -185,7 +185,7 @@ echo $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/view', arra
     'statsonlyforfinishedgames' => $miquiz->statsonlyforfinishedgames,
     'i18n_miquiz_view_statsonlyforfinishedgames' => get_string('miquiz_view_statsonlyforfinishedgames', 'miquiz'),
     'i18n_miquiz_view_answeredquestions' => get_string('miquiz_view_answeredquestions', 'miquiz'),
-    'i18n_miquiz_view_nodata' => get_string('miquiz_view_nodata', 'miquiz'),    
+    'i18n_miquiz_view_nodata' => get_string('miquiz_view_nodata', 'miquiz'),
     'i18n_miquiz_view_numquestions' => get_string('miquiz_view_numquestions', 'miquiz'),
     'i18n_miquiz_view_numquestions' => get_string('miquiz_view_numquestions', 'miquiz'),
     'numquestions' => count($DB->get_records('miquiz_questions', array('quizid' => $miquiz->id))),
