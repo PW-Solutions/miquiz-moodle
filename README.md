@@ -5,6 +5,10 @@ structures like questions and courses to create quizzes in MI-Quiz.
 ## Install plugin in Moodle
 TODO
 
+Make sure to enable web services and the external service `moodle_mobile_app`,
+so that MI-Quiz can authenticate users with Moodle credentials. See:
+`/admin/webservice/service.php?id=1` and `/admin/search.php?query=enablewebservices`.
+
 ## Development
 
 This repository comes with a ready to use docker configuration to test the plugin (without the connection to MI Quiz).
@@ -17,6 +21,9 @@ This repository comes with a ready to use docker configuration to test the plugi
 **Important:** To perform the initial moodle installation with this plugin already imported, we
 have to temporary comment out the lines in `lang\{en|de}\miquiz.php` where `get_config` is called,
 as Moodle tries to get the config value from the database before any tables are created.
+
+### Reset DB
+`docker-compose down -v`
 
 ### Cron
 There is no cron-job configured in the docker image (yet). To perform the Moodle cron job, execute
