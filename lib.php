@@ -49,6 +49,7 @@ function miquiz_update_instance($miquiz)
     $miquiz_fresh->name = $miquiz->name;
     $miquiz_fresh->short_name = $miquiz->short_name;
     $miquiz_fresh->questions = $miquiz->questions;
+    $miquiz_fresh->statsonlyforfinishedgames = $miquiz->statsonlyforfinishedgames;
 
     $updateResponse = [];
     try {
