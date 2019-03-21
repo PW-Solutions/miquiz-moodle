@@ -2,10 +2,10 @@
 
 require('../../config.php');
 require_once("lib.php");
- 
+
 
 $id = required_param('id', PARAM_INT);           // Course Module ID
- 
+
 // Ensure that the course specified is valid
 if (!$course = $DB->get_record('course', array('id'=> $id))) {
     print_error('Course ID is incorrect');
@@ -37,12 +37,14 @@ foreach($res as $a_cm_entry){
     $resp = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/stats");
     $answeredQuestions_training_total = $resp["answeredQuestions"]["training"]["total"];
     $answeredQuestions_training_correct = $resp["answeredQuestions"]["training"]["correct"];
+    $answeredQuestions_training_wrong = $answeredQuestions_training_total - $answeredQuestions_training_correct;
     $answeredQuestions_duel_total = $resp["answeredQuestions"]["duel"]["total"];
     $answeredQuestions_duel_correct = $resp["answeredQuestions"]["duel"]["correct"];
-    
-    $answeredQuestions_total = number_format($answeredQuestions_training_total+$answeredQuestions_duel_total, 0);
-    $answeredQuestions_correct = number_format($answeredQuestions_training_correct+$answeredQuestions_duel_correct, 0);
-    $answeredQuestions_wrong = number_format($answeredQuestions_total-$answeredQuestions_correct, 0);
+    $answeredQuestions_duel_wrong = $answeredQuestions_duel_total - $answeredQuestions_duel_correct;
+
+    $answeredQuestions_total = number_format($answeredQuestions_training_total + $answeredQuestions_duel_total, 0);
+    $answeredQuestions_correct = number_format($answeredQuestions_training_correct + $answeredQuestions_duel_correct, 0);
+    $answeredQuestions_wrong = number_format($answeredQuestions_training_wrong + $answeredQuestions_duel_wrong, 0);
 
     $miquizzes[] = [
         'id' => $a_cm->id,
@@ -52,9 +54,9 @@ foreach($res as $a_cm_entry){
         'num_questions' => count($DB->get_records('miquiz_questions', array('quizid' => $miquiz->id))),
         'num_questions_with_reports' => count(miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/reports")),
         'status' => $status,
-        'answeredQuestions_total' => $answeredQuestions_total,
-        'answeredQuestions_correct' => $answeredQuestions_correct,
-        'answeredQuestions_wrong' => $answeredQuestions_wrong,
+        'answeredQuestions_total' => "$answeredQuestions_total ($answeredQuestions_training_total / $answeredQuestions_duel_total)",
+        'answeredQuestions_correct' => "$answeredQuestions_correct ($answeredQuestions_training_correct / $answeredQuestions_duel_correct)",
+        'answeredQuestions_wrong' => "$answeredQuestions_wrong ($answeredQuestions_training_wrong / $answeredQuestions_duel_wrong)",
         'miquizcategoryid' => $miquiz->miquizcategoryid,
     ];
 }
@@ -68,7 +70,7 @@ if (isset($_GET['download_categories'])) {
             if($row['miquizcategoryid'] == $miquizcategoryid){
                 $found = true;
             }
-        } 
+        }
         if(!$found)
             die();
     }
@@ -84,18 +86,18 @@ $PAGE->set_url($url);
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('miquiz_index_title', 'miquiz'));
 
-$quiz_table_headings = [['name' => '<i class="icon fa fa-download fa-fw " aria-hidden="true" aria-label=""></i>'], 
-                        ['name' => get_string('miquiz_view_name', 'miquiz')], 
-                        ['name' => get_string('miquiz_create_assesstimestart', 'miquiz')], 
-                        ['name' => get_string('miquiz_create_assesstimefinish', 'miquiz')], 
-                        ['name' => get_string('miquiz_view_numquestions', 'miquiz')], 
-                        ['name' => get_string('miquiz_index_reports', 'miquiz')], 
-                        ['name' => get_string('miquiz_index_table_status', 'miquiz')], 
-                        ['name' => get_string('miquiz_view_numquestions', 'miquiz')], 
-                        ['name' => get_string('miquiz_cockpit_correct', 'miquiz')], 
+$quiz_table_headings = [['name' => '<i class="icon fa fa-download fa-fw " aria-hidden="true" aria-label=""></i>'],
+                        ['name' => get_string('miquiz_view_name', 'miquiz')],
+                        ['name' => get_string('miquiz_create_assesstimestart', 'miquiz')],
+                        ['name' => get_string('miquiz_create_assesstimefinish', 'miquiz')],
+                        ['name' => get_string('miquiz_view_numquestions', 'miquiz')],
+                        ['name' => get_string('miquiz_index_reports', 'miquiz')],
+                        ['name' => get_string('miquiz_index_table_status', 'miquiz')],
+                        ['name' => get_string('miquiz_view_numquestions', 'miquiz')],
+                        ['name' => get_string('miquiz_cockpit_correct', 'miquiz')],
                         ['name' => get_string('miquiz_cockpit_incorrect', 'miquiz')]];
 
-$quiz_table_body = [];    
+$quiz_table_body = [];
 foreach($miquizzes as $row) {
     array_push($quiz_table_body, array(
         "miquizcategoryid" => $row['miquizcategoryid'],
@@ -119,14 +121,14 @@ echo $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/index', arr
 
 $PAGE->requires->js_amd_inline('$("#datatable").DataTable();');
 $downloadjs = 'generateAndFollowDownloadLink = function(){
-    var downloadids = Array(); 
+    var downloadids = Array();
     $("input:checkbox[name=add2download]:checked").each(function(){
         downloadids.push($(this).val());
-    }); 
+    });
     if(downloadids.length == 0){
-        alert("'.get_string('miquiz_index_noquizselected', 'miquiz').'"); 
+        alert("'.get_string('miquiz_index_noquizselected', 'miquiz').'");
         return;
-    }   
+    }
     window.location = "'.$url.'&download_categories="+downloadids;
 };';
 $PAGE->requires->js_amd_inline($downloadjs);
