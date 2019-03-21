@@ -403,17 +403,29 @@ class miquiz
         }
     }
 
-    public static function scheduleTasks($miquiz)
+    public static function getCurrentStateForQuiz($miquiz)
     {
+        $stateTimestamps = self::getStateTimestampsForQuiz($miquiz);
         $currentTime = time();
-        $categoryId = (string) $miquiz->miquizcategoryid;
+        return self::getStateAtTimestamp($stateTimestamps, $currentTime);
+    }
 
-        $stateTimestamps = [
+    private static function getStateTimestampsForQuiz($miquiz)
+    {
+        return [
             'not_started' => 0,
             'training' => $miquiz->assesstimestart,
             'productive' => $miquiz->timeuntilproductive,
             'finished' => $miquiz->assesstimefinish,
         ];
+    }
+
+    public static function scheduleTasks($miquiz)
+    {
+        $currentTime = time();
+        $categoryId = (string) $miquiz->miquizcategoryid;
+
+        $stateTimestamps = self::getStateTimestampsForQuiz($miquiz);
 
         $scoreModes = [
             1 => 'rating_without_demerit',

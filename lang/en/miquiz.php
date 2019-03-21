@@ -70,7 +70,7 @@ $string['miquiz_view_sync_questions'] = 'Sync questions';
 $string['description'] = 'Description';
 $string['task_sync_users_name'] = 'Sync quiz users with instance';
 
-$string['miquiz_status_inactive'] = 'Inactive';
+$string['miquiz_status_not_started'] = 'Inactive';
 $string['miquiz_status_training'] = 'Training';
 $string['miquiz_status_productive'] = 'Productive';
 $string['miquiz_status_finished'] = 'Finished';

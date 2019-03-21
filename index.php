@@ -30,16 +30,9 @@ foreach($res as $a_cm_entry){
     $reports = [];
     $resp = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/reports");
 
-    $now = new DateTime("now");
-    if($miquiz->assesstimestart < $now){           
-        $status = get_string('miquiz_status_inactive', 'miquiz');
-    } elseif($miquiz->timeuntilproductive < $now){
-        $status = get_string('miquiz_status_training', 'miquiz');
-    } elseif($miquiz->assesstimefinish < $now){
-        $status = get_string('miquiz_status_productive', 'miquiz');
-    } else{
-        $status = get_string('miquiz_status_finished', 'miquiz');
-    }
+    $now = time();
+    $currentState = miquiz::getCurrentStateForQuiz($miquiz);
+    $status = get_string('miquiz_status_' . $currentState, 'miquiz');
 
     $resp = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/stats");
     $answeredQuestions_training_total = $resp["answeredQuestions"]["training"]["total"];
