@@ -1,5 +1,20 @@
-<h3>{{intro}}</h3></br>
-<form action="{{miquizurl}}" target="_blanc"><input class="btn btn-primary" id="id_tomiquizbutton" type="submit" value="{{i18n_miquiz_view_openlink}}"></form>
+<h3>{{ intro }}</h3>
+
+<script type="text/javascript">
+  function miquizSyncQuestions() {
+    var button = document.querySelector('#btn-sync-questions');
+    if (!button) {
+      return;
+    }
+    button.disabled = true;
+    $.getJSON('{{ url }}&queue_adhoc_task=sync_questions', function (response) {
+      button.disabled = false;
+      if (!response.success) {
+        console.warn('Sync of questions did not succeed!', response.error);
+      }
+    });
+  }
+</script>
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/2.7.0/svg.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.6/vue.min.js"></script>
@@ -98,7 +113,13 @@
 }
 </style>
 
-<br/><div class="container"><div class="row">
+<div class="clearfix">
+  <form action="{{miquizurl}}" target="_blank" class="pull-left"><input class="btn btn-primary" id="id_tomiquizbutton" type="submit" value="{{i18n_miquiz_view_openlink}}"></form>
+  <button onclick="miquizSyncQuestions()" id="btn-sync-questions" class="pull-right btn btn-primary">{{ i18n_miquiz_sync_questions }}</button>
+</div><br>
+
+<div class="container">
+<div class="row">
 <div class="col-sm-9"><h4><b>{{i18n_miquiz_view_shortname}}</b>: {{short_name}}</h4></div>
 <div class="col-sm-4">
 
@@ -214,7 +235,7 @@ var app = new Vue({
 <script type="text/javascript">
 if({{answeredQuestions_correct}}+{{answeredQuestions_wrong}} > 0){
   document.querySelector("#piechartbox").innerHTML+='<svg id="piechart"></svg>';
-  
+
   var data = [{
         "label": "{{i18n_miquiz_cockpit_correct}}",
             "value" : {{answeredQuestions_correct}},
@@ -238,7 +259,6 @@ if({{answeredQuestions_correct}}+{{answeredQuestions_wrong}} > 0){
     });
 } else {
   document.querySelector("#piechartbox").innerHTML+="<div>{{i18n_miquiz_view_nodata}}</div>";
-  console.log('hi');
 }
 </script>
 
@@ -272,7 +292,7 @@ if({{answeredQuestions_correct}}+{{answeredQuestions_wrong}} > 0){
 <th class="th-sm">{{i18n_miquiz_view_statistics_answeredquestionsabs}}</th>
 <th class="th-sm">{{i18n_miquiz_view_statistics_answeredquestionsrel}}</th>
 <th class="th-sm">{{i18n_miquiz_view_statistics_totalscore}}</th>
-</thead><tbody> 
+</thead><tbody>
 {{#user_stats}}
     <tr>
     <td>{{username}}</td>

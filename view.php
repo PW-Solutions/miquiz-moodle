@@ -31,6 +31,30 @@ if ($is_manager && isset($_GET['download'])) {
     die();
 }
 
+if ($is_manager && isset($_GET['queue_adhoc_task'])) {
+    header('Content-Type: application/json');
+    $taskToQueue = $_GET['queue_adhoc_task'];
+    if ($taskToQueue === 'sync_questions') {
+        $task = new \mod_miquiz\task\sync_questions();
+        $task->set_custom_data(['activities' => [$miquiz->id]]);
+    }
+
+    if (!is_null($task)) {
+        // \core\task\manager::queue_adhoc_task($task);
+        try {
+            $task->execute();
+            $result = ['success' => true, 'queued_task' => $taskToQueue];
+        } catch (\Exception $e) {
+            $result = ['success' => false, 'queued_task' => $taskToQueue, 'error' => $e->getMessage()];
+        }
+    } else {
+        $result = ['success' => false, 'queued_task' => $taskToQueue, 'error' => 'No valid task provided'];
+    }
+
+    echo json_encode($result);
+    die();
+}
+
 echo $OUTPUT->header();
 
 $categories_dto = array();
@@ -169,6 +193,7 @@ echo $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/view', arra
     'intro' => $miquiz->intro,
     'miquizurl' => $miquizurl,
     'i18n_miquiz_view_openlink' => get_string('miquiz_view_openlink', 'miquiz'),
+    'i18n_miquiz_sync_questions' => get_string('miquiz_view_sync_questions', 'miquiz'),
     'i18n_miquiz_view_shortname' => get_string('miquiz_view_shortname', 'miquiz'),
     'short_name' => $miquiz->short_name,
     'i18n_miquiz_status_training' => get_string('miquiz_status_training', 'miquiz'),

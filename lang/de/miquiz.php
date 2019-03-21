@@ -65,6 +65,7 @@ $string['miquiz_view_statsonlyforfinishedgames'] = 'Nur beendete Spiele';
 $string['miquiz_view_nodata'] =  'Es sind noch keine Daten vorhanden.';
 
 $string['miquiz_view_openlink'] =  $instance_name . ' &ouml;ffnen';
+$string['miquiz_view_sync_questions'] = 'Fragen synchronisieren';
 
 $string['miquiz_status_inactive'] = 'Inaktiv';
 $string['miquiz_status_training'] = 'Training';

@@ -65,6 +65,7 @@ $string['miquiz_view_statsonlyforfinishedgames'] = 'Finished games only'; //Nur 
 $string['miquiz_view_nodata'] =  'No data available.'; // Es sind noch keine Daten vorhanden
 
 $string['miquiz_view_openlink'] = 'Open ' . $instance_name; //&ouml;ffnen
+$string['miquiz_view_sync_questions'] = 'Sync questions';
 
 $string['description'] = 'Description';
 $string['task_sync_users_name'] = 'Sync quiz users with instance';
