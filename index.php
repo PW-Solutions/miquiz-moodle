@@ -12,7 +12,7 @@ if (!$course = $DB->get_record('course', array('id'=> $id))) {
 }
 
 // retrieve all quiz cm's from db
-$sql = "select cm.id, m.name, cm.instance from {modules} m, {course_modules} cm where name='miquiz' and cm.module=m.id and cm.course = '".$id."' and cm.id in (SELECT cs.sequence FROM {course_sections} cs where cs.course = '".$id."')";
+$sql = "select cm.id, m.name, cm.instance from {modules} m inner join {course_modules} cm on (cm.module=m.id) where name='miquiz' and cm.course = '$id'";
 $res = $DB->get_records_sql($sql);
 
 require_course_login($course, true, get_coursemodule_from_id('miquiz',$res[array_keys($res)[0]]->id, 0, false, MUST_EXIST));
