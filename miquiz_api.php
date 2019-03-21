@@ -68,7 +68,8 @@ class miquiz
     {
         $crl = miquiz::api_get_base_crl($endpoint);
         curl_setopt($crl, CURLOPT_HTTPGET, true);
-        return miquiz::api_send($endpoint, $crl, $config);
+        $response = miquiz::api_send($endpoint, $crl, $config);
+        return $response;
     }
 
     public static function api_post($endpoint, $data=array(), $config=array())
@@ -113,8 +114,7 @@ class miquiz
 
         $miquiz_qids = [];
         foreach ($questions as $question) {
-            $miQuizQuestion = miquiz::getOrCreateMiQuizQuestion($question, $catid);
-            $miquiz_qids[$question->id] = $miQuizQuestion['id'];
+            $miquiz_qids[$question->id] = miquiz::createOrUpdateMiQuizQuestion($question, $catid);
         }
 
         miquiz::scheduleTasks($miquiz);
@@ -122,7 +122,7 @@ class miquiz
         return ['catid' => $catid, 'qids' => $miquiz_qids];
     }
 
-    private static function getQuestionsById($questionIds)
+    public static function getQuestionsById($questionIds)
     {
         global $DB;
         $filteredQuestionIds = array_filter($questionIds, function ($questionId) {
@@ -134,19 +134,24 @@ class miquiz
         return $DB->get_records_list('question', 'id', $filteredQuestionIds);
     }
 
-    private static function getOrCreateMiQuizQuestion($question, $miQuizCategoryId)
+    public static function createOrUpdateMiQuizQuestion($question, $miQuizCategoryId)
     {
         $miQuizQuestionId = miquiz::getMiQuizQuestionId($question->id);
-        $questionData = miquiz::getQuestionData($question, $miQuizCategoryId);
-        if (is_null($miQuizQuestionId)) {
+        if (is_null($miQuizQuestionId) || !miquiz::miQuizQuestionExistsInMiQuiz($miQuizQuestionId)) {
+            $questionData = miquiz::getQuestionData($question, $miQuizCategoryId);
             $miQuizQuestion = miquiz::createMiQuizQuestion($questionData);
+            $miQuizQuestionId = (int) $miQuizQuestion['id'];
         } else {
-            // Attention: this will overwrite the question in miquiz. Maybe we should add check and if question is different, we create it as new
-            // Difficulty: images are included in moodle question and not in mi quiz question -> comparison complex. Maybe timestamps?
-            $miQuizQuestion = miquiz::updateMiQuizQuestion($questionData, $miQuizQuestionId);
+            $questionUpdateTimestamp = $question->timemodified;
+            if ($questionUpdateTimestamp > miquiz::getMiQuizQuestionRelationTimestamp($question->id)) {
+                $questionData = miquiz::getQuestionData($question, $miQuizCategoryId);
+                // Attention: this will overwrite the question in miquiz. Maybe we should add check and if question is different, we create it as new
+                // Difficulty: images are included in moodle question and not in mi quiz question -> comparison complex. Maybe timestamps?
+                miquiz::updateMiQuizQuestion($questionData, $miQuizQuestionId);
+                miquiz::updateMiQuizQuestionRelationTimestamp($question->id);
+            }
         }
-        $miQuizQuestion['id'] = (int) $miQuizQuestion['id'];
-        return $miQuizQuestion;
+        return $miQuizQuestionId;
     }
 
     private static function getMiQuizQuestionId($questionId, $activityId = null)
@@ -174,8 +179,34 @@ class miquiz
             return [];
         }
         return array_map(function ($question) {
-            return $question->miquizquestionid;
+            return (int) $question->miquizquestionid;
         }, $existingQuestions);
+    }
+
+    private static function getMiQuizQuestionRelationTimestamp($questionId)
+    {
+        global $DB;
+        if (is_null($questionId)) {
+            return;
+        }
+        $select = 'questionid = ' . $questionId;
+        $existingQuestions = $DB->get_records_select('miquiz_questions', $select);
+        if (empty($existingQuestions)) {
+            return;
+        }
+        // Return only for the first, because the creation timestamp should be roughly the same for all
+        return array_values($existingQuestions)[0]->timecreated;
+    }
+
+    private static function updateMiQuizQuestionRelationTimestamp($questionId)
+    {
+        global $DB;
+        if (is_null($questionId)) {
+            return;
+        }
+        $query = 'update {miquiz_questions} set timecreated = ' . time() . ' where questionid = ' . $questionId;
+        $result = $DB->execute($query);
+        return $result;
     }
 
     private static function getQuestionData($question, $miQuizCategoryId)
@@ -215,6 +246,21 @@ class miquiz
     {
         $response = miquiz::api_put('api/questions/' . $miQuizQuestionId, $questionData);
         return $response['question'];
+    }
+
+    private static function miQuizQuestionExistsInMiQuiz($miQuizQuestionId)
+    {
+        return !is_null(miquiz::getMiQuizQuestion($miQuizQuestionId));
+    }
+
+    private static function getMiQuizQuestion($miQuizQuestionId)
+    {
+        try {
+            $miQuizQuestion = miquiz::api_get('api/questions/' . $miQuizQuestionId);
+        } catch (Exception $e) {
+            return;
+        }
+        return $miQuizQuestion;
     }
 
     public static function addImage($string, $contextId, $component, $filearea, $objectId)
@@ -277,8 +323,7 @@ class miquiz
         $questionsToAdd = miquiz::getQuestionsById($questionIdsToAdd);
         $mappedMiQuizQuestionIds = [];
         foreach ($questionsToAdd as $question) {
-            $miQuizQuestion = miquiz::getOrCreateMiQuizQuestion($question, $miQuizCategoryId);
-            $mappedMiQuizQuestionIds[$question->id] = $miQuizQuestion['id'];
+            $mappedMiQuizQuestionIds[$question->id] = miquiz::createOrUpdateMiQuizQuestion($question, $miQuizCategoryId);
         }
 
         $questionIdsToRemove = array_diff($existingQuestionIds, $newQuestionIds);
@@ -331,7 +376,7 @@ class miquiz
     public static function forceDelete($miquiz)
     {
         if (empty($miquiz) || empty($miquiz->miquizcategoryid)) {
-            error_log('miquiz: forceDelelte failed. no categoryId found');
+            error_log('miquiz: forceDelete failed. no categoryId found');
             return false;
         }
         $categoryId = $miquiz->miquizcategoryid;
@@ -563,7 +608,7 @@ class miquiz
     {
         if (is_null($user_obj)) {
             $user_obj = miquiz::api_get("api/users?fields[users]=id&filter[externalLogin]=$username");
-            }
+        }
         if (count($user_obj) > 0 && isset($user_obj[0]['id'])) {
             return $user_obj[0]['id'];
         }
@@ -574,7 +619,7 @@ class miquiz
     {
         if (is_null($user_obj)) {
             $user_obj = miquiz::api_get("api/users?fields[users]=externalLogin&filter[id]=$id");
-            }
+        }
         if (count($user_obj) > 0 && isset($user_obj[0]['externalLogin'])) {
             return $user_obj[0]['externalLogin'];
         }
