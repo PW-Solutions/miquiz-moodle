@@ -29,4 +29,4 @@ echo "<? phpinfo();" > /var/www/htdocs/info.php &&\
 echo "\nini_set ('display_errors', 'on');\nini_set ('log_errors', 'on');\nini_set ('display_startup_errors', 'on');\nini_set ('error_reporting', E_ALL);\n\$CFG->debug = 30719; // DEBUG_ALL, but that constant is not defined here." >> /var/www/htdocs/config.php
 
 # Fileinfo from startup_db
-COPY pix/icon.png /var/www/moodledata/filedir/d2/cb/d2cbcf06c8485af6bf3ef9f486fbec4b713642f5
+COPY --chown=www-data:www-data pix/icon.png /var/www/moodledata/filedir/d2/cb/d2cbcf06c8485af6bf3ef9f486fbec4b713642f5
