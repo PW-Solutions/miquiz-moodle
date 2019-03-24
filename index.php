@@ -4,23 +4,26 @@ require('../../config.php');
 require_once("lib.php");
 
 
-$id = required_param('id', PARAM_INT);           // Course Module ID
+$id = required_param('id', PARAM_INT);           // Course ID
 
 // Ensure that the course specified is valid
 if (!$course = $DB->get_record('course', array('id'=> $id))) {
     print_error('Course ID is incorrect');
 }
 
-// retrieve all quiz cm's from db
-$sql = "select cm.id, m.name, cm.instance from {modules} m inner join {course_modules} cm on (cm.module=m.id) where name='miquiz' and cm.course = '$id'";
-$res = $DB->get_records_sql($sql);
+$url = new moodle_url('/mod/miquiz/index.php', array('id'=>$id));
+$PAGE->set_url($url);
 
-require_course_login($course, true, get_coursemodule_from_id('miquiz',$res[array_keys($res)[0]]->id, 0, false, MUST_EXIST));
+require_login($course);
 
 //check if user has permissions to administrate course
 $context = context_course::instance($id);
 $is_manager =  has_capability('moodle/course:manageactivities', $context);
 if(!$is_manager) die();
+
+// retrieve all quiz cm's from db
+$sql = "select cm.id, m.name, cm.instance from {modules} m inner join {course_modules} cm on (cm.module=m.id) where name='miquiz' and cm.course = '$id'";
+$res = $DB->get_records_sql($sql);
 
 $miquizzes = [];
 foreach($res as $a_cm_entry){
@@ -79,9 +82,6 @@ if (isset($_GET['download_categories'])) {
     echo miquiz::api_get("api/categories/download?categories=".$data, ['return_raw' => true]);
     die();
 }
-
-$url = new moodle_url('/mod/miquiz/index.php', array('id'=>$id));
-$PAGE->set_url($url);
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('miquiz_index_title', 'miquiz'));
