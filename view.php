@@ -217,7 +217,7 @@ echo $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/view', arra
     'url' => $url,
     'i18n_miquiz_index_download' => get_string('miquiz_index_download', 'miquiz'),
     'i18n_miquiz_cockpit_correct' => get_string('miquiz_cockpit_correct', 'miquiz'),
-    'i18_nmiquiz_cockpit_incorrect' => get_string('miquiz_cockpit_incorrect', 'miquiz'),
+    'i18n_nmiquiz_cockpit_incorrect' => get_string('miquiz_cockpit_incorrect', 'miquiz'),
     'answeredQuestions_correct' => $answeredQuestions_correct,
     'answeredQuestions_wrong' => $answeredQuestions_wrong,
     'i18n_miquiz_view_questions' => get_string('miquiz_view_questions', 'miquiz'),

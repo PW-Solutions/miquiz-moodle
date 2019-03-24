@@ -22,7 +22,7 @@
     }
     /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
     .caret-down::before {
-        transform: rotate(90deg); 
+        transform: rotate(90deg);
     }
     /* Hide the nested list */
     .nested {
@@ -39,7 +39,7 @@
     .categorycheckbox {
         padding-bottom: 0px;
         margin-top: 2px;
-    }           
+    }
     .questionlabel {
         display: flex;
         align-items: center;
@@ -54,7 +54,7 @@
         margin-top: 5px;
     }
 </style>
-<input type="text" id="questionsearch" size="15" onkeyup="updatequestionview(undefined);" placeholder="{{i18n_miquiz_create_questions_search}}"></input> 
+<input type="text" id="questionsearch" size="15" onkeyup="updatequestionview(undefined);" placeholder="{{{ i18n_miquiz_create_questions_search }}}"></input>
 <ul class="questionul">
 {{#categories}}
 <li><div class="questiondiv"><span class="caret"></span><label class="questionlabel"><input type="checkbox" onclick="updatequestionview(this);" class="categorycheckbox"> {{category_name}}</label></div><ul class="nested">
@@ -107,9 +107,9 @@ updatequestionview = function(el, init){
         else
             questioninputs[i].parentElement.parentElement.style.display="flex";
     }
-    document.getElementById("questionsstatus").innerText = "{{i18n_miquiz_create_questions_selected}}".replace("${numquestions}", questionids.length);
+    document.getElementById("questionsstatus").innerText = "{{{ i18n_miquiz_create_questions_selected }}}".replace("${numquestions}", questionids.length);
     document.querySelector("input[name=questions]").value = questionids;
-  
+
     // update category checkboxes
     if(el!=undefined || init){
         var categoryinputs = document.querySelectorAll(".categorycheckbox");
@@ -121,7 +121,7 @@ updatequestionview = function(el, init){
                     categoryinput_numchecked++;
                 }
             }
-           
+
             if (categoryinput_numchecked == 0){
                 categoryinputs[i].indeterminate = false;
                 categoryinputs[i].checked=false;
@@ -131,9 +131,9 @@ updatequestionview = function(el, init){
             } else if (categoryinput_numchecked > 0){
                 categoryinputs[i].checked=false;
                 categoryinputs[i].indeterminate = true;
-            } 
+            }
         }
     }
 }
-updatequestionview(undefined, true);            
+updatequestionview(undefined, true);
 </script>

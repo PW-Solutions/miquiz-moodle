@@ -114,13 +114,13 @@
 </style>
 
 <div class="clearfix">
-  <form action="{{miquizurl}}" target="_blank" class="pull-left"><input class="btn btn-primary" id="id_tomiquizbutton" type="submit" value="{{i18n_miquiz_view_openlink}}"></form>
-  <button onclick="miquizSyncQuestions()" id="btn-sync-questions" class="pull-right btn btn-primary">{{ i18n_miquiz_sync_questions }}</button>
+  <form action="{{miquizurl}}" target="_blank" class="pull-left"><input class="btn btn-primary" id="id_tomiquizbutton" type="submit" value="{{{ i18n_miquiz_view_openlink }}}"></form>
+  <button onclick="miquizSyncQuestions()" id="btn-sync-questions" class="pull-right btn btn-primary">{{{ i18n_miquiz_sync_questions }}}</button>
 </div><br>
 
 <div class="container">
 <div class="row">
-<div class="col-sm-9"><h4><b>{{i18n_miquiz_view_shortname}}</b>: {{short_name}}</h4></div>
+<div class="col-sm-9"><h4><b>{{{ i18n_miquiz_view_shortname }}}</b>: {{ short_name }}</h4></div>
 <div class="col-sm-4">
 
 <div id="timeline" style="padding-left:10px"></div>
@@ -139,7 +139,7 @@ tooltip_messages = {
   cend_message: '{{#userdate}} {{assesstimefinish}}, %d.%m.%Y %H:%M {{/userdate}}'
 };
 line_offset = 10;
-line_text = ['{{i18n_miquiz_status_training}}', '{{i18n_miquiz_status_productive}}'];
+line_text = ['{{{ i18n_miquiz_status_training }}}', '{{{ i18n_miquiz_status_productive }}}'];
 line_stroke_attr = {color: '#111',
                     width: 3,
                     linecap: 'round'};
@@ -215,17 +215,17 @@ var app = new Vue({
 </script>
 </div>
 
-<div class="col-sm-6" style="text-align:center;"><b>{{i18n_miquiz_view_scoremode}}</b> <br/> {{i18n_miquiz_create_scoremode}}
-{{#statsonlyforfinishedgames}} ({{i18n_miquiz_view_statsonlyforfinishedgames}}){{/statsonlyforfinishedgames}}
+<div class="col-sm-6" style="text-align:center;"><b>{{{ i18n_miquiz_view_scoremode }}}</b> <br/> {{{ i18n_miquiz_create_scoremode }}}
+{{#statsonlyforfinishedgames}} ({{{ i18n_miquiz_view_statsonlyforfinishedgames }}}){{/statsonlyforfinishedgames}}
 </div>
-<div class="col-sm-6" style="text-align:center;;padding-top:10px;"><b>{{i18n_miquiz_view_numquestions}}</b><br/> {{numquestions}}</div>
+<div class="col-sm-6" style="text-align:center;;padding-top:10px;"><b>{{{ i18n_miquiz_view_numquestions }}}</b><br/> {{numquestions}}</div>
 {{#is_manager}}
-    <div class="col-sm-6" style="text-align:center;padding-top:10px;" id="piechartbox"><b>{{i18n_miquiz_view_answeredquestions}}</b><br/></div>
+    <div class="col-sm-6" style="text-align:center;padding-top:10px;" id="piechartbox"><b>{{{ i18n_miquiz_view_answeredquestions }}}</b><br/></div>
 {{/is_manager}}
 
 </div></div>
 {{#is_manager}}
-<a href="{{url}}&download"><i class="icon fa fa-download fa-fw " aria-hidden="true" aria-label=""></i> {{i18n_miquiz_index_download}}</a>
+<a href="{{url}}&download"><i class="icon fa fa-download fa-fw " aria-hidden="true" aria-label=""></i> {{{ i18n_miquiz_index_download }}}</a>
 {{/is_manager}}
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js"></script>
@@ -237,11 +237,11 @@ if({{answeredQuestions_correct}}+{{answeredQuestions_wrong}} > 0){
   document.querySelector("#piechartbox").innerHTML+='<svg id="piechart"></svg>';
 
   var data = [{
-        "label": "{{i18n_miquiz_cockpit_correct}}",
+        "label": "{{{ i18n_miquiz_cockpit_correct }}}",
             "value" : {{answeredQuestions_correct}},
             "color": "green"
         },{
-        "label": "{{i18_nmiquiz_cockpit_incorrect}}",
+        "label": "{{{ i18n_nmiquiz_cockpit_incorrect }}}",
         "value": {{answeredQuestions_wrong}},
         "color": "red"
       }];
@@ -258,12 +258,12 @@ if({{answeredQuestions_correct}}+{{answeredQuestions_wrong}} > 0){
       chart.update();
     });
 } else {
-  document.querySelector("#piechartbox").innerHTML+="<div>{{i18n_miquiz_view_nodata}}</div>";
+  document.querySelector("#piechartbox").innerHTML+="<div>{{{ i18n_miquiz_view_nodata }}}</div>";
 }
 </script>
 
 {{#is_manager}}
-<br/><b data-toggle="collapse" href="#questions_box">{{i18n_miquiz_view_questions}}</b><br/>
+<br/><b data-toggle="collapse" href="#questions_box">{{{ i18n_miquiz_view_questions }}}</b><br/>
 <div class="collapse in" id="questions_box">
 {{#categories}}
     <span class="badge">{{category_name}}</span>
@@ -284,14 +284,14 @@ if({{answeredQuestions_correct}}+{{answeredQuestions_wrong}} > 0){
 {{/categories}}
 </div>
 
-<br/><b data-toggle="collapse" href="#statisticsuser_box">{{i18n_miquiz_view_statistics_user}}</b><br/>
+<br/><b data-toggle="collapse" href="#statisticsuser_box">{{{ i18n_miquiz_view_statistics_user }}}</b><br/>
 <div class="collapse in" id="statisticsuser_box">
 <table id="userdatatable" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
 <thead><tr>
-<th class="th-sm">{{i18n_miquiz_view_statistics_username}}</th>
-<th class="th-sm">{{i18n_miquiz_view_statistics_answeredquestionsabs}}</th>
-<th class="th-sm">{{i18n_miquiz_view_statistics_answeredquestionsrel}}</th>
-<th class="th-sm">{{i18n_miquiz_view_statistics_totalscore}}</th>
+<th class="th-sm">{{{ i18n_miquiz_view_statistics_username }}}</th>
+<th class="th-sm">{{{ i18n_miquiz_view_statistics_answeredquestionsabs }}}</th>
+<th class="th-sm">{{{ i18n_miquiz_view_statistics_answeredquestionsrel }}}</th>
+<th class="th-sm">{{{ i18n_miquiz_view_statistics_totalscore }}}</th>
 </thead><tbody>
 {{#user_stats}}
     <tr>
