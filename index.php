@@ -18,7 +18,7 @@ $res = $DB->get_records_sql($sql);
 require_course_login($course, true, get_coursemodule_from_id('miquiz',$res[array_keys($res)[0]]->id, 0, false, MUST_EXIST));
 
 //check if user has permissions to administrate course
-$context = context_module::instance($course->id);
+$context = context_course::instance($id);
 $is_manager =  has_capability('moodle/course:manageactivities', $context);
 if(!$is_manager) die();
 
