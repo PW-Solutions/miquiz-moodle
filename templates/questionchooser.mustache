@@ -92,7 +92,7 @@ updatequestionview = function(el, init){
 
     // on init retrieve questionids from hidden field
     if(init) {
-        questionids = document.querySelector("input[name=questions]").value.split(',');
+        questionids = document.querySelector("input[name=questions]").value.split(',').filter(Number);
     }
 
     // sync hidden field and question checkboxes

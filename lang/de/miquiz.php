@@ -45,7 +45,7 @@ $string['miquiz_create_error_endbeforestart'] = 'Das Quiz Enddatum muss später 
 $string['miquiz_create_error_betweenendstart'] = 'Das Enddatum der Testphase muss zwischen dem Quiz Start- und Enddatum sein.';
 $string['miquiz_create_statsonlyforfinishedgames'] = 'Nur beendete Spiele in Statistiken ber&uuml;cksichtigen.';
 $string['miquiz_create_statsonlyforfinishedgames_help'] = 'Wenn diese Option aktiv ist werden in den Statistiken nur beendete Spiele ber&uuml;cksichtigt. Dies umfasst unter Anderem die Punktvergabe und die Berechnung der beantworten Fragen.';
-
+$string['miquiz_create_duelmode_in_productive'] = 'Duele in der Testphase zulassen.';
 
 $string['miquiz_view_overview'] = '&Uuml;bersicht';
 $string['miquiz_view_shortname'] = 'Abk&uuml;rzung';
