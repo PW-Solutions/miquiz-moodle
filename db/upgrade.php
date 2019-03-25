@@ -8,19 +8,23 @@ function xmldb_miquiz_upgrade($oldversion) {
     if ($oldversion < 2019022308) {
         $table = new xmldb_table('miquiz');
         $field = new xmldb_field('statsonlyforfinishedgames');
-        $field->set_attributes(XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 1); 
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        $table = new xmldb_table('miquiz');
-        $field = new xmldb_field('duelmode_in_productive');
-        $field->set_attributes(XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 1); 
+        $field->set_attributes(XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 1);
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
         upgrade_plugin_savepoint(true, 2019022308, 'mod', 'miquiz');
+    }
+
+    if ($oldversion < 2019032510) {
+        $table = new xmldb_table('miquiz');
+        $field = new xmldb_field('has_training_phase');
+        $field->set_attributes(XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 1);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2019032510, 'mod', 'miquiz');
     }
 
     return true;

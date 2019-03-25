@@ -27,7 +27,7 @@ $string['miquiz_setting_questiondefaulttime_helper'] = 'Falls für eine Frage ke
 
 $string['miquiz_create_name'] = 'Quiz Name';
 $string['miquiz_create_short_name'] = 'Abk&uuml;rzung';
-$string['miquiz_create_timeuntilproductive'] = 'Ende der Testphase';
+$string['miquiz_create_timeuntilproductive'] = 'Ende der Trainingsphase';
 $string['miquiz_create_scoremode'] = 'Bewertungsmodus';
 $string['miquiz_create_scoremode_0'] = 'keine Punktvergabe';
 $string['miquiz_create_scoremode_1'] = 'einfache Punktvergabe ohne Minuspunkte';
@@ -42,10 +42,11 @@ $string['miquiz_create_assesstimestart'] = 'Quiz Startdatum';
 $string['miquiz_create_assesstimefinish'] = 'Quiz Enddatum';
 $string['miquiz_create_error_unique'] = 'Diese Abk&uuml;rzung muss einmalig sein.';
 $string['miquiz_create_error_endbeforestart'] = 'Das Quiz Enddatum muss später als das Quiz Startdatum sein.';
-$string['miquiz_create_error_betweenendstart'] = 'Das Enddatum der Testphase muss zwischen dem Quiz Start- und Enddatum sein.';
+$string['miquiz_create_error_betweenendstart'] = 'Das Enddatum der Trainingsphase muss zwischen dem Quiz Start- und Enddatum sein.';
 $string['miquiz_create_statsonlyforfinishedgames'] = 'Nur beendete Spiele in Statistiken ber&uuml;cksichtigen.';
 $string['miquiz_create_statsonlyforfinishedgames_help'] = 'Wenn diese Option aktiv ist werden in den Statistiken nur beendete Spiele ber&uuml;cksichtigt. Dies umfasst unter Anderem die Punktvergabe und die Berechnung der beantworten Fragen.';
-$string['miquiz_create_duelmode_in_productive'] = 'Duele in der Testphase zulassen.';
+$string['miquiz_create_activate_training_phase'] = 'Trainingsphase aktivieren';
+$string['miquiz_create_activate_training_phase_help'] = 'Während der Trainingsphase sind nur Einzelspiele möglich (Training) und es werden keine Puntke vergeben.';
 
 $string['miquiz_view_overview'] = '&Uuml;bersicht';
 $string['miquiz_view_shortname'] = 'Abk&uuml;rzung';

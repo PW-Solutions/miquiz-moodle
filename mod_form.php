@@ -56,9 +56,15 @@ class mod_miquiz_mod_form extends moodleform_mod
         $mform->addHelpButton('statsonlyforfinishedgames', 'miquiz_create_statsonlyforfinishedgames', 'miquiz');
 
         $mform->addElement('date_time_selector', 'assesstimestart', get_string('miquiz_create_assesstimestart', 'miquiz'));
+
+        $mform->addElement('advcheckbox', 'has_training_phase', get_string('miquiz_create_activate_training_phase', 'miquiz'));
+        $mform->setDefault('has_training_phase', '1');
+        $mform->addHelpButton('has_training_phase', 'miquiz_create_activate_training_phase', 'miquiz');
         $mform->addElement('date_time_selector', 'timeuntilproductive', get_string('miquiz_create_timeuntilproductive', 'miquiz'));
+        $mform->disabledIf('timeuntilproductive', 'has_training_phase');
+
         $mform->addElement('date_time_selector', 'assesstimefinish', get_string('miquiz_create_assesstimefinish', 'miquiz'));
-        $mform->addElement('advcheckbox', 'duelmodus_in_productive', get_string('miquiz_create_duelmodus_in_productive', 'miquiz'));
+
 
         $this->standard_intro_elements(get_string('description', 'miquiz'));
 
@@ -159,9 +165,11 @@ class mod_miquiz_mod_form extends moodleform_mod
             $errors['assesstimefinish'] = get_string('miquiz_create_error_endbeforestart', 'miquiz');
         }
 
-        if ($data['timeuntilproductive'] >= $data['assesstimefinish'] ||
-           $data['timeuntilproductive'] < $data['assesstimestart']) {
-            $errors['timeuntilproductive'] = get_string('miquiz_create_error_betweenendstart', 'miquiz');
+        if ($data['has_training_phase']) {
+            if ($data['timeuntilproductive'] >= $data['assesstimefinish'] ||
+               $data['timeuntilproductive'] < $data['assesstimestart']) {
+                $errors['timeuntilproductive'] = get_string('miquiz_create_error_betweenendstart', 'miquiz');
+            }
         }
 
         // Check open and close times are consistent.

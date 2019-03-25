@@ -16,10 +16,10 @@
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" />
         <FIELD NAME="assesstimestart" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="assesstimefinish" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="duelmode_in_productive" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>        
 
         <!-- If this time is over miquiz will be in productive mode-->
         <FIELD NAME="timeuntilproductive" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="has_training_phase" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false"/>
         <FIELD NAME="short_name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
         <!-- If score_mode is:
         0: keine Punktvergabe

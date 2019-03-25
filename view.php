@@ -177,16 +177,13 @@ foreach ($userdata as $username => $a_data) {
     ));
 }
 $now = time();
-$is_notyetstarted = $is_training = $is_productive = $is_finished = false;
-if($miquiz->assesstimestart > $now){
-    $is_notyetstarted = true;
-} elseif($miquiz->timeuntilproductive > $now){
-    $is_training = true;
-} elseif($miquiz->assesstimefinish > $now){
-    $is_productive = true;
-} else{
-    $is_finished = true;
-}
+
+$currentState = miquiz::getCurrentStateForQuiz($miquiz);
+$is_notyetstarted = $currentState === 'not_started';
+$is_training = $currentState === 'training';
+$is_productive = $currentState === 'productive';
+$is_finished = $currentState === 'finished';
+
 
 echo $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/view', array(
     'is_manager' => $is_manager,

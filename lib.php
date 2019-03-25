@@ -46,6 +46,7 @@ function miquiz_update_instance($miquiz)
     $miquiz_fresh->assesstimestart = $miquiz->assesstimestart;
     $miquiz_fresh->assesstimefinish = $miquiz->assesstimefinish;
     $miquiz_fresh->timeuntilproductive = $miquiz->timeuntilproductive;
+    $miquiz_fresh->has_training_phase = $miquiz->has_training_phase;
     $miquiz_fresh->name = $miquiz->name;
     $miquiz_fresh->short_name = $miquiz->short_name;
     $miquiz_fresh->questions = $miquiz->questions;

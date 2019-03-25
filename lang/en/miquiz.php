@@ -27,7 +27,7 @@ $string['miquiz_setting_questiondefaulttime_helper'] = 'In case no specific time
 
 $string['miquiz_create_name'] = 'Quiz Name';
 $string['miquiz_create_short_name'] = 'Short Name';
-$string['miquiz_create_timeuntilproductive'] = 'Test Phase Ending Time';
+$string['miquiz_create_timeuntilproductive'] = 'Training Phase Ending Time';
 $string['miquiz_create_scoremode'] = 'Rating Mode';
 $string['miquiz_create_scoremode_0'] = 'no rating';
 $string['miquiz_create_scoremode_1'] = 'simple rating without demerit';
@@ -42,10 +42,11 @@ $string['miquiz_create_assesstimestart'] = 'Quiz Start Date';
 $string['miquiz_create_assesstimefinish'] = 'Quiz Stop Date';
 $string['miquiz_create_error_unique'] = 'Has to be unique.';
 $string['miquiz_create_error_endbeforestart'] = 'Quiz end date date has to be later than quiz start date.';
-$string['miquiz_create_error_betweenendstart'] = 'Test phase ending time has to be between quiz start and end date.';
+$string['miquiz_create_error_betweenendstart'] = 'Training phase ending time has to be between quiz start and end date.';
 $string['miquiz_create_statsonlyforfinishedgames'] = 'Consider only finished games in statistics.';
 $string['miquiz_create_statsonlyforfinishedgames_help'] = 'If this flag is set, only finished games are considered in the statistics. This includes the rating and calculation of answered questions.';
-$string['miquiz_create_duelmode_in_productive'] = 'Enable duel mode in test phase.';
+$string['miquiz_create_activate_training_phase'] = 'Enable training phase';
+$string['miquiz_create_activate_training_phase_help'] = 'During the training phase only single player games are available (training) and no points are given.';
 
 $string['miquiz_view_overview'] = 'Overview'; //&Uuml;bersicht
 $string['miquiz_view_name'] = 'Name';

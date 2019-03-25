@@ -412,12 +412,17 @@ class miquiz
 
     private static function getStateTimestampsForQuiz($miquiz)
     {
-        return [
+        $baseTimestamps = [
             'not_started' => 0,
-            'training' => $miquiz->assesstimestart,
-            'productive' => $miquiz->timeuntilproductive,
             'finished' => $miquiz->assesstimefinish,
         ];
+        if ($miquiz->has_training_phase) {
+            $baseTimestamps['training'] = $miquiz->assesstimestart;
+            $baseTimestamps['productive'] = $miquiz->timeuntilproductive;
+        } else {
+            $baseTimestamps['productive'] = $miquiz->assesstimestart;
+        }
+        return $baseTimestamps;
     }
 
     public static function scheduleTasks($miquiz)
@@ -443,13 +448,13 @@ class miquiz
 
         // Configure current state
         $currentState = self::getStateAtTimestamp($stateTimestamps, $currentTime);
-        $currentStateConfig = self::getConfigForState($currentState, $scoremode, $miquiz->duelmode_in_productive);
+        $currentStateConfig = self::getConfigForState($currentState, $scoremode);
         self::scheduleTaskForCategory($categoryId, $stateTimestamps[$currentState], $currentStateConfig);
 
         // Configure future states
         $futureStates = self::getStatesAfterTimestamp($stateTimestamps, $currentTime);
         foreach ($futureStates as $state) {
-            $stateConfig = self::getConfigForState($state, $scoremode, $miquiz->duelmode_in_productive);
+            $stateConfig = self::getConfigForState($state, $scoremode);
             self::scheduleTaskForCategory($categoryId, $stateTimestamps[$state], $stateConfig);
         }
 
@@ -479,17 +484,11 @@ class miquiz
         );
     }
 
-    private static function getConfigForState($state, $scoreMode, $duelmode_in_productive)
+    private static function getConfigForState($state, $scoreMode)
     {
         $active = in_array($state, ['training', 'productive']);
         $scoreStrategy = $state === 'productive' ? $scoreMode : 'no_rating';
-        if($state === 'productive') {
-            $enabledModes = 'random-fight';
-            if($duelmode_in_productive)
-                $enabledModes .= ',duel';
-        } else {
-            $enabledModes = 'training';
-        }
+        $enabledModes = $state === 'productive' ? 'random-fight' : 'training';
 
         return [
             'active' => $active,
