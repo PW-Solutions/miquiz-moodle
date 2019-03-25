@@ -12,6 +12,14 @@ function xmldb_miquiz_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+
+        $table = new xmldb_table('miquiz');
+        $field = new xmldb_field('duelmode_in_productive');
+        $field->set_attributes(XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 1); 
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
         upgrade_plugin_savepoint(true, 2019022308, 'mod', 'miquiz');
     }
 

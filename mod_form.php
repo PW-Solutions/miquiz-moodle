@@ -58,6 +58,7 @@ class mod_miquiz_mod_form extends moodleform_mod
         $mform->addElement('date_time_selector', 'assesstimestart', get_string('miquiz_create_assesstimestart', 'miquiz'));
         $mform->addElement('date_time_selector', 'timeuntilproductive', get_string('miquiz_create_timeuntilproductive', 'miquiz'));
         $mform->addElement('date_time_selector', 'assesstimefinish', get_string('miquiz_create_assesstimefinish', 'miquiz'));
+        $mform->addElement('advcheckbox', 'duelmodus_in_productive', get_string('miquiz_create_duelmodus_in_productive', 'miquiz'));
 
         $this->standard_intro_elements(get_string('description', 'miquiz'));
 

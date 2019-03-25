@@ -443,13 +443,13 @@ class miquiz
 
         // Configure current state
         $currentState = self::getStateAtTimestamp($stateTimestamps, $currentTime);
-        $currentStateConfig = self::getConfigForState($currentState, $scoremode);
+        $currentStateConfig = self::getConfigForState($currentState, $scoremode, $miquiz->duelmode_in_productive);
         self::scheduleTaskForCategory($categoryId, $stateTimestamps[$currentState], $currentStateConfig);
 
         // Configure future states
         $futureStates = self::getStatesAfterTimestamp($stateTimestamps, $currentTime);
         foreach ($futureStates as $state) {
-            $stateConfig = self::getConfigForState($state, $scoremode);
+            $stateConfig = self::getConfigForState($state, $scoremode, $miquiz->duelmode_in_productive);
             self::scheduleTaskForCategory($categoryId, $stateTimestamps[$state], $stateConfig);
         }
 
@@ -479,11 +479,17 @@ class miquiz
         );
     }
 
-    private static function getConfigForState($state, $scoreMode)
+    private static function getConfigForState($state, $scoreMode, $duelmode_in_productive)
     {
         $active = in_array($state, ['training', 'productive']);
         $scoreStrategy = $state === 'productive' ? $scoreMode : 'no_rating';
-        $enabledModes = $state === 'productive' ? 'random-fight' : 'training';
+        if($state === 'productive') {
+            $enabledModes = 'random-fight';
+            if($duelmode_in_productive)
+                $enabledModes .= ',duel';
+        } else {
+            $enabledModes = 'training';
+        }
 
         return [
             'active' => $active,
