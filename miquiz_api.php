@@ -604,37 +604,48 @@ class miquiz
         }
 
         // send patch to miquiz to update user links
-        $user_patch = array();
+        $user_patch = [];
         foreach ($enrolled as $a_user) {
             $a_user_id = miquiz::get_user_id($a_user->username, $miquiz_users);
-            $user_patch[] = ["type" => "users", "id" => (string)$a_user_id];
+            if (is_null($a_user_id)) {
+                continue;
+            }
+            $user_patch[] = [
+                'type' => 'users',
+                'id' => (string)$a_user_id,
+            ];
         }
-        $resp = miquiz::api_post(
-            "api/categories/" . $miquiz->miquizcategoryid . "/relationships/players",
-                      array("data" => $user_patch)
-        );
+        $resp = miquiz::api_post('api/categories/' . $miquiz->miquizcategoryid . '/relationships/players', ['data' => $user_patch]);
         return $enrolled;
     }
 
-    public static function get_user_id($username, $user_obj=null)
+    public static function get_user_id($username, $miquiz_users = null)
     {
-        if (is_null($user_obj)) {
-            $user_obj = miquiz::api_get("api/users?fields[users]=id&filter[externalLogin]=$username");
+        if (is_null($miquiz_users)) {
+            $miquiz_users = miquiz::api_get("api/users?fields[users]=id,externalLogin&filter[externalLogin]=$username");
         }
-        if (count($user_obj) > 0 && isset($user_obj[0]['id'])) {
-            return $user_obj[0]['id'];
+        if (count($miquiz_users) > 0) {
+            foreach ($miquiz_users as $miquiz_user) {
+                if ($miquiz_user['externalLogin'] === $username) {
+                    return $miquiz_user['id'];
+                }
+            }
         }
-        return -1;
+        return;
     }
 
-    public static function get_username($id, $user_obj=null)
+    public static function get_username($id, $miquiz_users = null)
     {
-        if (is_null($user_obj)) {
-            $user_obj = miquiz::api_get("api/users?fields[users]=externalLogin&filter[id]=$id");
+        if (is_null($miquiz_users)) {
+            $miquiz_users = miquiz::api_get("api/users?fields[users]=id,externalLogin&filter[id]=$id");
         }
-        if (count($user_obj) > 0 && isset($user_obj[0]['externalLogin'])) {
-            return $user_obj[0]['externalLogin'];
+        if (count($miquiz_users) > 0) {
+            foreach ($miquiz_users as $miquiz_user) {
+                if ($miquiz_user['id'] == $id) {
+                    return $miquiz_user['externalLogin'];
+                }
+            }
         }
-        return '';
+        return;
     }
 }
