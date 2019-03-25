@@ -115,7 +115,9 @@
 
 <div class="clearfix">
   <form action="{{miquizurl}}" target="_blank" class="pull-left"><input class="btn btn-primary" id="id_tomiquizbutton" type="submit" value="{{{ i18n_miquiz_view_openlink }}}"></form>
+  {{#is_manager}}
   <button onclick="miquizSyncQuestions()" id="btn-sync-questions" class="pull-right btn btn-primary">{{{ i18n_miquiz_sync_questions }}}</button>
+  {{/is_manager}}
 </div><br>
 
 <div class="container">
