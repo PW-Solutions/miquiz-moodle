@@ -11,7 +11,7 @@ $string['modulename_help'] = 'Challenge your students in a ' . $instance_name . 
 $string['miquiz_index_title'] = $instance_name .' Course Overview';
 $string['miquiz_index_table_status'] = 'Status';
 $string['miquiz_index_reports'] = 'Number of reports'; //Anzahl Reports
-$string['miquiz_index_download'] = 'Download';
+$string['miquiz_index_download'] = 'Download statistics';
 $string['miquiz_index_noquizselected'] = 'Please select at least one quiz!';
 
 $string['miquiz_setting_instanceurl_title'] = 'URL for quiz instance';
@@ -62,7 +62,7 @@ $string['miquiz_view_statistics_totalscore'] = 'Score (achieved/maximum)'; //Pun
 $string['miquiz_view_score'] = 'Your score training(achieved/maximum), duel(achieved/maximum)'; //Deine Punke
 $string['miquiz_view_answeredquestions'] = 'Answered questions'; //Beantwortete Fragen
 $string['miquiz_view_statsonlyforfinishedgames'] = 'Finished games only'; //Nur beendete Spiele
-$string['miquiz_view_nodata'] =  'No data available.'; // Es sind noch keine Daten vorhanden
+$string['miquiz_view_nodata'] =  'No data available'; // Es sind noch keine Daten vorhanden
 
 $string['miquiz_view_openlink'] = 'Open ' . $instance_name; //&ouml;ffnen
 $string['miquiz_view_sync_questions'] = 'Sync questions';
@@ -78,6 +78,7 @@ $string['miquiz_status_finished'] = 'Finished';
 $string['miquiz_cockpit_total'] = 'Total';
 $string['miquiz_cockpit_correct'] = 'Correct';
 $string['miquiz_cockpit_incorrect'] = 'Incorrect';
+$string['miquiz_cockpit_with_reports'] = 'With reports';
 
 $string['pluginname'] = 'MI-Quiz';
 $string['pluginadministration'] = 'MI-Quiz Plugin administration';

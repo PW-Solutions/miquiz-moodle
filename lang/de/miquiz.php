@@ -11,7 +11,7 @@ $string['modulename_help'] = 'Erstelle ein ' . $instance_name . ' Duell.';
 
 $string['miquiz_index_title'] = $instance_name .' Kurs &Uuml;bersicht';
 $string['miquiz_index_reports'] = 'Anzahl Reports';
-$string['miquiz_index_download'] = 'Herunterladen';
+$string['miquiz_index_download'] = 'Statistiken herunterladen';
 $string['miquiz_index_noquizselected'] = 'Bitte w&auml;hlen sie mindestens ein Quiz aus!';
 
 $string['miquiz_setting_instanceurl_title'] = 'URL zur Quiz-Instanz';
@@ -62,7 +62,7 @@ $string['miquiz_view_statistics_totalscore'] = 'Punkte (erreicht/gesamt erreichb
 $string['miquiz_view_score'] = 'Deine Punke Training(Erreicht/M&ouml;glich), Duel(Erreicht/M&ouml;glich)';
 $string['miquiz_view_answeredquestions'] = 'Beantwortete Fragen';
 $string['miquiz_view_statsonlyforfinishedgames'] = 'Nur beendete Spiele';
-$string['miquiz_view_nodata'] =  'Es sind noch keine Daten vorhanden.';
+$string['miquiz_view_nodata'] = 'Keine Daten vorhanden';
 
 $string['miquiz_view_openlink'] =  $instance_name . ' &ouml;ffnen';
 $string['miquiz_view_sync_questions'] = 'Fragen synchronisieren';
@@ -75,6 +75,7 @@ $string['miquiz_status_finished'] = 'Beendet';
 $string['miquiz_cockpit_total'] = 'Insgesamt';
 $string['miquiz_cockpit_correct'] = 'Richtig';
 $string['miquiz_cockpit_incorrect'] = 'Falsch';
+$string['miquiz_cockpit_with_reports'] = 'Mit R&uuml;meldungen';
 
 $string['description'] = 'Beschreibung';
 $string['task_sync_users_name'] = 'Synchronisiere Quiz-User mit Instanz';
