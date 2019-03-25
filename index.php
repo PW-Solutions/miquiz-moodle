@@ -19,7 +19,11 @@ require_login($course);
 //check if user has permissions to administrate course
 $context = context_course::instance($id);
 $is_manager =  has_capability('moodle/course:manageactivities', $context);
-if(!$is_manager) die();
+if(!$is_manager) {
+    $red_url = new moodle_url('/course/view.php', array('id'=>$course->id));
+    header("Location: ".$red_url);
+    die();
+}
 
 // retrieve all quiz cm's from db
 $sql = "select cm.id, m.name, cm.instance from {modules} m inner join {course_modules} cm on (cm.module=m.id) where name='miquiz' and cm.course = '$id'";
