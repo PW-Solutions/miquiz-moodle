@@ -84,7 +84,7 @@ if (isset($_GET['download_categories'])) {
 }
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('miquiz_index_title', 'miquiz'));
+echo $OUTPUT->heading(get_string('miquiz_index_title', 'miquiz')." (".$course->fullname.")");
 
 $quiz_table_headings = [['name' => '<i class="icon fa fa-download fa-fw " aria-hidden="true" aria-label=""></i>'],
                         ['name' => get_string('miquiz_view_name', 'miquiz')],
