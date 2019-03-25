@@ -123,7 +123,6 @@ $score_duel = 0;
 $score_training_correct = 0;
 $score_duel_correct = 0;
 $user_stats = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/user-stats");
-$user_obj = miquiz::api_get("api/users?fields[users]=id,externalLogin");
 $resp = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/stats");
 $answeredQuestions_training_total = $resp["answeredQuestions"]["training"]["total"];
 $answeredQuestions_training_correct = $resp["answeredQuestions"]["training"]["correct"];
@@ -140,6 +139,7 @@ $answered_abs = "(".$answeredQuestions_total."/".$answeredQuestions_correct."/".
 $answered_rel = "(".$rel_answeredQuestions_total."/".$rel_answeredQuestions_correct."/".$rel_answeredQuestions_wrong.")";
 
 $userdata = [];
+$miquiz_users = miquiz::api_get("api/users?fields[users]=id,externalLogin");
 foreach ($user_stats as $user_score) {
     $a_data = [
         "score_training" => $user_score["score"]["training"]["total"],
@@ -159,7 +159,7 @@ foreach ($user_stats as $user_score) {
         "rel_answeredQuestions_correct" => number_format($answeredQuestions_correct/($answeredQuestions_total+$eps), 2),
         "rel_answeredQuestions_wrong" => number_format($answeredQuestions_wrong/($answeredQuestions_total+$eps), 2),
     ];
-    $username = miquiz::get_username($user_score["userId"], $user_obj);
+    $username = miquiz::get_username($user_score["userId"], $miquiz_users);
     $userdata[$username] = $a_data;
 }
 asort($userdata);
