@@ -7,7 +7,7 @@ $string['modulenameplural'] = 'MI-Quizze';
 
 //$instance_name ='';
 $instance_name = get_config('mod_miquiz', 'instancename');
-$string['modulename_help'] = 'Erstelle ein ' . $instance_name . ' Duell.';
+$string['modulename_help'] = 'Erstelle eine ' . $instance_name . ' Duell';
 
 $string['miquiz_index_title'] = $instance_name .' Kurs &Uuml;bersicht';
 $string['miquiz_index_reports'] = 'Anzahl Reports';
@@ -55,12 +55,11 @@ $string['miquiz_view_questions'] = 'Fragen';
 $string['miquiz_view_numquestions'] = 'Anzahl Fragen';
 $string['miquiz_view_user'] = 'Mitspieler';
 $string['miquiz_view_statistics_user'] = 'Statistiken (Mitspieler)';
-$string['miquiz_view_score'] = 'Deine Punke';
 $string['miquiz_view_statistics_username'] = 'Nutzername';
-$string['miquiz_view_statistics_answeredquestionsabs'] = 'Beantwortete Fragen absolut(gesamt/richtig/falsch)';
-$string['miquiz_view_statistics_answeredquestionsrel'] = 'Beantwortete Fragen relativ(gesamt/richtig/falsch)';
+$string['miquiz_view_statistics_answeredquestionsabs'] = 'Beantwortete Fragen absolut (gesamt / richtig / falsch)';
+$string['miquiz_view_statistics_answeredquestionsrel'] = 'Beantwortete Fragen relativ (richtig / falsch)';
 $string['miquiz_view_statistics_totalscore'] = 'Punkte (erreicht/gesamt erreichbar)';
-$string['miquiz_view_score'] = 'Deine Punke Training(Erreicht/M&ouml;glich), Duel(Erreicht/M&ouml;glich)';
+$string['miquiz_view_score'] = 'Deine Punkte: Training (Erreicht / M&ouml;glich), Duell (Erreicht / M&ouml;glich)';
 $string['miquiz_view_answeredquestions'] = 'Beantwortete Fragen';
 $string['miquiz_view_statsonlyforfinishedgames'] = 'Nur beendete Spiele';
 $string['miquiz_view_nodata'] = 'Keine Daten vorhanden';
