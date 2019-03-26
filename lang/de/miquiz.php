@@ -75,7 +75,7 @@ $string['miquiz_status_finished'] = 'Beendet';
 $string['miquiz_cockpit_total'] = 'Insgesamt';
 $string['miquiz_cockpit_correct'] = 'Richtig';
 $string['miquiz_cockpit_incorrect'] = 'Falsch';
-$string['miquiz_cockpit_with_reports'] = 'Mit R&uuml;meldungen';
+$string['miquiz_cockpit_with_reports'] = 'Mit R&uuml;ckmeldungen';
 
 $string['description'] = 'Beschreibung';
 $string['task_sync_users_name'] = 'Synchronisiere Quiz-User mit Instanz';
