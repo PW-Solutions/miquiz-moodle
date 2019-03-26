@@ -412,17 +412,17 @@ class miquiz
 
     private static function getStateTimestampsForQuiz($miquiz)
     {
-        $baseTimestamps = [
+        $timestamps = [
             'not_started' => 0,
+            'training' => $miquiz->assesstimestart,
+            'productive' => $miquiz->timeuntilproductive,
             'finished' => $miquiz->assesstimefinish,
         ];
-        if ($miquiz->has_training_phase) {
-            $baseTimestamps['training'] = $miquiz->assesstimestart;
-            $baseTimestamps['productive'] = $miquiz->timeuntilproductive;
-        } else {
-            $baseTimestamps['productive'] = $miquiz->assesstimestart;
+        if (!$miquiz->has_training_phase) {
+            unset($timestamps['training']);
+            $timestamps['productive'] = $miquiz->assesstimestart;
         }
-        return $baseTimestamps;
+        return $timestamps;
     }
 
     public static function scheduleTasks($miquiz)
