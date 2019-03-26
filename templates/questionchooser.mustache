@@ -107,7 +107,7 @@ updatequestionview = function(el, init){
         else
             questioninputs[i].parentElement.parentElement.style.display="flex";
     }
-    document.getElementById("questionsstatus").innerText = "{{{ i18n_miquiz_create_questions_selected }}}".replace("${numquestions}", questionids.length);
+    document.getElementById("questionsstatus").innerHTML = "{{{ i18n_miquiz_create_questions_selected }}}".replace("${numquestions}", questionids.length);
     document.querySelector("input[name=questions]").value = questionids;
 
     // update category checkboxes
