@@ -7,7 +7,7 @@ TODO
 
 Make sure to enable web services and the external service `moodle_mobile_app`,
 so that MI-Quiz can authenticate users with Moodle credentials. See:
-`/admin/webservice/service.php?id=1` and `/admin/search.php?query=enablewebservices`.
+`/admin/webservice/service.php?id=1`, `/admin/search.php?query=enablewebservices`, and `/admin/settings.php?section=mobilesettings`.
 
 ## Development
 
@@ -25,9 +25,18 @@ as Moodle tries to get the config value from the database before any tables are 
 ### Reset DB
 `docker-compose down -v`
 
+### Recreate moodle image
+`docker-compose build --no-cache`
+
+### Create new startup_db
+`docker exec -it moodle_db_1 mysqldump -u moodle -pmoodle moodle -r startup_db.sql`
+`docker cp moodle_db_1:startup_db.sql ./`
+
+See https://stackoverflow.com/a/20086949/5816097 on why we cannot use `... > startup_db.sql`.
+
 ### Cron
 There is no cron-job configured in the docker image (yet). To perform the Moodle cron job, execute
-`docker exec -it moodle_moodle_1 php htdocs/admin/cli/cron.php`. This is necessary to sync users
+`docker exec -it moodle_moodle_1 php admin/cli/cron.php`. This is necessary to sync users
 of activities with miquiz.
 
 ### Connect with MI-Quiz development workspace
