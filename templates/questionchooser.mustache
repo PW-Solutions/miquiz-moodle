@@ -54,20 +54,22 @@
         margin-top: 5px;
     }
 </style>
-<input type="text" id="questionsearch" size="15" onkeyup="updatequestionview(undefined);" placeholder="{{{ i18n_miquiz_create_questions_search }}}"></input>
-<ul class="questionul">
-{{#categories}}
-<li><div class="questiondiv"><span class="caret"></span><label class="questionlabel"><input type="checkbox" onclick="updatequestionview(this);" class="categorycheckbox"> {{category_name}}</label></div><ul class="nested">
-    {{#questions}}
-        <li><div class="questiondiv"><label class="questionlabel"><input type="checkbox" class="questioncheckbox" onclick="updatequestionview(this);" value="{{question_id}}"> {{question_name}}</label>
-        <a href="/question/preview.php?id={{question_id}}&courseid={{category_id}}" target="popup" onclick="window.open('/question/preview.php?id={{question_id}}&courseid={{category_id}}','popup','width=600,height=600'); return false;" style="cursor: pointer;">
-            <i class="icon fa fa-search-plus fa-fw iconsmall" aria-hidden="true" title="Preview" aria-label="Preview"></i>
-        </a></div></li>
-    {{/questions}}
-</ul></li>
-{{/categories}}
-</ul>
-<div id="questionsstatus"></div>
+<div>
+  <input type="text" id="questionsearch" size="15" onkeyup="updatequestionview(undefined);" placeholder="{{{ i18n_miquiz_create_questions_search }}}"></input>
+  <ul class="questionul">
+  {{#categories}}
+  <li><div class="questiondiv"><span class="caret"></span><label class="questionlabel"><input type="checkbox" onclick="updatequestionview(this);" class="categorycheckbox"> {{category_name}}</label></div><ul class="nested">
+      {{#questions}}
+          <li><div class="questiondiv"><label class="questionlabel"><input type="checkbox" class="questioncheckbox" onclick="updatequestionview(this);" value="{{question_id}}"> {{question_name}}</label>
+          <a href="/question/preview.php?id={{question_id}}&courseid={{category_id}}" target="popup" onclick="window.open('/question/preview.php?id={{question_id}}&courseid={{category_id}}','popup','width=600,height=600'); return false;" style="cursor: pointer;">
+              <i class="icon fa fa-search-plus fa-fw iconsmall" aria-hidden="true" title="Preview" aria-label="Preview"></i>
+          </a></div></li>
+      {{/questions}}
+  </ul></li>
+  {{/categories}}
+  </ul>
+  <div id="questionsstatus"></div>
+</div>
 <script>
 var toggler = document.getElementsByClassName("caret");
 var i;
