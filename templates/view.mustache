@@ -24,42 +24,39 @@
     {{/is_manager}}
   </div><br>
 
-  <div class="container">
-    <div class="row">
-      <div><h4><b>{{{ instance_name }}}</b>: {{ name }} ({{ short_name }})</h4></div>
-      <div>{{{ description }}}</div>
-      <div class="mi-cockpit">
-        <div class="mi-cockpit-section">
-          <div class="mi-cockpit-timeline" id="timeline"></div>
-        </div>
-        <div class="mi-cockpit-section">
-          <div class="mi-cockpit-line">
-            <b>{{{ i18n_miquiz_view_scoremode }}}</b>
-            <div>{{{ i18n_miquiz_create_scoremode }}}</div>
-            {{#statsonlyforfinishedgames}}
-            <div>({{{ i18n_miquiz_view_statsonlyforfinishedgames }}})</div>
-            {{/statsonlyforfinishedgames}}
-          </div>
-          <div class="mi-cockpit-line">
-            <b>{{{ i18n_miquiz_view_numquestions }}}</b>
-            <div>{{{ i18n_miquiz_cockpit_total }}}: {{ numquestions }}</div>
-            <div>{{{ i18n_miquiz_cockpit_with_reports }}}: {{ numquestions_with_reports }}</div>
-          </div>
-        </div>
-        {{#is_manager}}
-        <div class="mi-cockpit-section">
-          <div class="mi-cockpit-line">
-            <b>{{{ i18n_miquiz_view_answeredquestions }}}</b>
-            <div>
-              {{{ i18n_miquiz_cockpit_total }}}: {{ answeredQuestions_total }}
-              ({{{ i18n_miquiz_cockpit_correct }}}: {{ answeredQuestions_correct }}, {{{ i18n_miquiz_cockpit_incorrect }}}: {{ answeredQuestions_wrong }})
-            </div>
-            <div id="piechartbox"></div>
-          </div>
-        </div>
-        {{/is_manager}}
+  <div><h4><b>{{{ instance_name }}}</b>: {{ name }} ({{ short_name }})</h4></div>
+  <div>{{{ description }}}</div>
+
+  <div class="mi-cockpit">
+    <div class="mi-cockpit-section">
+      <div class="mi-cockpit-timeline" id="timeline"></div>
+    </div>
+    <div class="mi-cockpit-section">
+      <div class="mi-cockpit-line">
+        <b>{{{ i18n_miquiz_view_scoremode }}}</b>
+        <div>{{{ i18n_miquiz_create_scoremode }}}</div>
+        {{#statsonlyforfinishedgames}}
+        <div>({{{ i18n_miquiz_view_statsonlyforfinishedgames }}})</div>
+        {{/statsonlyforfinishedgames}}
+      </div>
+      <div class="mi-cockpit-line">
+        <b>{{{ i18n_miquiz_view_numquestions }}}</b>
+        <div>{{{ i18n_miquiz_cockpit_total }}}: {{ numquestions }}</div>
+        <div>{{{ i18n_miquiz_cockpit_with_reports }}}: {{ numquestions_with_reports }}</div>
       </div>
     </div>
+    {{#is_manager}}
+    <div class="mi-cockpit-section">
+      <div class="mi-cockpit-line">
+        <b>{{{ i18n_miquiz_view_answeredquestions }}}</b>
+        <div>
+          {{{ i18n_miquiz_cockpit_total }}}: {{ answeredQuestions_total }}
+          ({{{ i18n_miquiz_cockpit_correct }}}: {{ answeredQuestions_correct }}, {{{ i18n_miquiz_cockpit_incorrect }}}: {{ answeredQuestions_wrong }})
+        </div>
+        <div id="piechartbox"></div>
+      </div>
+    </div>
+    {{/is_manager}}
   </div>
 
   {{#is_manager}}
@@ -92,7 +89,7 @@
   <div data-toggle="collapse" href="#mod-mi--section-statistics">
     <span>{{{ i18n_miquiz_view_statistics_user }}}</span>
   </div>
-  <div class="mod-mi--section collapse in" id="mod-mi--section-statistics">
+  <div class="mod-mi--section collapse show" id="mod-mi--section-statistics">
     <table id="userdatatable" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
       <thead>
         <tr>
