@@ -77,6 +77,9 @@ class mod_miquiz_mod_form extends moodleform_mod
         $questionchooser_categories = array();
         foreach ($categories as $category) {
             $questions = $DB->get_records('question', array('category' => $category->id));
+            if (empty($questions)) {
+                continue;
+            }
             $question_dtos = array();
             foreach ($questions as $question) {
                 if ($question->qtype =='multichoice') {
@@ -86,7 +89,7 @@ class mod_miquiz_mod_form extends moodleform_mod
                     ));
                 }
             }
-            $cat_dto = array(
+            $questionchooser_categories[] = array(
                 "category_id" => $category->id,
                 "category_name" => $category->name,
                 "questions" => $question_dtos
@@ -94,10 +97,9 @@ class mod_miquiz_mod_form extends moodleform_mod
         }
 
         $customel_rendered = $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/questionchooser', array(
-            $questionchooser_categories,
             "i18n_miquiz_create_questions_search" => get_string("miquiz_create_questions_search", "miquiz"),
             "i18n_miquiz_create_questions_selected" => get_string("miquiz_create_questions_selected", "miquiz"),
-            "categories" => $cat_dto
+            "categories" => $questionchooser_categories
         ));
         $questionIds = $this->_instance === '' ? '' : implode(',', miquiz::getQuestionIdsForMiQuizId($this->_instance));
         // $questionIds = '';
