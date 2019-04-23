@@ -22,6 +22,11 @@ This repository comes with a ready to use docker configuration to test the plugi
 have to temporary comment out the lines in `lang\{en|de}\miquiz.php` where `get_config` is called,
 as Moodle tries to get the config value from the database before any tables are created.
 
+### Available users
+- admin:Admin123. = Admin
+- alice:Alice123. = User
+- bob:Bob1234. = Teacher
+
 ### Reset DB
 `docker-compose down -v`
 
