@@ -245,7 +245,7 @@ echo $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/view', arra
 if ($is_manager) {
     echo '<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>';
     echo '<script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>';
-    $PAGE->requires->js_amd_inline('$("#userdatatable").DataTable();');
+    $PAGE->requires->js_amd_inline('$("#userdatatable").DataTable && $("#userdatatable").DataTable();');
 }
 
 echo $OUTPUT->footer();
