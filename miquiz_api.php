@@ -149,6 +149,8 @@ class miquiz
                 // Difficulty: images are included in moodle question and not in mi quiz question -> comparison complex. Maybe timestamps?
                 miquiz::updateMiQuizQuestion($questionData, $miQuizQuestionId);
                 miquiz::updateMiQuizQuestionRelationTimestamp($question->id);
+            } else {
+                miquiz::addMiQuizQuestionToMiQuizCategory($miQuizQuestionId, $miQuizCategoryId);
             }
         }
         return $miQuizQuestionId;
@@ -246,6 +248,19 @@ class miquiz
     {
         $response = miquiz::api_put('api/questions/' . $miQuizQuestionId, $questionData);
         return $response['question'];
+    }
+
+    private static function addMiQuizQuestionToMiQuizCategory($miQuizQuestionId, $miQuizCategoryId)
+    {
+        $addRelationshipPayload = [
+            'data' => [
+                [
+                    'type' => 'questions',
+                    'id' => (string) $miQuizQuestionId,
+                ],
+            ],
+        ];
+        $response = miquiz::api_post('api/categories/' . $miQuizCategoryId . '/relationships/questions', $addRelationshipPayload);
     }
 
     private static function miQuizQuestionExistsInMiQuiz($miQuizQuestionId)
