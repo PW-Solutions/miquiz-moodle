@@ -154,10 +154,6 @@ class mod_miquiz_mod_form extends moodleform_mod
         $this->local_validation($errors, $data, $files);
         $this->external_validation($errors, $data, $files);
 
-        if ($data['questions'] == "") {
-            $errors['questiong'] = get_string('miquiz_create_questions_error', 'miquiz');
-        }
-
         return $errors;
     }
 
@@ -184,6 +180,11 @@ class mod_miquiz_mod_form extends moodleform_mod
 
         if (!empty($data['usepassword']) && empty($data['password'])) {
             $errors['password'] = get_string('emptypassword', 'lesson');
+        }
+
+
+        if (empty($data['questions']) || count(explode(',', $data['questions'])) < 3) {
+            $errors['questiong'] = get_string('miquiz_create_questions_error', 'miquiz');
         }
     }
 
