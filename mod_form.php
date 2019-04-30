@@ -103,6 +103,7 @@ class mod_miquiz_mod_form extends moodleform_mod
             'i18n_miquiz_create_questions_create_questions' => get_string('miquiz_create_questions_create_questions', 'miquiz'),
             "categories" => $questionchooser_categories,
             'course_id' => $this->course->id,
+            'hasCategories' => count($questionchooser_categories) > 0,
         ));
         $questionIds = $this->_instance === '' ? '' : implode(',', miquiz::getQuestionIdsForMiQuizId($this->_instance));
         // $questionIds = '';
