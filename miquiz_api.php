@@ -348,7 +348,7 @@ class miquiz
                 'data' => array_map(function ($questionId) {
                     return [
                         'type' => 'questions',
-                        'id' => $questionId,
+                        'id' => (string) $questionId,
                     ];
                 }, $miQuestionIdsToRemove),
             ];
@@ -632,7 +632,7 @@ class miquiz
             }
             $user_patch[] = [
                 'type' => 'users',
-                'id' => (string)$a_user_id,
+                'id' => (string) $a_user_id,
             ];
         }
         $resp = miquiz::api_post('api/categories/' . $miquiz->miquizcategoryid . '/relationships/players', ['data' => $user_patch]);
