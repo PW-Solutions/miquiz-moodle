@@ -99,7 +99,10 @@ class mod_miquiz_mod_form extends moodleform_mod
         $customel_rendered = $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/questionchooser', array(
             "i18n_miquiz_create_questions_search" => get_string("miquiz_create_questions_search", "miquiz"),
             "i18n_miquiz_create_questions_selected" => get_string("miquiz_create_questions_selected", "miquiz"),
-            "categories" => $questionchooser_categories
+            'i18n_miquiz_create_questions_no_questions' => get_string('miquiz_create_questions_no_questions', 'miquiz'),
+            'i18n_miquiz_create_questions_create_questions' => get_string('miquiz_create_questions_create_questions', 'miquiz'),
+            "categories" => $questionchooser_categories,
+            'course_id' => $this->course->id,
         ));
         $questionIds = $this->_instance === '' ? '' : implode(',', miquiz::getQuestionIdsForMiQuizId($this->_instance));
         // $questionIds = '';

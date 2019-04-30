@@ -55,6 +55,7 @@
     }
 </style>
 <div>
+  {{#hasCategories}}
   <input type="text" id="questionsearch" size="15" onkeyup="updatequestionview(undefined);" placeholder="{{{ i18n_miquiz_create_questions_search }}}"></input>
   <ul class="questionul">
   {{#categories}}
@@ -69,6 +70,10 @@
   {{/categories}}
   </ul>
   <div id="questionsstatus"></div>
+  {{/hasCategories}}
+  {{^hasCategories}}
+    {{ i18n_miquiz_create_questions_no_questions }} <a href="/question/edit.php?courseid={{ course_id }}" target="_blank">{{ i18n_miquiz_create_questions_create_questions }}</a>
+  {{/hasCategories}}
 </div>
 <script>
 var toggler = document.getElementsByClassName("caret");
