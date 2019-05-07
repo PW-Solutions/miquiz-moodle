@@ -127,11 +127,11 @@ $answeredQuestions_training_total = $resp["answeredQuestions"]["training"]["tota
 $answeredQuestions_training_correct = $resp["answeredQuestions"]["training"]["correct"];
 $answeredQuestions_duel_total = $resp["answeredQuestions"]["duel"]["total"];
 $answeredQuestions_duel_correct = $resp["answeredQuestions"]["duel"]["correct"];
-$answeredQuestions_total = number_format($answeredQuestions_training_total+$answeredQuestions_duel_total, 0);
-$answeredQuestions_correct = number_format($answeredQuestions_training_correct+$answeredQuestions_duel_correct, 0);
-$answeredQuestions_wrong = number_format($answeredQuestions_total-$answeredQuestions_correct, 0);
+$answeredQuestions_total = $answeredQuestions_training_total + $answeredQuestions_duel_total;
+$answeredQuestions_correct = $answeredQuestions_training_correct + $answeredQuestions_duel_correct;
+$answeredQuestions_wrong = $answeredQuestions_total - $answeredQuestions_correct;
 $eps = pow(10000000, -1);
-$rel_answeredQuestions_total = number_format($answeredQuestions_total/($answeredQuestions_total+$eps), 2);
+$rel_answeredQuestions_total = number_format($answeredQuestions_total/($answeredQuestions_total+$eps));
 $rel_answeredQuestions_correct = number_format($answeredQuestions_correct/($answeredQuestions_total+$eps), 2);
 $rel_answeredQuestions_wrong = number_format($answeredQuestions_wrong/($answeredQuestions_total+$eps), 2);
 $answered_abs = "(".$answeredQuestions_total."/".$answeredQuestions_correct."/".$answeredQuestions_wrong.")";
@@ -162,9 +162,9 @@ foreach ($user_stats as $user_score) {
         "answeredQuestions_duel_correct" => $duel_correct,
         "score"=> $score_training + $score_duel,
         "score_possible" => $score_training_possible + $score_duel_possible,
-        "answeredQuestions_total" => number_format($training + $duel, 0),
-        "answeredQuestions_correct" => number_format($training_correct + $duel_correct, 0),
-        "answeredQuestions_wrong" => number_format($total - $total_correct, 0),
+        "answeredQuestions_total" => $training + $duel,
+        "answeredQuestions_correct" => $training_correct + $duel_correct,
+        "answeredQuestions_wrong" => $total - $total_correct,
         "rel_answeredQuestions_correct" => $total === 0 ? '-' : number_format($total_correct / ($total + $eps), 2),
         "rel_answeredQuestions_wrong" => $total === 0 ? '-' : number_format(1 - number_format($total_correct / ($total + $eps), 2), 2),
     ];
