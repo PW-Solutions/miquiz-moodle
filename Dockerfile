@@ -3,10 +3,14 @@ FROM php:7.1-apache
 ARG MOODLE_URL
 
 RUN apt-get update &&\
-apt-get install -y nano zlib1g-dev libpng-dev libicu-dev libxml2-dev &&\
+apt-get install -y nano zlib1g-dev libpng-dev libicu-dev libxml2-dev unzip &&\
 docker-php-ext-install mysqli zip gd intl xmlrpc soap &&\
-mkdir /var/www/moodledata &&\
+mkdir -p /var/www/moodledata/lang &&\
 chown -R www-data:www-data /var/www/moodledata &&\
+cd /var/www/moodledata/lang &&\
+curl https://download.moodle.org/download.php/direct/langpack/3.6/de.zip > de.zip &&\
+unzip de.zip &&\
+rm de.zip &&\
 cd /var/www/html &&\
 curl https://download.moodle.org/download.php/direct/stable36/moodle-latest-36.tgz > moodle.tgz &&\
 tar -xzf moodle.tgz &&\
