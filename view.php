@@ -243,9 +243,10 @@ echo $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/view', arra
 ));
 
 if ($is_manager) {
-    echo '<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>';
-    echo '<script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>';
-    $PAGE->requires->js_amd_inline('$(document).ready(function(){$("#userdatatable").DataTable();});');
+    echo '<script type="text/javascript">if (typeof $ !== "undefined") var $x = jQuery.noConflict();</script>';
+    echo '<script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-3.3.1/dt-1.10.18/datatables.min.js"></script>';
+    echo '<script type="text/javascript">var $y = jQuery.noConflict(); if (typeof $ !== "undefined") $=$x;</script>';
+    $PAGE->requires->js_amd_inline('$y(document).ready(function() {$y("#userdatatable").DataTable();});');
 }
 
 echo $OUTPUT->footer();
