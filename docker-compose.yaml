@@ -19,4 +19,4 @@ services:
     links:
       - db
     volumes:
-      - ./:/var/www/html/mod/miquiz/
+      - ./:/var/www/htdocs/mod/miquiz/
