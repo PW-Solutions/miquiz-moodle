@@ -72,6 +72,7 @@ class mod_miquiz_mod_form extends moodleform_mod
         $mform->setExpanded('modstandardelshdr');
 
         // https://docs.moodle.org/dev/Question_database_structure
+        $PAGE->requires->css(new moodle_url('/mod/miquiz/static/css/questionchooser.css'));
         $context = context_course::instance($COURSE->id);
         $categories = $DB->get_records('question_categories', array('contextid' => $context->id));
         $questionchooser_categories = array();

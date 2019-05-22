@@ -122,7 +122,7 @@ echo $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/index', arr
     'quiz_table_headings' => $quiz_table_headings,
     'quiz_table_body' => $quiz_table_body,
     'i18n_miquiz_index_download' => get_string('miquiz_index_download', 'miquiz')));
-$PAGE->requires->js_amd_inline('$("#datatable").DataTable && $("#datatable").DataTable();');
+$PAGE->requires->js_amd_inline('$y(document).ready(function() {$y("#datatable").DataTable();});');
 $downloadjs = 'generateAndFollowDownloadLink = function(){
     var downloadids = Array();
     $("input:checkbox[name=add2download]:checked").each(function(){
