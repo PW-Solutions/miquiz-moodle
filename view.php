@@ -193,6 +193,14 @@ $is_training = $currentState === 'training';
 $is_productive = $currentState === 'productive';
 $is_finished = $currentState === 'finished';
 
+$i18nEnabledGameModes = [];
+if ($miquiz->game_mode_random_fight) {
+    $i18nEnabledGameModes[] = get_string('miquiz_create_game_mode_random_fight', 'miquiz');
+}
+if ($miquiz->game_mode_picked_fight) {
+    $i18nEnabledGameModes[] = get_string('miquiz_create_game_mode_picked_fight', 'miquiz');
+}
+
 
 echo $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/view', array(
     'is_manager' => $is_manager,
@@ -215,6 +223,8 @@ echo $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/view', arra
     'is_finished' => $is_finished,
     'i18n_miquiz_view_scoremode' => get_string('miquiz_view_scoremode', 'miquiz'),
     'i18n_miquiz_create_scoremode' => get_string('miquiz_create_scoremode_'.$miquiz->scoremode, 'miquiz'),
+    'i18n_miquiz_view_game_modes' => get_string('miquiz_view_game_modes', 'miquiz'),
+    'i18n_miquiz_enabled_game_modes' => implode(', ', $i18nEnabledGameModes),
     'statsonlyforfinishedgames' => $miquiz->statsonlyforfinishedgames,
     'i18n_miquiz_view_statsonlyforfinishedgames' => get_string('miquiz_view_statsonlyforfinishedgames', 'miquiz'),
     'i18n_miquiz_view_answeredquestions' => get_string('miquiz_view_answeredquestions', 'miquiz'),

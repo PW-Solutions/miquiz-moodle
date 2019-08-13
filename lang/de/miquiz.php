@@ -76,7 +76,7 @@ $string['miquiz_create_activate_training_phase_help'] = 'Während der Trainingsp
 
 $string['miquiz_view_overview'] = '&Uuml;bersicht';
 $string['miquiz_view_shortname'] = 'Abk&uuml;rzung';
-$string['miquiz_view_scoremode'] = 'Bewertungsmodus';
+$string['miquiz_view_scoremode'] = 'Bewertungsmodus (wenn produktiv)';
 $string['miquiz_view_questions'] = 'Fragen';
 $string['miquiz_view_numquestions'] = 'Anzahl Fragen';
 $string['miquiz_view_user'] = 'Mitspieler';
@@ -89,6 +89,7 @@ $string['miquiz_view_score'] = 'Deine Punkte: Training (Erreicht / M&ouml;glich)
 $string['miquiz_view_answeredquestions'] = 'Beantwortete Fragen';
 $string['miquiz_view_statsonlyforfinishedgames'] = 'Nur beendete Spiele';
 $string['miquiz_view_nodata'] = 'Keine Daten vorhanden';
+$string['miquiz_view_game_modes'] = 'Spielmodus (wenn produktiv)';
 
 $string['miquiz_view_openlink'] =  $instance_name . ' &ouml;ffnen';
 $string['miquiz_view_sync_questions'] = 'Fragen synchronisieren';

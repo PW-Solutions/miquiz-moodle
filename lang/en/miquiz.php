@@ -77,7 +77,7 @@ $string['miquiz_create_activate_training_phase_help'] = 'During the training pha
 $string['miquiz_view_overview'] = 'Overview'; //&Uuml;bersicht
 $string['miquiz_view_name'] = 'Name';
 $string['miquiz_view_shortname'] = 'Short name'; //Abk&uuml;rzung
-$string['miquiz_view_scoremode'] = 'Rating mode'; //Bewertungsmodus
+$string['miquiz_view_scoremode'] = 'Rating mode (if productive)'; //Bewertungsmodus
 $string['miquiz_view_questions'] = 'Questions'; //Fragen
 $string['miquiz_view_numquestions'] = 'Number of questions'; //Anzahl Fragen
 $string['miquiz_view_user'] = 'Player'; //Mitspieler
@@ -90,6 +90,7 @@ $string['miquiz_view_score'] = 'Your score: training (achieved / maximum), duel 
 $string['miquiz_view_answeredquestions'] = 'Answered questions'; //Beantwortete Fragen
 $string['miquiz_view_statsonlyforfinishedgames'] = 'Finished games only'; //Nur beendete Spiele
 $string['miquiz_view_nodata'] =  'No data available'; // Es sind noch keine Daten vorhanden
+$string['miquiz_view_game_modes'] = 'Game modes (if productive)';
 
 $string['miquiz_view_openlink'] = 'Open ' . $instance_name; //&ouml;ffnen
 $string['miquiz_view_sync_questions'] = 'Sync questions';
