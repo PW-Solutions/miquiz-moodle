@@ -121,7 +121,11 @@
 
 <script type='text/javascript'>
 //config
+  has_training_phase = !!{{ has_training_phase }}
   dot_pos = [20, 70 + 30, 120 + 30 * 2];
+  if (!has_training_phase) {
+    dot_pos[1] = dot_pos[0];
+  }
   circle_size = 20;
   dot_attr = {
     fill: '#eee',
@@ -178,11 +182,11 @@
   svg_size = [(line_offset + circle_size / 2) * 2 + text_font.size * 10, dot_pos[2] + circle_size + dot_pos[0]];
   var draw = SVG('timeline').size(svg_size[0],svg_size[1]);
   lxoffset = line_offset + circle_size / 2;
-  var lines = draw.line(lxoffset, 0, lxoffset, dot_pos[0]).stroke(line_stroke_attr).attr(line_attr);
-  var linet = draw.line(lxoffset, dot_pos[0] + circle_size, lxoffset, dot_pos[1]).stroke(line_stroke_attr).attr(line_attr);
-  var linep = draw.line(lxoffset, dot_pos[1] + circle_size, lxoffset, dot_pos[2]).stroke(line_stroke_attr).attr(line_attr);
-  var linee = draw.line(lxoffset, dot_pos[2] + circle_size, lxoffset, svg_size[1]).stroke(line_stroke_attr).attr(line_attr);
-  var polylinet = draw
+  var line_pre = draw.line(lxoffset, 0, lxoffset, dot_pos[0]).stroke(line_stroke_attr).attr(line_attr);
+  var line_training = has_training_phase && draw.line(lxoffset, dot_pos[0] + circle_size, lxoffset, dot_pos[1]).stroke(line_stroke_attr).attr(line_attr);
+  var line_productive = draw.line(lxoffset, dot_pos[1] + circle_size, lxoffset, dot_pos[2]).stroke(line_stroke_attr).attr(line_attr);
+  var line_post = draw.line(lxoffset, dot_pos[2] + circle_size, lxoffset, svg_size[1]).stroke(line_stroke_attr).attr(line_attr);
+  var polyline_training = has_training_phase && draw
     .polyline([
       [lxoffset + circle_size / 2 + polyline_stroke_offet1, dot_pos[0] + circle_size / 2 + polyline_stroke_attr.width],
       [lxoffset + circle_size / 2 + polyline_stroke_offet2, dot_pos[0] + circle_size / 2 + polyline_stroke_attr.width],
@@ -191,7 +195,7 @@
     ])
     .attr({fill: 'none'})
     .stroke(polyline_stroke_attr);
-  var polylinep = draw
+  var polyline_productive = draw
     .polyline([
       [lxoffset + circle_size / 2 + polyline_stroke_offet1, dot_pos[1] + circle_size / 2 + polyline_stroke_attr.width],
       [lxoffset + circle_size / 2 + polyline_stroke_offet2, dot_pos[1] + circle_size / 2 + polyline_stroke_attr.width],
@@ -200,7 +204,7 @@
     ])
     .attr({fill: 'none'})
     .stroke(polyline_stroke_attr);
-  text_t = draw
+  text_t = has_training_phase && draw
     .text(line_text[0])
     .font(text_font)
     .move(lxoffset + circle_size / 2 + polyline_stroke_offet2 + polyline_stroke_offet1, dot_pos[0] + (dot_pos[1] - dot_pos[0]) / 2);
@@ -209,7 +213,7 @@
     .font(text_font)
     .move(lxoffset + circle_size / 2 + polyline_stroke_offet2 + polyline_stroke_offet1, dot_pos[1] + (dot_pos[2] - dot_pos[1]) / 2);
   var cstart = draw.circle(circle_size).move(line_offset, dot_pos[0]).attr(dot_attr);
-  var cprod = draw.circle(circle_size).move(line_offset, dot_pos[1]).attr(dot_attr);
+  var cprod = has_training_phase ? draw.circle(circle_size).move(line_offset, dot_pos[1]).attr(dot_attr) : cstart;
   var cend = draw.circle(circle_size).move(line_offset, dot_pos[2]).attr(dot_attr);
   cstart.attr({
     'v-tooltip': tooltip_conf.replace('{message}', 'cstart_message'),
@@ -236,10 +240,10 @@
   };
 
   //set active part
-  {{#is_notyetstarted}}setactive(cstart, cstart, lines);{{/is_notyetstarted}}
-  {{#is_training}}setactive(cstart, cprod, linet, text_t, polylinet);{{/is_training}}
-  {{#is_productive}}setactive(cprod, cend, linep, text_p, polylinep);{{/is_productive}}
-  {{#is_finished}}setactive(cend, cend, linee);{{/is_finished}}
+  {{#is_notyetstarted}}setactive(cstart, cstart, line_pre);{{/is_notyetstarted}}
+  {{#is_training}}setactive(cstart, cprod, line_training, text_t, polyline_training);{{/is_training}}
+  {{#is_productive}}setactive(cprod, cend, line_productive, text_p, polyline_productive);{{/is_productive}}
+  {{#is_finished}}setactive(cend, cend, line_post);{{/is_finished}}
 
   Vue.use(VTooltip);
   var app = new Vue({

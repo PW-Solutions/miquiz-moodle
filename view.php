@@ -214,6 +214,7 @@ echo $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/view', arra
     'i18n_miquiz_view_shortname' => get_string('miquiz_view_shortname', 'miquiz'),
     'i18n_miquiz_status_training' => get_string('miquiz_status_training', 'miquiz'),
     'i18n_miquiz_status_productive' => get_string('miquiz_status_productive', 'miquiz'),
+    'has_training_phase' => $miquiz->has_training_phase,
     'assesstimestart' => $miquiz->assesstimestart,
     'timeuntilproductive' => $miquiz->timeuntilproductive,
     'assesstimefinish' => $miquiz->assesstimefinish,
