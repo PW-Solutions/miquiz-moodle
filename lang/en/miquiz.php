@@ -34,6 +34,18 @@ $string['miquiz_create_scoremode_1'] = 'simple rating without demerit';
 $string['miquiz_create_scoremode_2'] = 'simple rating with demerit';
 $string['miquiz_create_scoremode_3'] = 'relative rating without demerit';
 $string['miquiz_create_scoremode_4'] = 'relative rating with demerit';
+$string['miquiz_create_scoremode_help'] = 'Rating during the productive phase.
+  Can <strong>not</strong> be changed later!
+  <br><br>
+  <strong>Simple rating</strong>: 1 point, if all correct possibilities are selected. Otherwise 0 points ("without demerit") or -1 points ("with demerit")
+  <br><br>
+  <strong>Relative rating</strong>: Calculated with <code>(x / n) - (y / m)</code> with values below 0 only possible "with demerit".
+  <br>
+  <i>x</i> = selected correct possibilities<br>
+  <i>n</i> = number of correct possibilities<br>
+  <i>y</i> = selected wrong possibilities<br>
+  <i>m</i> = number of wrong possibilities<br>
+';
 $string['miquiz_create_questions'] = 'Questions';
 $string['miquiz_create_questions_error'] = 'A quiz requires at least three questions!';
 $string['miquiz_create_questions_selected'] = '${numquestions} questions selected';

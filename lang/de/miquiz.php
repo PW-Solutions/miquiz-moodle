@@ -34,6 +34,18 @@ $string['miquiz_create_scoremode_1'] = 'einfache Punktvergabe ohne Minuspunkte';
 $string['miquiz_create_scoremode_2'] = 'einfache Punktvergabe mit Minuspunkten';
 $string['miquiz_create_scoremode_3'] = 'relative Punktvergabe ohne Minuspunkte';
 $string['miquiz_create_scoremode_4'] = 'relative Punktvergabe mit Minuspunkten';
+$string['miquiz_create_scoremode_help'] = 'Punktvergabe während der Produktivphase.
+  Kann nachträglich <strong>nicht</strong> geändert werden!
+  <br><br>
+  <strong>Einfache Punktvergabe</strong>: 1 Punkt, falls alle korrekten Antwortmöglichkeiten ausgewählt wurden. Anderenfalls 0 Punkte ("ohne Minuspunkte") oder -1 Punkt ("mit Minuspunkten")
+  <br><br>
+  <strong>Relative Punktvergabe</strong>: Berechnung aus <code>(x / n) - (y / m)</code>, wobei der Wert bei "ohne Minuspunkte" nicht unter 0 Punkte sinken kann.
+  <br>
+  <i>x</i> = ausgewählte korrekte Antwortmöglichkeiten<br>
+  <i>n</i> = Anzahl korrekter Antwortmöglichkeiten<br>
+  <i>y</i> = ausgewählte falsche Antwortmöglichkeiten<br>
+  <i>m</i> = Anzahl falscher Antwortmöglichkeiten<br>
+';
 $string['miquiz_create_questions'] = 'Fragen';
 $string['miquiz_create_questions_error'] = 'Ein Quiz ben&ouml;tigt mindestens drei Fragen!';
 $string['miquiz_create_questions_selected'] = '${numquestions} Fragen ausgew&auml;lt';
@@ -48,7 +60,7 @@ $string['miquiz_create_error_betweenendstart'] = 'Das Enddatum der Trainingsphas
 $string['miquiz_create_statsonlyforfinishedgames'] = 'Nur beendete Spiele in Statistiken ber&uuml;cksichtigen.';
 $string['miquiz_create_statsonlyforfinishedgames_help'] = 'Wenn diese Option aktiv ist werden in den Statistiken nur beendete Spiele ber&uuml;cksichtigt. Dies umfasst unter Anderem die Punktvergabe und die Berechnung der beantworten Fragen.';
 $string['miquiz_create_activate_training_phase'] = 'Trainingsphase aktivieren';
-$string['miquiz_create_activate_training_phase_help'] = 'Während der Trainingsphase sind nur Einzelspiele möglich (Training) und es werden keine Puntke vergeben.';
+$string['miquiz_create_activate_training_phase_help'] = 'Während der Trainingsphase sind nur Einzelspiele möglich (Training) und es werden keine Punkte vergeben.';
 
 $string['miquiz_view_overview'] = '&Uuml;bersicht';
 $string['miquiz_view_shortname'] = 'Abk&uuml;rzung';

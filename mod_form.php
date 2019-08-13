@@ -51,6 +51,7 @@ class mod_miquiz_mod_form extends moodleform_mod
             $options[3]  = get_string('miquiz_create_scoremode_3', 'miquiz');
             $options[4]  = get_string('miquiz_create_scoremode_4', 'miquiz');
             $mform->addElement('select', 'scoremode', get_string('miquiz_create_scoremode', 'miquiz'), $options);
+            $mform->addHelpButton('scoremode', 'miquiz_create_scoremode', 'miquiz');
         }
         $mform->addElement('advcheckbox', 'statsonlyforfinishedgames', get_string('miquiz_create_statsonlyforfinishedgames', 'miquiz'));
         $mform->addHelpButton('statsonlyforfinishedgames', 'miquiz_create_statsonlyforfinishedgames', 'miquiz');
@@ -75,6 +76,10 @@ class mod_miquiz_mod_form extends moodleform_mod
         $PAGE->requires->css(new moodle_url('/mod/miquiz/static/css/questionchooser.css'));
         $context = context_course::instance($COURSE->id);
         $categories = $DB->get_records('question_categories', array('contextid' => $context->id));
+        // require_once($CFG->libdir . '/questionlib.php');
+        // list($context2, $course2, $cm2) = get_context_info_array($context->id);
+        // $contexts = new question_edit_contexts($context2);
+        // question_category_select_menu($contexts);
         $questionchooser_categories = array();
         foreach ($categories as $category) {
             $questions = $DB->get_records('question', array('category' => $category->id));
