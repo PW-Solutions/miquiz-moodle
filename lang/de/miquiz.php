@@ -25,7 +25,7 @@ $string['miquiz_setting_questiontimetag_helper'] = 'Name des Fragetags, dass die
 $string['miquiz_setting_questiondefaulttime_title'] = 'Default-Beantwortungszeit (in s)';
 $string['miquiz_setting_questiondefaulttime_helper'] = 'Falls für eine Frage keine Beantwortungszeit festgelegt wurde, wird diese Zeit in Sekunden verwendet.';
 
-$string['miquiz_create_name'] = 'Quiz Name';
+$string['miquiz_create_name'] = 'Quiz-Name';
 $string['miquiz_create_short_name'] = 'Abk&uuml;rzung';
 $string['miquiz_create_timeuntilproductive'] = 'Ende der Trainingsphase';
 $string['miquiz_create_scoremode'] = 'Bewertungsmodus';
@@ -46,17 +46,29 @@ $string['miquiz_create_scoremode_help'] = 'Punktvergabe während der Produktivph
   <i>y</i> = ausgewählte falsche Antwortmöglichkeiten<br>
   <i>m</i> = Anzahl falscher Antwortmöglichkeiten<br>
 ';
+$string['miquiz_create_game_modes'] = 'Spielmodus';
+$string['miquiz_create_game_modes_help'] = 'Spielbare Formate während der Produktivphase.
+  Kann jederzeit geändert werden.
+  <br><br>
+  <strong>Zufallsduell</strong>: Ein/e zufällige/r Gegner/in wird ausgewählt.<br>
+  <strong>Gezieltes Duell</strong>: Gegner/in kann ausgewählt werden.<br>
+  <br>
+  Unabhängig vom Spielmodus kann immer nur <strong>ein</strong> Spiel mit der/m gleichen Gegner/in gespielt werden.
+';
+$string['miquiz_create_game_mode_random_fight'] = 'Zufallsduell';
+$string['miquiz_create_game_mode_picked_fight'] = 'Gezieltes Duell';
 $string['miquiz_create_questions'] = 'Fragen';
 $string['miquiz_create_questions_error'] = 'Ein Quiz ben&ouml;tigt mindestens drei Fragen!';
 $string['miquiz_create_questions_selected'] = '${numquestions} Fragen ausgew&auml;lt';
 $string['miquiz_create_questions_search'] = 'Suche';
 $string['miquiz_create_questions_no_questions'] = 'Keine Fragen in diesem Kurs vorhanden.';
 $string['miquiz_create_questions_create_questions'] = 'Bitte mindestens drei Fragen in diesem Kurs erstellen.';
-$string['miquiz_create_assesstimestart'] = 'Quiz Startdatum';
-$string['miquiz_create_assesstimefinish'] = 'Quiz Enddatum';
+$string['miquiz_create_assesstimestart'] = 'Quiz-Startdatum';
+$string['miquiz_create_assesstimefinish'] = 'Quiz-Enddatum';
 $string['miquiz_create_error_unique'] = 'Diese Abk&uuml;rzung muss einmalig sein.';
-$string['miquiz_create_error_endbeforestart'] = 'Das Quiz Enddatum muss später als das Quiz Startdatum sein.';
-$string['miquiz_create_error_betweenendstart'] = 'Das Enddatum der Trainingsphase muss zwischen dem Quiz Start- und Enddatum sein.';
+$string['miquiz_create_error_endbeforestart'] = 'Das Quiz-Enddatum muss nach dem Quiz-Startdatum liegen.';
+$string['miquiz_create_error_betweenendstart'] = 'Das Enddatum der Trainingsphase muss zwischen dem Quiz-Start- und -Enddatum liegen.';
+$string['miquiz_create_error_game_modes'] = 'Es muss mindestens ein Spielmodus ausgewählt werden.';
 $string['miquiz_create_statsonlyforfinishedgames'] = 'Nur beendete Spiele in Statistiken ber&uuml;cksichtigen.';
 $string['miquiz_create_statsonlyforfinishedgames_help'] = 'Wenn diese Option aktiv ist werden in den Statistiken nur beendete Spiele ber&uuml;cksichtigt. Dies umfasst unter Anderem die Punktvergabe und die Berechnung der beantworten Fragen.';
 $string['miquiz_create_activate_training_phase'] = 'Trainingsphase aktivieren';

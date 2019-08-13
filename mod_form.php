@@ -56,6 +56,13 @@ class mod_miquiz_mod_form extends moodleform_mod
         $mform->addElement('advcheckbox', 'statsonlyforfinishedgames', get_string('miquiz_create_statsonlyforfinishedgames', 'miquiz'));
         $mform->addHelpButton('statsonlyforfinishedgames', 'miquiz_create_statsonlyforfinishedgames', 'miquiz');
 
+        $gameModes = [];
+        $gameModes[] = $mform->createElement('advcheckbox', 'game_mode_random_fight', get_string('miquiz_create_game_mode_random_fight', 'miquiz'));
+        $gameModes[] = $mform->createElement('advcheckbox', 'game_mode_picked_fight', get_string('miquiz_create_game_mode_picked_fight', 'miquiz'));
+        $mform->addGroup($gameModes, 'game_modes', get_string('miquiz_create_game_modes', 'miquiz'), ['<br>'], false);
+        $mform->addHelpButton('game_modes', 'miquiz_create_game_modes', 'miquiz');
+        $mform->setDefault('game_mode_random_fight', '1');
+
         $mform->addElement('date_time_selector', 'assesstimestart', get_string('miquiz_create_assesstimestart', 'miquiz'));
 
         $mform->addElement('advcheckbox', 'has_training_phase', get_string('miquiz_create_activate_training_phase', 'miquiz'));
@@ -178,6 +185,10 @@ class mod_miquiz_mod_form extends moodleform_mod
                $data['timeuntilproductive'] < $data['assesstimestart']) {
                 $errors['timeuntilproductive'] = get_string('miquiz_create_error_betweenendstart', 'miquiz');
             }
+        }
+
+        if (empty($data['game_mode_random_fight']) && empty($data['game_mode_picked_fight'])) {
+            $errors['game_modes'] = get_string('miquiz_create_error_game_modes', 'miquiz');
         }
 
         // Check open and close times are consistent.

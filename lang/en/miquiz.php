@@ -46,6 +46,17 @@ $string['miquiz_create_scoremode_help'] = 'Rating during the productive phase.
   <i>y</i> = selected wrong possibilities<br>
   <i>m</i> = number of wrong possibilities<br>
 ';
+$string['miquiz_create_game_modes'] = 'Game Mode';
+$string['miquiz_create_game_modes_help'] = 'Playable game modes during the productive phase.
+  Can be changed later.
+  <br><br>
+  <strong>Random duel</strong>: A random opponent is selected.<br>
+  <strong>Picked duel</strong>: A specifc opponent can be selected.<br>
+  <br>
+  Regardless of the game mode, there is only one game at the time possible with the <strong>same</strong> opponent.
+';
+$string['miquiz_create_game_mode_random_fight'] = 'Random duel';
+$string['miquiz_create_game_mode_picked_fight'] = 'Picked duel';
 $string['miquiz_create_questions'] = 'Questions';
 $string['miquiz_create_questions_error'] = 'A quiz requires at least three questions!';
 $string['miquiz_create_questions_selected'] = '${numquestions} questions selected';
@@ -57,6 +68,7 @@ $string['miquiz_create_assesstimefinish'] = 'Quiz Stop Date';
 $string['miquiz_create_error_unique'] = 'Has to be unique.';
 $string['miquiz_create_error_endbeforestart'] = 'Quiz end date date has to be later than quiz start date.';
 $string['miquiz_create_error_betweenendstart'] = 'Training phase ending time has to be between quiz start and end date.';
+$string['miquiz_create_error_game_modes'] = 'Select at least one game mode!';
 $string['miquiz_create_statsonlyforfinishedgames'] = 'Consider only finished games in statistics.';
 $string['miquiz_create_statsonlyforfinishedgames_help'] = 'If this flag is set, only finished games are considered in the statistics. This includes the rating and calculation of answered questions.';
 $string['miquiz_create_activate_training_phase'] = 'Enable training phase';
