@@ -51,6 +51,8 @@ function miquiz_update_instance($miquiz)
     $miquiz_fresh->short_name = $miquiz->short_name;
     $miquiz_fresh->questions = $miquiz->questions;
     $miquiz_fresh->statsonlyforfinishedgames = $miquiz->statsonlyforfinishedgames;
+    $miquiz_fresh->game_mode_random_fight = $miquiz->game_mode_random_fight;
+    $miquiz_fresh->game_mode_picked_fight = $miquiz->game_mode_picked_fight;
 
     $updateResponse = [];
     try {

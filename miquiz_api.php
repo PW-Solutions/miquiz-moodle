@@ -458,18 +458,27 @@ class miquiz
             $scoremode = $scoreModes[$miquiz->scoremode];
         }
 
+        $gameModes = [];
+        if (!empty($miquiz->game_mode_random_fight)) {
+            $gameModes[] = 'random-fight';
+        }
+
+        if (!empty($miquiz->game_mode_picked_fight)) {
+            $gameModes[] = 'picked-fight';
+        }
+
         // Delete old tasks for this category
         miquiz::deleteTasks($miquiz);
 
         // Configure current state
         $currentState = self::getStateAtTimestamp($stateTimestamps, $currentTime);
-        $currentStateConfig = self::getConfigForState($currentState, $scoremode);
+        $currentStateConfig = self::getConfigForState($currentState, $scoremode, $gameModes);
         self::scheduleTaskForCategory($categoryId, $stateTimestamps[$currentState], $currentStateConfig);
 
         // Configure future states
         $futureStates = self::getStatesAfterTimestamp($stateTimestamps, $currentTime);
         foreach ($futureStates as $state) {
-            $stateConfig = self::getConfigForState($state, $scoremode);
+            $stateConfig = self::getConfigForState($state, $scoremode, $gameModes);
             self::scheduleTaskForCategory($categoryId, $stateTimestamps[$state], $stateConfig);
         }
 
@@ -499,16 +508,16 @@ class miquiz
         );
     }
 
-    private static function getConfigForState($state, $scoreMode)
+    private static function getConfigForState($state, $scoreMode, $gameModes)
     {
         $active = in_array($state, ['training', 'productive']);
         $scoreStrategy = $state === 'productive' ? $scoreMode : 'no_rating';
-        $enabledModes = $state === 'productive' ? 'random-fight' : 'training';
+        $enabledModes = $state === 'productive' ? $gameModes : ['training'];
 
         return [
             'active' => $active,
             'scoreStrategy' => $scoreStrategy,
-            'enabledModes' => $enabledModes,
+            'enabledModes' => implode(',', $enabledModes),
         ];
     }
 
