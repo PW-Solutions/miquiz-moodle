@@ -7,6 +7,10 @@ $string['modulenameplural'] = 'MI-Quizzes';
 
 $instance_name = get_config('mod_miquiz', 'instancename');
 $string['modulename_help'] = 'Challenge your students in a ' . $instance_name . ' duel.';
+$additional_info = get_config('mod_miquiz', 'additional_info');
+if (!empty($additional_info)) {
+  $string['modulename_help'] .= $additional_info;
+}
 
 $string['miquiz_index_title'] = $instance_name .' Course Overview';
 $string['miquiz_index_table_status'] = 'Status';
@@ -14,6 +18,8 @@ $string['miquiz_index_reports'] = 'Number of reports'; //Anzahl Reports
 $string['miquiz_index_download'] = 'Download statistics';
 $string['miquiz_index_noquizselected'] = 'Please select at least one quiz!';
 
+$string['miquiz_setting_info_title'] = 'Additional info';
+$string['miquiz_setting_info_helper'] = 'Visible when creating a new instance.';
 $string['miquiz_setting_instanceurl_title'] = 'URL for quiz instance';
 $string['miquiz_setting_instanceurl_helper'] = 'Please add the full url to the quiz instance';
 $string['miquiz_setting_apikey_title'] = 'API key for quiz instance';

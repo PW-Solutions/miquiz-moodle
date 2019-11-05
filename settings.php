@@ -42,4 +42,12 @@ if ($hassiteconfig) {
         '60',
         PARAM_TEXT
     ));
+
+    $settings->add(new admin_setting_confightmleditor(
+        'mod_miquiz/additional_info',
+        get_string('miquiz_setting_info_title', 'miquiz'),
+        get_string('miquiz_setting_info_helper', 'miquiz'),
+        '',
+        PARAM_RAW
+    ));
 }

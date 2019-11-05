@@ -7,13 +7,19 @@ $string['modulenameplural'] = 'MI-Quizze';
 
 //$instance_name ='';
 $instance_name = get_config('mod_miquiz', 'instancename');
-$string['modulename_help'] = 'Erstelle eine ' . $instance_name . ' Duell';
+$string['modulename_help'] = 'Erstelle ein ' . $instance_name . ' Duell.';
+$additional_info = get_config('mod_miquiz', 'additional_info');
+if (!empty($additional_info)) {
+  $string['modulename_help'] .= $additional_info;
+}
 
 $string['miquiz_index_title'] = $instance_name .' Kurs &Uuml;bersicht';
 $string['miquiz_index_reports'] = 'Anzahl Reports';
 $string['miquiz_index_download'] = 'Statistiken herunterladen';
 $string['miquiz_index_noquizselected'] = 'Bitte w&auml;hlen sie mindestens ein Quiz aus!';
 
+$string['miquiz_setting_info_title'] = 'Zusätzliche Info';
+$string['miquiz_setting_info_helper'] = 'Erscheint beim Erstellen der Aktivität';
 $string['miquiz_setting_instanceurl_title'] = 'URL zur Quiz-Instanz';
 $string['miquiz_setting_instanceurl_helper'] = 'Bitte die komplette URL zur Quiz-Instanz angeben, mit der dieses Plugin arbeiten soll';
 $string['miquiz_setting_apikey_title'] = 'API-Key zur Quiz-Instanz';
