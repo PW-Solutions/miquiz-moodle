@@ -1,0 +1,26 @@
+<table id="datatable" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+<thead>
+{{#quiz_table_headings}}
+<th class="th-sm">{{{name}}}</th>
+{{/quiz_table_headings}}
+</thead><tbody>
+    {{#quiz_table_body}}
+    <tr>
+        <td><input type="checkbox" name="add2download" value="{{miquizcategoryid}}" size="64"></td>
+        <td><a href="view.php?id={{id}}">{{name}}</a></td>
+        <td>{{assesstimestart}}</td>
+        <td>{{assesstimefinish}}</td>
+        <td>{{num_questions}}</td>
+        <td>{{num_questions_with_reports}}</td>
+        <td>{{status}}</td>
+        <td>{{answeredQuestions_total}}</td>
+        <td>{{answeredQuestions_correct}}</td>
+        <td>{{answeredQuestions_wrong}}</td>
+    </tr>
+    {{/quiz_table_body}}
+</tbody></table>
+<a href="#" onclick="generateAndFollowDownloadLink();"><i class="icon fa fa-download fa-fw " aria-hidden="true" aria-label=""></i> {{{ i18n_miquiz_index_download }}}</a>
+
+<script type="text/javascript">if (typeof $ !== 'undefined') var $x = jQuery.noConflict();</script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-3.3.1/dt-1.10.18/datatables.min.js"></script>
+<script type="text/javascript">var $y = jQuery.noConflict(); if (typeof $ !== 'undefined') $=$x;</script>

@@ -21,11 +21,11 @@ function miquiz_add_instance($miquiz)
     $miquiz->miquizcategoryid = $miquiz_ids["catid"];
     $miquiz->id = $DB->insert_record("miquiz", $miquiz);
 
-    foreach ($miquiz->questions as $question) {
+    foreach (explode(',', $miquiz->questions) as $questionId) {
         $added_question = array(
             'quizid' => $miquiz->id,
-            'questionid' => $question,
-            'miquizquestionid' => $miquiz_ids["qids"][$question],
+            'questionid' => $questionId,
+            'miquizquestionid' => $miquiz_ids["qids"][$questionId],
             'timecreated' => time()
         );
         $DB->insert_record("miquiz_questions", $added_question);
@@ -46,12 +46,36 @@ function miquiz_update_instance($miquiz)
     $miquiz_fresh->assesstimestart = $miquiz->assesstimestart;
     $miquiz_fresh->assesstimefinish = $miquiz->assesstimefinish;
     $miquiz_fresh->timeuntilproductive = $miquiz->timeuntilproductive;
+    $miquiz_fresh->has_training_phase = $miquiz->has_training_phase;
     $miquiz_fresh->name = $miquiz->name;
     $miquiz_fresh->short_name = $miquiz->short_name;
+    $miquiz_fresh->questions = $miquiz->questions;
+    $miquiz_fresh->statsonlyforfinishedgames = $miquiz->statsonlyforfinishedgames;
+    $miquiz_fresh->game_mode_random_fight = $miquiz->game_mode_random_fight;
+    $miquiz_fresh->game_mode_picked_fight = $miquiz->game_mode_picked_fight;
+
+    $updateResponse = [];
     try {
-        miquiz::update($miquiz_fresh);
+        $updateResponse = miquiz::update($miquiz_fresh);
     } catch (Exception $e) {
         echo $e->getMessage();
+    }
+
+    if (!empty($updateResponse['addedQuestionIds'])) {
+        foreach ($updateResponse['addedQuestionIds'] as $questionId) {
+            $questionToAdd = [
+                'quizid' => $miquiz->id,
+                'questionid' => $questionId,
+                'miquizquestionid' => $updateResponse['miQuizQuestionIds'][$questionId],
+                'timecreated' => time()
+            ];
+            $DB->insert_record('miquiz_questions', $questionToAdd);
+        }
+    }
+
+    if (!empty($updateResponse['removedQuestionIds'])) {
+        $deleteSelect = 'quizid = ' . $miquiz->id . ' AND questionid IN (' . implode(',', $updateResponse['removedQuestionIds']) . ')';
+        $DB->delete_records_select('miquiz_questions', $deleteSelect);
     }
 
     return $DB->update_record('miquiz', $miquiz);

@@ -19,7 +19,7 @@ class mod_miquiz_mod_form extends moodleform_mod
 
     public function definition()
     {
-        global $CFG, $COURSE, $DB, $OUTPUT;
+        global $CFG, $COURSE, $DB, $OUTPUT, $PAGE;
 
         $mform =& $this->_form;
 
@@ -44,38 +44,87 @@ class mod_miquiz_mod_form extends moodleform_mod
         $mform->addRule('short_name', get_string('maximumchars', '', 10), 'maxlength', 10, 'client');
 
         if ($this->_instance == '') {
-            $options=array(); //use string keys as keys since conversion to numbers more complicated
+            $options = []; //use string keys as keys since conversion to numbers more complicated
             $options[0]  = get_string('miquiz_create_scoremode_0', 'miquiz');
             $options[1]  = get_string('miquiz_create_scoremode_1', 'miquiz');
             $options[2]  = get_string('miquiz_create_scoremode_2', 'miquiz');
             $options[3]  = get_string('miquiz_create_scoremode_3', 'miquiz');
             $options[4]  = get_string('miquiz_create_scoremode_4', 'miquiz');
             $mform->addElement('select', 'scoremode', get_string('miquiz_create_scoremode', 'miquiz'), $options);
+            $mform->addHelpButton('scoremode', 'miquiz_create_scoremode', 'miquiz');
         }
+        $mform->addElement('advcheckbox', 'statsonlyforfinishedgames', get_string('miquiz_create_statsonlyforfinishedgames', 'miquiz'));
+        $mform->addHelpButton('statsonlyforfinishedgames', 'miquiz_create_statsonlyforfinishedgames', 'miquiz');
+
+        $gameModes = [];
+        $gameModes[] = $mform->createElement('advcheckbox', 'game_mode_random_fight', get_string('miquiz_create_game_mode_random_fight', 'miquiz'));
+        $gameModes[] = $mform->createElement('advcheckbox', 'game_mode_picked_fight', get_string('miquiz_create_game_mode_picked_fight', 'miquiz'));
+        $mform->addGroup($gameModes, 'game_modes', get_string('miquiz_create_game_modes', 'miquiz'), ['<br>'], false);
+        $mform->addHelpButton('game_modes', 'miquiz_create_game_modes', 'miquiz');
+        $mform->setDefault('game_mode_random_fight', '1');
 
         $mform->addElement('date_time_selector', 'assesstimestart', get_string('miquiz_create_assesstimestart', 'miquiz'));
+
+        $mform->addElement('advcheckbox', 'has_training_phase', get_string('miquiz_create_activate_training_phase', 'miquiz'));
+        $mform->setDefault('has_training_phase', '1');
+        $mform->addHelpButton('has_training_phase', 'miquiz_create_activate_training_phase', 'miquiz');
         $mform->addElement('date_time_selector', 'timeuntilproductive', get_string('miquiz_create_timeuntilproductive', 'miquiz'));
+        $mform->disabledIf('timeuntilproductive', 'has_training_phase');
+
         $mform->addElement('date_time_selector', 'assesstimefinish', get_string('miquiz_create_assesstimefinish', 'miquiz'));
+
 
         $this->standard_intro_elements(get_string('description', 'miquiz'));
 
-        if ($this->_instance == '') {
-            // https://docs.moodle.org/dev/Question_database_structure
-            $context = context_course::instance($COURSE->id);
-            $categories = $DB->get_records('question_categories', array('contextid' => $context->id));
-            $question_choice = array();
-            foreach ($categories as $category) {
-                $questions = $DB->get_records('question', array('category' => $category->id));
-                foreach ($questions as $question) {
-                    if ($question->qtype =='multichoice') {
-                        $question_choice[$question->id] = $question->name.' ('.$category->name.')';
-                    }
+        $mform->addElement('header', 'modstandardelshdr', get_string("miquiz_create_questions", "miquiz").'<i class="icon fa fa-exclamation-circle text-danger fa-fw " aria-hidden="true" title="Required" aria-label="Required"></i>');
+        $mform->setExpanded('modstandardelshdr');
+
+        // https://docs.moodle.org/dev/Question_database_structure
+        $PAGE->requires->css(new moodle_url('/mod/miquiz/static/css/questionchooser.css'));
+        $context = context_course::instance($COURSE->id);
+        $categories = $DB->get_records('question_categories', array('contextid' => $context->id));
+        // require_once($CFG->libdir . '/questionlib.php');
+        // list($context2, $course2, $cm2) = get_context_info_array($context->id);
+        // $contexts = new question_edit_contexts($context2);
+        // question_category_select_menu($contexts);
+        $questionchooser_categories = array();
+        foreach ($categories as $category) {
+            $questions = $DB->get_records('question', array('category' => $category->id));
+            if (empty($questions)) {
+                continue;
+            }
+            $question_dtos = array();
+            foreach ($questions as $question) {
+                if ($question->qtype =='multichoice') {
+                    array_push($question_dtos, array(
+                        "question_id" => $question->id,
+                        "question_name" => $question->name
+                    ));
                 }
             }
-            $select = $mform->addElement('select', 'questions', get_string("miquiz_create_questions", "miquiz"), $question_choice);
-            $select->setMultiple(true);
-            $mform->addRule('questions', null, 'required', null, 'client');
+            $questionchooser_categories[] = array(
+                "category_id" => $category->id,
+                "category_name" => $category->name,
+                "questions" => $question_dtos
+            );
         }
+
+        $customel_rendered = $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/questionchooser', array(
+            "i18n_miquiz_create_questions_search" => get_string("miquiz_create_questions_search", "miquiz"),
+            "i18n_miquiz_create_questions_selected" => get_string("miquiz_create_questions_selected", "miquiz"),
+            'i18n_miquiz_create_questions_no_questions' => get_string('miquiz_create_questions_no_questions', 'miquiz'),
+            'i18n_miquiz_create_questions_create_questions' => get_string('miquiz_create_questions_create_questions', 'miquiz'),
+            "categories" => $questionchooser_categories,
+            'course_id' => $this->course->id,
+            'hasCategories' => count($questionchooser_categories) > 0,
+        ));
+        $questionIds = $this->_instance === '' ? '' : implode(',', miquiz::getQuestionIdsForMiQuizId($this->_instance));
+        // $questionIds = '';
+        $fields = array(
+            $mform->createElement('hidden', 'questions', $questionIds),
+            $mform->createElement('html', $customel_rendered));
+        $mform->addGroup($fields, 'questiong', '', '', false);
+        $mform->setType('questions', PARAM_NOTAGS);
 
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
@@ -117,38 +166,29 @@ class mod_miquiz_mod_form extends moodleform_mod
      **/
     public function validation($data, $files)
     {
-        global $DB;
         $errors = parent::validation($data, $files);
 
-        if ($this->current->instance) {
-            $activities = $DB->get_records("miquiz", array("short_name" => $data["short_name"]));
-            if (!empty($activities)) {
-                $activity = array_pop($activities);
-            }
-        }
+        $this->local_validation($errors, $data, $files);
+        $this->external_validation($errors, $data, $files);
 
-        # check categories in miquiz
-        $moduleid = miquiz::get_module_id();
-        $categories = miquiz::api_get("api/categories");
-        $exists_in_miquiz = false;
-        foreach ($categories as $category) {
-            if ($category["name"] === $data["short_name"]) {
-                $exists_in_miquiz = !isset($activity) || strval($category['id']) !== $activity->miquizcategoryid;
-                break;
-            }
-        }
+        return $errors;
+    }
 
-        if ($exists_in_miquiz) {
-            $errors['short_name'] = get_string('miquiz_create_error_unique', 'miquiz');
-        }
-
+    private function local_validation(&$errors, $data, $files)
+    {
         if ($data['assesstimestart'] >= $data['assesstimefinish']) {
             $errors['assesstimefinish'] = get_string('miquiz_create_error_endbeforestart', 'miquiz');
         }
 
-        if ($data['timeuntilproductive'] >= $data['assesstimefinish'] ||
-           $data['timeuntilproductive'] < $data['assesstimestart']) {
-            $errors['timeuntilproductive'] = get_string('miquiz_create_error_betweenendstart', 'miquiz');
+        if ($data['has_training_phase']) {
+            if ($data['timeuntilproductive'] >= $data['assesstimefinish'] ||
+               $data['timeuntilproductive'] < $data['assesstimestart']) {
+                $errors['timeuntilproductive'] = get_string('miquiz_create_error_betweenendstart', 'miquiz');
+            }
+        }
+
+        if (empty($data['game_mode_random_fight']) && empty($data['game_mode_picked_fight'])) {
+            $errors['game_modes'] = get_string('miquiz_create_error_game_modes', 'miquiz');
         }
 
         // Check open and close times are consistent.
@@ -163,7 +203,35 @@ class mod_miquiz_mod_form extends moodleform_mod
             $errors['password'] = get_string('emptypassword', 'lesson');
         }
 
-        return $errors;
+
+        if (empty($data['questions']) || count(explode(',', $data['questions'])) < 3) {
+            $errors['questiong'] = get_string('miquiz_create_questions_error', 'miquiz');
+        }
+    }
+
+    private function external_validation(&$errors, $data, $files)
+    {
+        global $DB;
+        if ($this->current->instance) {
+            $activities = $DB->get_records("miquiz", array("short_name" => $data["short_name"]));
+            if (!empty($activities)) {
+                $activity = array_pop($activities);
+            }
+        }
+
+        # check categories in miquiz
+        $categories = miquiz::api_get("api/categories");
+        $exists_in_miquiz = false;
+        foreach ($categories as $category) {
+            if ($category["name"] === $data["short_name"]) {
+                $exists_in_miquiz = !isset($activity) || strval($category['id']) !== $activity->miquizcategoryid;
+                break;
+            }
+        }
+
+        if ($exists_in_miquiz) {
+            $errors['short_name'] = get_string('miquiz_create_error_unique', 'miquiz');
+        }
     }
 
     /**

@@ -19,6 +19,7 @@
 
         <!-- If this time is over miquiz will be in productive mode-->
         <FIELD NAME="timeuntilproductive" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="has_training_phase" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false"/>
         <FIELD NAME="short_name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
         <!-- If score_mode is:
         0: keine Punktvergabe
@@ -30,6 +31,9 @@ Antwortmöglichkeiten)
 Antwortmöglichkeiten + gewählte/mögliche richtige Antwortmöglichkeiten)
         set respective scoring mode-->
         <FIELD NAME="scoremode" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="game_mode_random_fight" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="game_mode_picked_fight" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="statsonlyforfinishedgames" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false"/>
         <FIELD NAME="miquizcategoryid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>

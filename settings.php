@@ -18,22 +18,6 @@ if ($hassiteconfig) {
     ));
 
     $settings->add(new admin_setting_configtext(
-        'mod_miquiz/loginprovider',
-        get_string('miquiz_setting_loginprovider_title', 'miquiz'),
-        get_string('miquiz_setting_loginprovider_helper', 'miquiz'),
-        'default',
-        PARAM_TEXT
-    ));
-
-    $settings->add(new admin_setting_configtext(
-        'mod_miquiz/modulename',
-        get_string('miquiz_setting_modulename_title', 'miquiz'),
-        get_string('miquiz_setting_modulename_helper', 'miquiz'),
-        'Moodle',
-        PARAM_TEXT
-    ));
-
-    $settings->add(new admin_setting_configtext(
         'mod_miquiz/instancename',
         get_string('miquiz_setting_instancename_title', 'miquiz'),
         get_string('miquiz_setting_instancename_helper', 'miquiz'),
@@ -57,5 +41,13 @@ if ($hassiteconfig) {
         get_string('miquiz_setting_questiondefaulttime_helper', 'miquiz'),
         '60',
         PARAM_TEXT
+    ));
+
+    $settings->add(new admin_setting_confightmleditor(
+        'mod_miquiz/additional_info',
+        get_string('miquiz_setting_info_title', 'miquiz'),
+        get_string('miquiz_setting_info_helper', 'miquiz'),
+        '',
+        PARAM_RAW
     ));
 }

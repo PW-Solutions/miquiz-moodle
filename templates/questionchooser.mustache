@@ -1,0 +1,90 @@
+<div>
+  {{#hasCategories}}
+  <input type="text" id="questionsearch" size="15" onkeyup="updatequestionview(undefined);" placeholder="{{{ i18n_miquiz_create_questions_search }}}"></input>
+  <ul class="questionul">
+  {{#categories}}
+  <li><div class="questiondiv"><span class="caret"></span><label class="questionlabel"><input type="checkbox" onclick="updatequestionview(this);" class="categorycheckbox"> {{category_name}}</label></div><ul class="nested">
+      {{#questions}}
+          <li><div class="questiondiv"><label class="questionlabel"><input type="checkbox" class="questioncheckbox" onclick="updatequestionview(this);" value="{{question_id}}"> {{question_name}}</label>
+          <a href="/question/preview.php?id={{question_id}}&courseid={{category_id}}" target="popup" onclick="window.open('/question/preview.php?id={{question_id}}&courseid={{category_id}}','popup','width=600,height=600'); return false;" style="cursor: pointer;">
+              <i class="icon fa fa-search-plus fa-fw iconsmall" aria-hidden="true" title="Preview" aria-label="Preview"></i>
+          </a></div></li>
+      {{/questions}}
+  </ul></li>
+  {{/categories}}
+  </ul>
+  <div id="questionsstatus"></div>
+  {{/hasCategories}}
+  {{^hasCategories}}
+    {{ i18n_miquiz_create_questions_no_questions }} <a href="/question/edit.php?courseid={{ course_id }}" target="_blank">{{ i18n_miquiz_create_questions_create_questions }}</a>
+  {{/hasCategories}}
+</div>
+<script>
+var toggler = document.getElementsByClassName("caret");
+var i;
+for (i=0; i<toggler.length; i++) {
+    toggler[i].addEventListener("click", function() {
+        this.parentElement.parentElement.querySelector(".nested").classList.toggle("active");
+        this.classList.toggle("caret-down");
+    });
+}
+updatequestionview = function(el, init){
+    // check all questions in category if category checkbox is clicked
+    if(el!=undefined && el.classList.contains("categorycheckbox")){
+        var subquestions = el.parentElement.parentElement.parentElement.querySelectorAll(".questioncheckbox");
+        for (i=0; i<subquestions.length; i++){
+            subquestions[i].checked=el.checked;
+        }
+    }
+
+    var searchText = document.getElementById("questionsearch").value.toLowerCase();
+    var questioninputs = document.querySelectorAll(".questioncheckbox");
+    var questionids = [];
+
+    // on init retrieve questionids from hidden field
+    if(init) {
+        questionids = document.querySelector("input[name=questions]").value.split(',').filter(Number);
+    }
+
+    // sync hidden field and question checkboxes
+    for (i=0; i<questioninputs.length; i++){
+        if(questioninputs[i].checked)
+            questionids.push(parseInt(questioninputs[i].value));
+        else if(init && questionids.includes(questioninputs[i].value)){
+            questioninputs[i].checked = true;
+        }
+        if(searchText != "" && !questioninputs[i].parentElement.innerText.toLowerCase().includes(searchText))
+            questioninputs[i].parentElement.parentElement.style.display="none";
+        else
+            questioninputs[i].parentElement.parentElement.style.display="flex";
+    }
+    document.getElementById("questionsstatus").innerHTML = "{{{ i18n_miquiz_create_questions_selected }}}".replace("${numquestions}", questionids.length);
+    document.querySelector("input[name=questions]").value = questionids;
+
+    // update category checkboxes
+    if(el!=undefined || init){
+        var categoryinputs = document.querySelectorAll(".categorycheckbox");
+        for (i=0; i<categoryinputs.length; i++){
+            var categoryinput_numchecked = 0;
+            var categoryquestioninputs = categoryinputs[i].parentElement.parentElement.parentElement.querySelectorAll(".questioncheckbox");
+            for (q=0; q<categoryquestioninputs.length; q++){
+                if(categoryquestioninputs[q].checked){
+                    categoryinput_numchecked++;
+                }
+            }
+
+            if (categoryinput_numchecked == 0){
+                categoryinputs[i].indeterminate = false;
+                categoryinputs[i].checked=false;
+            } else if (categoryinput_numchecked == categoryquestioninputs.length){
+                categoryinputs[i].indeterminate = false;
+                categoryinputs[i].checked=true;
+            } else if (categoryinput_numchecked > 0){
+                categoryinputs[i].checked=false;
+                categoryinputs[i].indeterminate = true;
+            }
+        }
+    }
+}
+updatequestionview(undefined, true);
+</script>

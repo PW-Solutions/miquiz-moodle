@@ -1,0 +1,405 @@
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/2.7.0/svg.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.6/vue.min.js"></script>
+<script type="text/javascript" src="https://unpkg.com/v-tooltip"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/nvd3@1.8.6/build/nv.d3.min.js"></script>
+
+<link href="https://cdn.jsdelivr.net/npm/nvd3@1.8.6/build/nv.d3.min.css" rel="stylesheet" type="text/css">
+
+<div class="mod-mi--view">
+
+  <div class="clearfix">
+    <form action="{{ miquizurl }}" target="_blank" class="pull-left">
+      <input class="btn btn-primary" type="submit" value="{{{ i18n_miquiz_view_openlink }}}">
+    </form>
+    {{#is_manager}}
+    <div class="pull-right">
+      <a href="{{url}}&download" class="btn btn-primary">
+        <i class="icon fa fa-download fa-fw fa-white" aria-hidden="true" aria-label=""></i> {{{ i18n_miquiz_index_download }}}
+      </a>
+      <button onclick="miquizSyncQuestions()" id="mod-mi--btn-sync-questions" class="btn btn-primary">
+        <i class="icon fa fa-refresh fa-fw fa-white" aria-hidden="true" aria-label=""></i> {{{ i18n_miquiz_sync_questions }}}
+      </button>
+    </div>
+    {{/is_manager}}
+  </div><br>
+
+  <div><h4><b>{{{ instance_name }}}</b>: {{ name }} ({{ short_name }})</h4></div>
+  <div>{{{ description }}}</div>
+
+  <div class="mi-cockpit">
+    <div class="mi-cockpit-section">
+      <div class="mi-cockpit-timeline" id="timeline"></div>
+    </div>
+    <div class="mi-cockpit-section">
+      <div class="mi-cockpit-line">
+        <b>{{{ i18n_miquiz_view_scoremode }}}</b>
+        <div>{{{ i18n_miquiz_create_scoremode }}}</div>
+        {{#statsonlyforfinishedgames}}
+        <div>({{{ i18n_miquiz_view_statsonlyforfinishedgames }}})</div>
+        {{/statsonlyforfinishedgames}}
+      </div>
+      <div class="mi-cockpit-line">
+        <b>{{{ i18n_miquiz_view_game_modes }}}</b>
+        <div>{{{ i18n_miquiz_enabled_game_modes }}}</div>
+      </div>
+      <div class="mi-cockpit-line">
+        <b>{{{ i18n_miquiz_view_numquestions }}}</b>
+        <div>{{{ i18n_miquiz_cockpit_total }}}: {{ numquestions }}</div>
+        <div>{{{ i18n_miquiz_cockpit_with_reports }}}: {{ numquestions_with_reports }}</div>
+      </div>
+    </div>
+    {{#is_manager}}
+    <div class="mi-cockpit-section">
+      <div class="mi-cockpit-line">
+        <b>{{{ i18n_miquiz_view_answeredquestions }}}</b>
+        <div>
+          {{{ i18n_miquiz_cockpit_total }}}: {{ answeredQuestions_total }}
+          ({{{ i18n_miquiz_cockpit_correct }}}: {{ answeredQuestions_correct }}, {{{ i18n_miquiz_cockpit_incorrect }}}: {{ answeredQuestions_wrong }})
+        </div>
+        <div id="piechartbox"></div>
+      </div>
+    </div>
+    {{/is_manager}}
+  </div>
+
+  {{#is_manager}}
+
+  <div data-toggle="collapse" href="#mod-mi--section-questions">
+    <span>{{{ i18n_miquiz_view_questions }}}</span>
+  </div>
+  <div class="mod-mi--section collapse in show" id="mod-mi--section-questions">
+  {{#categories}}
+    <span class="badge">{{ category_name }}</span>
+    <ul class="list-group">
+    {{#questions}}
+      <li class="list-group-item">
+        <a href="/question/preview.php?id={{question_id}}&courseid={{category_id}}" target="popup" onclick="window.open('/question/preview.php?id={{question_id}}&courseid={{category_id}}','popup','width=600,height=600'); return false;" style="cursor: pointer;">{{question_name}}</a>
+        <ul class="list-group">
+        {{#reports}}
+          <li class="list-group-item">
+            <u>{{ report_category }}</u><br/>
+            {{ report_message }}<br/>
+            <i>{{ report_author }}</i>
+          </li>
+        {{/reports}}
+        </ul>
+      </li>
+    {{/questions}}
+    </ul>
+  {{/categories}}
+  </div>
+
+  <div data-toggle="collapse" href="#mod-mi--section-statistics">
+    <span>{{{ i18n_miquiz_view_statistics_user }}}</span>
+  </div>
+  <div class="mod-mi--section collapse in show" id="mod-mi--section-statistics">
+    <table id="userdatatable" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+      <thead>
+        <tr>
+          <th class="th-sm">{{{ i18n_miquiz_view_statistics_username }}}</th>
+          <th class="th-sm">{{{ i18n_miquiz_view_statistics_answeredquestionsabs }}}</th>
+          <th class="th-sm">{{{ i18n_miquiz_view_statistics_answeredquestionsrel }}}</th>
+          <th class="th-sm">{{{ i18n_miquiz_view_statistics_totalscore }}}</th>
+        </tr>
+      </thead>
+      <tbody>
+      {{#user_stats}}
+        <tr>
+          <td>{{ username }}</td>
+          <td>{{ answered_abs }}</td>
+          <td>{{ answered_rel }}</td>
+          <td>{{ score }} / {{ score_possible }}</td>
+        </tr>
+      {{/user_stats}}
+      </tbody>
+    </table>
+  </div>
+
+  {{/is_manager}}
+</div>
+
+<script type='text/javascript'>
+//config
+  has_training_phase = !!{{ has_training_phase }}
+  dot_pos = [20, 70 + 30, 120 + 30 * 2];
+  if (!has_training_phase) {
+    dot_pos[1] = dot_pos[0];
+  }
+  circle_size = 20;
+  dot_attr = {
+    fill: '#eee',
+    stroke: '#111',
+    'stroke-width': 2,
+  };
+  dot_over_fill = '#aaa';
+  tooltip_conf = "{content: {message}, placement: 'left-center', classes: ['info'], targetClasses: ['it-has-a-tooltip'], offset: 1, delay: { show: 100, hide: 200}}"
+  tooltip_messages = {
+    cstart_message: '{{#userdate}} {{assesstimestart}}, %d.%m.%Y %H:%M {{/userdate}}',
+    cprod_message: '{{#userdate}} {{timeuntilproductive}}, %d.%m.%Y %H:%M {{/userdate}}',
+    cend_message: '{{#userdate}} {{assesstimefinish}}, %d.%m.%Y %H:%M {{/userdate}}',
+  };
+  line_offset = 10;
+  line_text = ['{{{ i18n_miquiz_status_training }}}', '{{{ i18n_miquiz_status_productive }}}'];
+  line_stroke_attr = {
+    color: '#111',
+    width: 3,
+    linecap: 'round',
+  };
+  line_attr = {
+    'stroke-dasharray': [1, 5],
+    'stroke-dashoffset': 2,
+  };
+  text_font = {
+    size: 16,
+    family: 'Menlo, sans-serif',
+    anchor: 'start',
+    fill: '#000',
+  };
+  polyline_stroke_attr = {
+    color: '#111',
+    width: 2,
+    linecap: 'round',
+  };
+  polyline_stroke_offet1 = 4;
+  polyline_stroke_offet2 = 12;
+  setactive = function(dot1, dot2, line, text, text_poly) {
+    active_color = '#0c0';
+    line.attr({'stroke-dasharray': [0, 0]}).stroke({color: active_color});
+    dot1.attr({stroke: active_color});
+    dot2.attr({stroke: active_color});
+    text = text || 0;
+    if (text != 0) {
+      text.font({fill: active_color})
+    }
+    text_poly = text_poly || 0;
+    if (text_poly != 0) {
+      text_poly.attr({stroke: active_color})
+    }
+  };
+
+  //render
+  svg_size = [(line_offset + circle_size / 2) * 2 + text_font.size * 10, dot_pos[2] + circle_size + dot_pos[0]];
+  var draw = SVG('timeline').size(svg_size[0],svg_size[1]);
+  lxoffset = line_offset + circle_size / 2;
+  var line_pre = draw.line(lxoffset, 0, lxoffset, dot_pos[0]).stroke(line_stroke_attr).attr(line_attr);
+  var line_training = has_training_phase && draw.line(lxoffset, dot_pos[0] + circle_size, lxoffset, dot_pos[1]).stroke(line_stroke_attr).attr(line_attr);
+  var line_productive = draw.line(lxoffset, dot_pos[1] + circle_size, lxoffset, dot_pos[2]).stroke(line_stroke_attr).attr(line_attr);
+  var line_post = draw.line(lxoffset, dot_pos[2] + circle_size, lxoffset, svg_size[1]).stroke(line_stroke_attr).attr(line_attr);
+  var polyline_training = has_training_phase && draw
+    .polyline([
+      [lxoffset + circle_size / 2 + polyline_stroke_offet1, dot_pos[0] + circle_size / 2 + polyline_stroke_attr.width],
+      [lxoffset + circle_size / 2 + polyline_stroke_offet2, dot_pos[0] + circle_size / 2 + polyline_stroke_attr.width],
+      [lxoffset + circle_size / 2 + polyline_stroke_offet2, dot_pos[1] + circle_size / 2 - polyline_stroke_attr.width],
+      [lxoffset + circle_size / 2 + polyline_stroke_offet1, dot_pos[1] + circle_size / 2 - polyline_stroke_attr.width],
+    ])
+    .attr({fill: 'none'})
+    .stroke(polyline_stroke_attr);
+  var polyline_productive = draw
+    .polyline([
+      [lxoffset + circle_size / 2 + polyline_stroke_offet1, dot_pos[1] + circle_size / 2 + polyline_stroke_attr.width],
+      [lxoffset + circle_size / 2 + polyline_stroke_offet2, dot_pos[1] + circle_size / 2 + polyline_stroke_attr.width],
+      [lxoffset + circle_size / 2 + polyline_stroke_offet2, dot_pos[2] + circle_size / 2 - polyline_stroke_attr.width],
+      [lxoffset + circle_size / 2 + polyline_stroke_offet1, dot_pos[2] + circle_size / 2 - polyline_stroke_attr.width],
+    ])
+    .attr({fill: 'none'})
+    .stroke(polyline_stroke_attr);
+  text_t = has_training_phase && draw
+    .text(line_text[0])
+    .font(text_font)
+    .move(lxoffset + circle_size / 2 + polyline_stroke_offet2 + polyline_stroke_offet1, dot_pos[0] + (dot_pos[1] - dot_pos[0]) / 2);
+  text_p = draw
+    .text(line_text[1])
+    .font(text_font)
+    .move(lxoffset + circle_size / 2 + polyline_stroke_offet2 + polyline_stroke_offet1, dot_pos[1] + (dot_pos[2] - dot_pos[1]) / 2);
+  var cstart = draw.circle(circle_size).move(line_offset, dot_pos[0]).attr(dot_attr);
+  var cprod = has_training_phase ? draw.circle(circle_size).move(line_offset, dot_pos[1]).attr(dot_attr) : cstart;
+  var cend = draw.circle(circle_size).move(line_offset, dot_pos[2]).attr(dot_attr);
+  cstart.attr({
+    'v-tooltip': tooltip_conf.replace('{message}', 'cstart_message'),
+    'v-on:mouseover': "dotover('" + cstart.id() + "')",
+    'v-on:mouseout': "dotout('" + cstart.id() + "')",
+  });
+  cprod.attr({
+    'v-tooltip': tooltip_conf.replace('{message}', 'cprod_message'),
+    'v-on:mouseover': "dotover('" + cprod.id() + "')",
+    'v-on:mouseout': "dotout('" + cprod.id() + "')",
+  });
+  cend.attr({
+    'v-tooltip': tooltip_conf.replace('{message}', 'cend_message'),
+    'v-on:mouseover': "dotover('" + cend.id() + "')",
+    'v-on:mouseout': "dotout('" + cend.id() + "')",
+  });
+
+  dotover = function(objid) {
+    document.getElementById(objid).setAttribute("fill", dot_over_fill)
+  };
+
+  dotout = function(objid) {
+    document.getElementById(objid).setAttribute("fill", dot_attr.fill)
+  };
+
+  //set active part
+  {{#is_notyetstarted}}setactive(cstart, cstart, line_pre);{{/is_notyetstarted}}
+  {{#is_training}}setactive(cstart, cprod, line_training, text_t, polyline_training);{{/is_training}}
+  {{#is_productive}}setactive(cprod, cend, line_productive, text_p, polyline_productive);{{/is_productive}}
+  {{#is_finished}}setactive(cend, cend, line_post);{{/is_finished}}
+
+  Vue.use(VTooltip);
+  var app = new Vue({
+    el: '#timeline',
+    data: tooltip_messages
+  });
+</script>
+
+{{#is_manager}}
+<script type="text/javascript">
+  if ({{ answeredQuestions_correct }} + {{ answeredQuestions_wrong }} > 0) {
+    document.querySelector('#piechartbox').innerHTML += '<svg id="piechart"></svg>';
+
+    var data = [
+      {
+        label: '{{{ i18n_miquiz_cockpit_correct }}}',
+        value: {{ answeredQuestions_correct }},
+        color: 'green',
+      }, {
+        label: '{{{ i18n_miquiz_cockpit_incorrect }}}',
+        value: {{ answeredQuestions_wrong }},
+        color: 'red',
+      }
+    ];
+    var chart = nv.models
+      .pieChart()
+      .x(function(d) { return d.label })
+      .y(function(d) { return d.value })
+      .color(function(d) { return d.color })
+      .showLabels(true)
+      .showLegend(false);
+
+    d3.select("#piechart")
+      .datum(data)
+      .call(chart);
+
+    nv.utils.windowResize(function() {
+      chart.update();
+    });
+  } else {
+    var element = document.querySelector('#piechartbox');
+    if (element) {
+      element.innerHTML += '<span>{{{ i18n_miquiz_view_nodata }}}</span>';
+      element.classList.add('no-data');
+    }
+  }
+</script>
+
+<script type="text/javascript">
+  function miquizSyncQuestions() {
+    var button = document.querySelector('#mod-mi--btn-sync-questions');
+    if (!button) {
+      return;
+    }
+    button.disabled = true;
+    $.getJSON('{{ url }}&queue_adhoc_task=sync_questions', function (response) {
+      button.disabled = false;
+      if (!response.success) {
+        console.warn('Sync of questions did not succeed!', response.error);
+      }
+    });
+  }
+</script>
+{{/is_manager}}
+
+<!-- This is needed here, as the Vue tooltip package appends the tooltip to the body -->
+<style>
+  .tooltip {
+    display: block !important;
+    z-index: 10000;
+  }
+  .tooltip .tooltip-inner {
+    background: black;
+    color: white;
+    border-radius: 16px;
+    padding: 5px 10px 4px;
+  }
+  .tooltip .tooltip-arrow {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    position: absolute;
+    margin: 5px;
+    border-color: black;
+    z-index: 1;
+  }
+  .tooltip[x-placement^="top"] {
+    margin-bottom: 5px;
+  }
+  .tooltip[x-placement^="top"] .tooltip-arrow {
+    border-width: 5px 5px 0 5px;
+    border-left-color: transparent !important;
+    border-right-color: transparent !important;
+    border-bottom-color: transparent !important;
+    bottom: -5px;
+    left: calc(50% - 5px);
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  .tooltip[x-placement^="bottom"] {
+    margin-top: 5px;
+  }
+  .tooltip[x-placement^="bottom"] .tooltip-arrow {
+    border-width: 0 5px 5px 5px;
+    border-left-color: transparent !important;
+    border-right-color: transparent !important;
+    border-top-color: transparent !important;
+    top: -5px;
+    left: calc(50% - 5px);
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  .tooltip[x-placement^="right"] {
+    margin-left: 5px;
+  }
+  .tooltip[x-placement^="right"] .tooltip-arrow {
+    border-width: 5px 5px 5px 0;
+    border-left-color: transparent !important;
+    border-top-color: transparent !important;
+    border-bottom-color: transparent !important;
+    left: -5px;
+    top: calc(50% - 5px);
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .tooltip[x-placement^="left"] {
+    margin-right: 5px;
+  }
+  .tooltip[x-placement^="left"] .tooltip-arrow {
+    border-width: 5px 0 5px 5px;
+    border-top-color: transparent !important;
+    border-right-color: transparent !important;
+    border-bottom-color: transparent !important;
+    right: -5px;
+    top: calc(50% - 5px);
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .tooltip.popover .popover-inner {
+    background: #f9f9f9;
+    color: black;
+    padding: 24px;
+    border-radius: 5px;
+    box-shadow: 0 5px 30px rgba(black, .1);
+  }
+  .tooltip.popover .popover-arrow {
+    border-color: #f9f9f9;
+  }
+  .tooltip[aria-hidden="true"] {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity .15s, visibility .15s;
+  }
+  .tooltip[aria-hidden="false"] {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity .15s;
+  }
+</style>

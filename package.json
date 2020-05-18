@@ -1,0 +1,27 @@
+{
+  "name": "miquiz-moodle",
+  "version": "2.0.0",
+  "description": "Activity module for Moodle that enables you to use already existing Moodle\r structures like questions and courses to create quizzes in MI-Quiz.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "cron": "docker exec -it moodle_moodle_1 php admin/cli/cron.php",
+    "start": "docker-compose up -d",
+    "reset": "docker-compose down -v"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PW-Solutions/miquiz-moodle.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PW-Solutions/miquiz-moodle/issues"
+  },
+  "homepage": "https://github.com/PW-Solutions/miquiz-moodle#readme",
+  "devDependencies": {
+    "moment": "^2.24.0",
+    "puppeteer": "^1.19.0",
+    "underscore": "^1.9.1"
+  }
+}
