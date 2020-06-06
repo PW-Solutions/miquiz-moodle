@@ -3,31 +3,52 @@
 require('../../config.php');
 require_once("lib.php");
 
+$show_overview = !isset($_GET['id']);
+$context = context_user::instance($USER->id);
+$cansee_overview = has_capability('report/courseoverview:view', $context);
 
-$id = required_param('id', PARAM_INT);           // Course ID
+if(!$show_overview) {    
+    $id = intval($_GET['id']); // Course ID
 
-// Ensure that the course specified is valid
-if (!$course = $DB->get_record('course', array('id'=> $id))) {
-    print_error('Course ID is incorrect');
+    // Ensure that the course specified is valid
+    if (!$course = $DB->get_record('course', array('id'=> $id))) {
+        print_error('Course ID is incorrect');
+    }
+
+    $url = new moodle_url('/mod/miquiz/index.php', array('id'=>$id));
+    $PAGE->set_url($url);
+
+    require_login($course);
+
+    //check if user has permissions to administrate course
+    $context = context_course::instance($id);
+    $is_manager =  has_capability('moodle/course:manageactivities', $context);
+    if(!$is_manager) {
+        $red_url = new moodle_url('/course/view.php', array('id'=>$course->id));
+        header("Location: ".$red_url);
+        die();
+    }
+
+    // retrieve all quiz cm's from db
+    $sql = "select cm.id, m.name, cm.instance from {modules} m inner join {course_modules} cm on (cm.module=m.id) where name='miquiz' and cm.course = '$id'";
+    $res = $DB->get_records_sql($sql);
+} else {
+    $url = new moodle_url('/mod/miquiz/index.php');
+    $PAGE->set_url($url);
+
+    $PAGE->set_context(context_system::instance());
+
+    //check if user has permissions to see course overviews
+    if(!$cansee_overview) {
+        $red_url = new moodle_url('/');
+        header("Location: ".$red_url);
+        die();
+    }
+
+    // retrieve all quiz cm's from db
+    $sql = "select cm.id, m.name, cm.instance from {modules} m inner join {course_modules} cm on (cm.module=m.id) where name='miquiz'";
+    $res = $DB->get_records_sql($sql);
 }
-
-$url = new moodle_url('/mod/miquiz/index.php', array('id'=>$id));
-$PAGE->set_url($url);
-
-require_login($course);
-
-//check if user has permissions to administrate course
-$context = context_course::instance($id);
-$is_manager =  has_capability('moodle/course:manageactivities', $context);
-if(!$is_manager) {
-    $red_url = new moodle_url('/course/view.php', array('id'=>$course->id));
-    header("Location: ".$red_url);
-    die();
-}
-
-// retrieve all quiz cm's from db
-$sql = "select cm.id, m.name, cm.instance from {modules} m inner join {course_modules} cm on (cm.module=m.id) where name='miquiz' and cm.course = '$id'";
-$res = $DB->get_records_sql($sql);
 
 $miquizzes = [];
 foreach($res as $a_cm_entry){
@@ -53,8 +74,12 @@ foreach($res as $a_cm_entry){
     $answeredQuestions_correct = number_format($answeredQuestions_training_correct + $answeredQuestions_duel_correct, 0);
     $answeredQuestions_wrong = number_format($answeredQuestions_training_wrong + $answeredQuestions_duel_wrong, 0);
 
+    $a_course = $DB->get_record('course', array('id'=> $a_cm->course));
+
     $miquizzes[] = [
         'id' => $a_cm->id,
+        'course_id' => $a_course->id,
+        'course_name' => $a_course->shortname,
         'name' => $miquiz->name,
         'assesstimestart' => $miquiz->assesstimestart,
         'assesstimefinish' => $miquiz->assesstimefinish,
@@ -88,9 +113,14 @@ if (isset($_GET['download_categories'])) {
 }
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('miquiz_index_title', 'miquiz')." (".$course->fullname.")");
+if(!$show_overview) {
+    echo $OUTPUT->heading(get_string('miquiz_index_title', 'miquiz')." (".$course->fullname.")");
+} else {
+    echo $OUTPUT->heading(get_string('miquiz_index_title_overview', 'miquiz'));
+}
 
 $quiz_table_headings = [['name' => '<i class="icon fa fa-download fa-fw " aria-hidden="true" aria-label=""></i>'],
+                        ['name' => get_string('miquiz_view_coursename', 'miquiz')],
                         ['name' => get_string('miquiz_view_name', 'miquiz')],
                         ['name' => get_string('miquiz_create_assesstimestart', 'miquiz')],
                         ['name' => get_string('miquiz_create_assesstimefinish', 'miquiz')],
@@ -107,6 +137,8 @@ foreach($miquizzes as $row) {
         "miquizcategoryid" => $row['miquizcategoryid'],
         "id" => $row['id'],
         "name" => $row['name'],
+        "course_id" => $row['course_id'],        
+        "course_name" => $row['course_name'],        
         "assesstimestart" => date("d.m.Y, H:i", $row['assesstimestart']),
         "assesstimefinish" => date("d.m.Y, H:i", $row['assesstimefinish']),
         "num_questions" => $row['num_questions'],
@@ -119,8 +151,10 @@ foreach($miquizzes as $row) {
 }
 
 echo $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/index', array(
+    'overview_button' => ($cansee_overview && !$show_overview),
     'quiz_table_headings' => $quiz_table_headings,
-    'quiz_table_body' => $quiz_table_body,
+    'quiz_table_body' => $quiz_table_body,    
+    'i18n_miquiz_index_overview' => get_string('miquiz_index_overview', 'miquiz'),
     'i18n_miquiz_index_download' => get_string('miquiz_index_download', 'miquiz')));
 $PAGE->requires->js_amd_inline('$y(document).ready(function() {$y("#datatable").DataTable();});');
 $downloadjs = 'generateAndFollowDownloadLink = function(){

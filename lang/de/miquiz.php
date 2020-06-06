@@ -13,10 +13,12 @@ if (!empty($additional_info)) {
   $string['modulename_help'] .= $additional_info;
 }
 
+$string['miquiz_index_title_overview'] = $instance_name .' Overview';
 $string['miquiz_index_title'] = $instance_name .' Kurs &Uuml;bersicht';
 $string['miquiz_index_reports'] = 'Anzahl Reports';
 $string['miquiz_index_download'] = 'Statistiken herunterladen';
 $string['miquiz_index_noquizselected'] = 'Bitte w&auml;hlen sie mindestens ein Quiz aus!';
+$string['miquiz_index_overview'] = 'Zur Übersicht';
 
 $string['miquiz_setting_info_title'] = 'Zusätzliche Info';
 $string['miquiz_setting_info_helper'] = 'Erscheint beim Erstellen der Aktivität';
@@ -81,6 +83,7 @@ $string['miquiz_create_activate_training_phase'] = 'Trainingsphase aktivieren';
 $string['miquiz_create_activate_training_phase_help'] = 'Während der Trainingsphase sind nur Einzelspiele möglich (Training) und es werden keine Punkte vergeben.';
 
 $string['miquiz_view_overview'] = '&Uuml;bersicht';
+$string['miquiz_view_coursename'] = 'Kurs';
 $string['miquiz_view_shortname'] = 'Abk&uuml;rzung';
 $string['miquiz_view_scoremode'] = 'Bewertungsmodus (wenn produktiv)';
 $string['miquiz_view_questions'] = 'Fragen';
