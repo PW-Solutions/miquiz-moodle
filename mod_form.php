@@ -169,7 +169,8 @@ class mod_miquiz_mod_form extends moodleform_mod
         $errors = parent::validation($data, $files);
 
         $this->local_validation($errors, $data, $files);
-        $this->external_validation($errors, $data, $files);
+        // Keep for documentation purpose
+        // $this->external_validation($errors, $data, $files);
 
         return $errors;
     }
@@ -209,30 +210,31 @@ class mod_miquiz_mod_form extends moodleform_mod
         }
     }
 
-    private function external_validation(&$errors, $data, $files)
-    {
-        global $DB;
-        if ($this->current->instance) {
-            $activities = $DB->get_records("miquiz", array("short_name" => $data["short_name"]));
-            if (!empty($activities)) {
-                $activity = array_pop($activities);
-            }
-        }
+    // Keep for documentation purpose (in case we need it for some other external validation rules)
+    // private function external_validation(&$errors, $data, $files)
+    // {
+    //     global $DB;
+    //     if ($this->current->instance) {
+    //         $activities = $DB->get_records("miquiz", array("short_name" => $data["short_name"]));
+    //         if (!empty($activities)) {
+    //             $activity = array_pop($activities);
+    //         }
+    //     }
 
-        # check categories in miquiz
-        $categories = miquiz::api_get("api/categories");
-        $exists_in_miquiz = false;
-        foreach ($categories as $category) {
-            if ($category["name"] === $data["short_name"]) {
-                $exists_in_miquiz = !isset($activity) || strval($category['id']) !== $activity->miquizcategoryid;
-                break;
-            }
-        }
+    //     # check categories in miquiz
+    //     $categories = miquiz::api_get("api/categories");
+    //     $exists_in_miquiz = false;
+    //     foreach ($categories as $category) {
+    //         if ($category["name"] === $data["short_name"]) {
+    //             $exists_in_miquiz = !isset($activity) || strval($category['id']) !== $activity->miquizcategoryid;
+    //             break;
+    //         }
+    //     }
 
-        if ($exists_in_miquiz) {
-            $errors['short_name'] = get_string('miquiz_create_error_unique', 'miquiz');
-        }
-    }
+    //     if ($exists_in_miquiz) {
+    //         $errors['short_name'] = get_string('miquiz_create_error_unique', 'miquiz');
+    //     }
+    // }
 
     /**
      * Display module-specific activity completion rules.

@@ -71,7 +71,6 @@ $string['miquiz_create_questions_no_questions'] = 'No questions in this course a
 $string['miquiz_create_questions_create_questions'] = 'Please first create at least three questions in this course.';
 $string['miquiz_create_assesstimestart'] = 'Quiz Start Date';
 $string['miquiz_create_assesstimefinish'] = 'Quiz Stop Date';
-$string['miquiz_create_error_unique'] = 'Has to be unique.';
 $string['miquiz_create_error_endbeforestart'] = 'Quiz end date date has to be later than quiz start date.';
 $string['miquiz_create_error_betweenendstart'] = 'Training phase ending time has to be between quiz start and end date.';
 $string['miquiz_create_error_game_modes'] = 'Select at least one game mode!';
