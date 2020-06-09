@@ -105,6 +105,8 @@ class miquiz
             'fullName' => $miquiz->name,
             'name' => $miquiz->short_name,
             'stats_only_for_finished_games' => $miquiz->statsonlyforfinishedgames,
+            'external_parent_id' => $miquiz->course_id,
+            'external_parent_name' => $miquiz->course_name
         ];
         $resp = miquiz::api_post('api/categories', $categoryObject);
         $catid = (int)$resp['id'];
