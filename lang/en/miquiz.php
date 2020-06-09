@@ -12,13 +12,17 @@ if (!empty($additional_info)) {
   $string['modulename_help'] .= $additional_info;
 }
 
+//strings for Administration->Manage roles page 
+$string['miquiz:overview'] = 'Display ' . $instance_name . ' activity overview';
+$string['miquiz:addinstance'] = 'Challenge your students in a ' . $instance_name . ' duel';
+
 $string['miquiz_index_title_overview'] = $instance_name .' Overview';
 $string['miquiz_index_title'] = $instance_name .' Course Overview';
 $string['miquiz_index_table_status'] = 'Status';
 $string['miquiz_index_reports'] = 'Number of reports'; //Anzahl Reports
 $string['miquiz_index_download'] = 'Download statistics';
 $string['miquiz_index_noquizselected'] = 'Please select at least one quiz!';
-$string['miquiz_index_overview'] = 'Display Overview';
+$string['miquiz_index_overview'] = 'Display all activities';
 
 $string['miquiz_setting_info_title'] = 'Additional info';
 $string['miquiz_setting_info_helper'] = 'Visible when creating a new instance.';

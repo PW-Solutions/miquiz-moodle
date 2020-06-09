@@ -5,7 +5,7 @@ require_once("lib.php");
 
 $show_overview = !isset($_GET['id']);
 $context = context_user::instance($USER->id);
-$cansee_overview = has_capability('report/courseoverview:view', $context);
+$cansee_overview = has_capability('mod/miquiz:overview', $context);
 
 if(!$show_overview) {    
     $id = intval($_GET['id']); // Course ID
