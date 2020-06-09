@@ -5,15 +5,16 @@ defined('MOODLE_INTERNAL') || die();
 $string['modulename'] = 'MI-Quiz';
 $string['modulenameplural'] = 'MI-Quizze';
 
+//$instance_name ='';
 $instance_name = get_config('mod_miquiz', 'instancename');
-$string['modulename_help'] = 'Erstelle ein ' . $instance_name . ' Duell.';
+$string['modulename_help'] = 'Erstelle eine ' . $instance_name . ' Aktivit&auml;t.';
 $additional_info = get_config('mod_miquiz', 'additional_info');
 if (!empty($additional_info)) {
   $string['modulename_help'] .= $additional_info;
 }
 
 //strings for Administration->Manage roles page 
-$string['miquiz:overview'] = 'Globale ' . $instance_name . ' Aktivitäts&uuml;bersicht';
+$string['miquiz:overview'] = 'Globale ' . $instance_name . ' Aktivit&auml;ts&uuml;bersicht';
 $string['miquiz:addinstance'] = 'Erstelle ein ' . $instance_name . ' Duell';
 
 $string['miquiz_index_title_overview'] = $instance_name .' &Uuml;bersicht';
