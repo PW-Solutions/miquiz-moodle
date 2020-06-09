@@ -122,8 +122,6 @@ class mod_miquiz_mod_form extends moodleform_mod
         // $questionIds = '';
         $fields = array(
             $mform->createElement('hidden', 'questions', $questionIds),
-            $mform->createElement('hidden', 'course_id', $COURSE->id),
-            $mform->createElement('hidden', 'course_name', $COURSE->shortname),
             $mform->createElement('html', $customel_rendered));
         $mform->addGroup($fields, 'questiong', '', '', false);
         $mform->setType('questions', PARAM_NOTAGS);
