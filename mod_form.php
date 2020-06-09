@@ -56,9 +56,10 @@ class mod_miquiz_mod_form extends moodleform_mod
         $mform->addElement('advcheckbox', 'statsonlyforfinishedgames', get_string('miquiz_create_statsonlyforfinishedgames', 'miquiz'));
         $mform->addHelpButton('statsonlyforfinishedgames', 'miquiz_create_statsonlyforfinishedgames', 'miquiz');
 
-        $gameModes = [];
+        $gameModes = [];        
         $gameModes[] = $mform->createElement('advcheckbox', 'game_mode_random_fight', get_string('miquiz_create_game_mode_random_fight', 'miquiz'));
         $gameModes[] = $mform->createElement('advcheckbox', 'game_mode_picked_fight', get_string('miquiz_create_game_mode_picked_fight', 'miquiz'));
+        $gameModes[] = $mform->createElement('advcheckbox', 'game_mode_solo_fight', get_string('miquiz_create_game_mode_solo_fight', 'miquiz'));
         $mform->addGroup($gameModes, 'game_modes', get_string('miquiz_create_game_modes', 'miquiz'), ['<br>'], false);
         $mform->addHelpButton('game_modes', 'miquiz_create_game_modes', 'miquiz');
         $mform->setDefault('game_mode_random_fight', '1');
@@ -188,7 +189,7 @@ class mod_miquiz_mod_form extends moodleform_mod
             }
         }
 
-        if (empty($data['game_mode_random_fight']) && empty($data['game_mode_picked_fight'])) {
+        if (empty($data['game_mode_random_fight']) && empty($data['game_mode_picked_fight']) && empty($data['game_mode_solo_fight'])) {
             $errors['game_modes'] = get_string('miquiz_create_error_game_modes', 'miquiz');
         }
 

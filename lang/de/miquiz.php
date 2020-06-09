@@ -63,6 +63,7 @@ $string['miquiz_create_game_modes_help'] = 'Spielbare Formate während der Produ
 ';
 $string['miquiz_create_game_mode_random_fight'] = 'Zufallsduell';
 $string['miquiz_create_game_mode_picked_fight'] = 'Gezieltes Duell';
+$string['miquiz_create_game_mode_solo_fight'] = 'Einzelspieler';
 $string['miquiz_create_questions'] = 'Fragen';
 $string['miquiz_create_questions_error'] = 'Ein Quiz ben&ouml;tigt mindestens drei Fragen!';
 $string['miquiz_create_questions_selected'] = '${numquestions} Fragen ausgew&auml;lt';

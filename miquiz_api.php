@@ -467,6 +467,10 @@ class miquiz
             $gameModes[] = 'picked-fight';
         }
 
+        if (!empty($miquiz->game_mode_solo_fight)) {
+            $gameModes[] = 'solo-fight';
+        }
+
         // Delete old tasks for this category
         miquiz::deleteTasks($miquiz);
 
