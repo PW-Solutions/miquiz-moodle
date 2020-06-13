@@ -15,7 +15,7 @@ if (!empty($additional_info)) {
 
 //strings for Administration->Manage roles page 
 $string['miquiz:overview'] = 'Globale ' . $instance_name . ' Aktivit&auml;ts&uuml;bersicht';
-$string['miquiz:addinstance'] = 'Erstelle ein ' . $instance_name . ' Duell';
+$string['miquiz:addinstance'] = 'Erstelle eine ' . $instance_name . ' Aktivit&auml;t';
 
 $string['miquiz_index_title_overview'] = $instance_name .' &Uuml;bersicht';
 $string['miquiz_index_title'] = $instance_name .' Kurs &Uuml;bersicht';
