@@ -1,7 +1,8 @@
 <?php
 defined('MOODLE_INTERNAL') || die();
 
-function xmldb_miquiz_upgrade($oldversion) {
+function xmldb_miquiz_upgrade($oldversion)
+{
     global $CFG, $DB;
     $dbman = $DB->get_manager();
 

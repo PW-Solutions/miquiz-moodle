@@ -1,7 +1,7 @@
 <?php
 
-require_once('../../config.php');
-require_once("lib.php");
+require_once '../../config.php';
+require_once "lib.php";
 
 $id = required_param('id', PARAM_INT);  // Course Module ID
 
@@ -81,15 +81,17 @@ if (count($quiz_questions) > 0) {
     $questionsbycategory = array();
     foreach ($questions as $question) {
         $category = $DB->get_record('question_categories', array('id' => $question->category));
-        if(!array_key_exists($category->name, $questionsbycategory))
+        if (!array_key_exists($category->name, $questionsbycategory)) {
             $questionsbycategory[$category->name] = [$question];
-        else
+        } else {
             array_push($questionsbycategory[$category->name], $question);
+        }
     }
     asort($questionsbycategory);
     foreach ($questionsbycategory as $catname => $questions) {
-        if (count($questions) == 0)
+        if (count($questions) == 0) {
             continue;
+        }
 
         $category = $DB->get_record('question_categories', array('id' => $questions[0]->category));
         $questions_dto = array();
@@ -98,23 +100,32 @@ if (count($quiz_questions) > 0) {
             $reports_dto = array();
             if (isset($reports[$miquiz_question->miquizquestionid])) {
                 foreach ($reports[$miquiz_question->miquizquestionid] as $report) {
-                    array_push($reports_dto, array(
+                    array_push(
+                        $reports_dto,
+                        array(
                         'report_category' =>$report['category'],
                         'report_message' =>$report['message'],
                         'report_author' => $report['author']
-                    ));
+                        )
+                    );
                 }
             }
-            array_push($questions_dto, array(
+            array_push(
+                $questions_dto,
+                array(
                 'question_id' =>$question->id,
                 'question_name' =>$question->name,
                 'reports' => $reports_dto
-            ));
+                )
+            );
         }
-        array_push($categories_dto, array(
+        array_push(
+            $categories_dto,
+            array(
             'category_name' => $category->name,
             'questions' => $questions_dto
-        ));
+            )
+        );
     }
 }
 
@@ -176,14 +187,17 @@ $user_stats_dto = array();
 foreach ($userdata as $username => $a_data) {
     $answered_abs = implode(' / ', [$a_data['answeredQuestions_total'], $a_data['answeredQuestions_correct'], $a_data['answeredQuestions_wrong']]);
     $answered_rel = implode(' / ', [$a_data['rel_answeredQuestions_correct'], $a_data['rel_answeredQuestions_wrong']]);
-    array_push($user_stats_dto, array(
+    array_push(
+        $user_stats_dto,
+        array(
         "username" => $username,
         "answered_abs" => $answered_abs,
         "answered_rel" => $answered_rel,
         "score" => $a_data['score'],
         "score_possible" => $a_data['score_possible'],
 
-    ));
+        )
+    );
 }
 $now = time();
 
@@ -205,7 +219,9 @@ if ($miquiz->game_mode_solo_fight) {
 }
 
 
-echo $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/view', array(
+echo $PAGE->get_renderer('mod_miquiz')->render_from_template(
+    'miquiz/view',
+    array(
     'is_manager' => $is_manager,
     'name' => $miquiz->name,
     'short_name' => $miquiz->short_name,
@@ -254,7 +270,8 @@ echo $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/view', arra
     'i18n_miquiz_view_statistics_answeredquestionsrel' => get_string('miquiz_view_statistics_answeredquestionsrel', 'miquiz'),
     'i18n_miquiz_view_statistics_totalscore' => get_string('miquiz_view_statistics_totalscore', 'miquiz'),
     'user_stats' => $user_stats_dto
-));
+    )
+);
 
 if ($is_manager) {
     echo '<script type="text/javascript">if (typeof $ !== "undefined") var $x = jQuery.noConflict();</script>';
