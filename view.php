@@ -210,6 +210,9 @@ if ($miquiz->game_mode_random_fight) {
 if ($miquiz->game_mode_picked_fight) {
     $i18nEnabledGameModes[] = get_string('miquiz_create_game_mode_picked_fight', 'miquiz');
 }
+if ($miquiz->game_mode_solo_fight) {
+    $i18nEnabledGameModes[] = get_string('miquiz_create_game_mode_solo_fight', 'miquiz');
+}
 
 
 echo $PAGE->get_renderer('mod_miquiz')->render_from_template(

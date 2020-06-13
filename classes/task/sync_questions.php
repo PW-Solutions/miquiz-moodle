@@ -6,9 +6,6 @@ require_once $CFG->dirroot.'/mod/miquiz/miquiz_api.php';
 
 class sync_questions extends \core\task\adhoc_task
 {
-
-    private $activities;
-
     public function get_name()
     {
         return get_string('task_sync_questions', 'miquiz');
@@ -31,6 +28,7 @@ class sync_questions extends \core\task\adhoc_task
         } else {
             $activities = $DB->get_records_list('miquiz', 'id', $customData->activities);
         }
+
 
         // Better: get all questions where miquiz->id in all ids AND
         foreach ($activities as $miquiz) {

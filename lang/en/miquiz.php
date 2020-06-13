@@ -69,6 +69,7 @@ $string['miquiz_create_game_modes_help'] = 'Playable game modes during the produ
 ';
 $string['miquiz_create_game_mode_random_fight'] = 'Random duel';
 $string['miquiz_create_game_mode_picked_fight'] = 'Picked duel';
+$string['miquiz_create_game_mode_solo_fight'] = 'Solo';
 $string['miquiz_create_questions'] = 'Questions';
 $string['miquiz_create_questions_error'] = 'A quiz requires at least three questions!';
 $string['miquiz_create_questions_selected'] = '${numquestions} questions selected';
@@ -77,7 +78,6 @@ $string['miquiz_create_questions_no_questions'] = 'No questions in this course a
 $string['miquiz_create_questions_create_questions'] = 'Please first create at least three questions in this course.';
 $string['miquiz_create_assesstimestart'] = 'Quiz Start Date';
 $string['miquiz_create_assesstimefinish'] = 'Quiz Stop Date';
-$string['miquiz_create_error_unique'] = 'Has to be unique.';
 $string['miquiz_create_error_endbeforestart'] = 'Quiz end date date has to be later than quiz start date.';
 $string['miquiz_create_error_betweenendstart'] = 'Training phase ending time has to be between quiz start and end date.';
 $string['miquiz_create_error_game_modes'] = 'Select at least one game mode!';

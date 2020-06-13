@@ -101,11 +101,15 @@ class miquiz
 
     public static function create($miquiz)
     {
+        global $DB;
+
         $categoryObject = [
             'active' => false,
             'fullName' => $miquiz->name,
             'name' => $miquiz->short_name,
             'stats_only_for_finished_games' => $miquiz->statsonlyforfinishedgames,
+            'external_parent_id' => $miquiz->coursemodule,
+            'external_parent_name' => $DB->get_record('course', array('id'=> $miquiz->coursemodule))
         ];
         $resp = miquiz::api_post('api/categories', $categoryObject);
         $catid = (int)$resp['id'];
@@ -480,6 +484,10 @@ class miquiz
 
         if (!empty($miquiz->game_mode_picked_fight)) {
             $gameModes[] = 'picked-fight';
+        }
+
+        if (!empty($miquiz->game_mode_solo_fight)) {
+            $gameModes[] = 'solo-fight';
         }
 
         // Delete old tasks for this category
