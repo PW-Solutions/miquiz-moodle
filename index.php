@@ -1,7 +1,7 @@
 <?php
 
-require('../../config.php');
-require_once("lib.php");
+require '../../config.php';
+require_once "lib.php";
 
 $show_overview = !isset($_GET['id']);
 $context = context_user::instance($USER->id);
@@ -97,14 +97,15 @@ if (isset($_GET['download_categories'])) {
     // perform export
     $data = $_GET['download_categories'];
     foreach (explode(",", $data) as $miquizcategoryid) {
-        $found = False;
+        $found = false;
         foreach($miquizzes as $row) {
-            if($row['miquizcategoryid'] == $miquizcategoryid){
+            if($row['miquizcategoryid'] == $miquizcategoryid) {
                 $found = true;
             }
         }
-        if(!$found)
+        if(!$found) {
             die();
+        }
     }
     header('Content-Type: text/csv');
     header('Content-disposition: filename="export_'.time() .'.csv"');
@@ -133,7 +134,8 @@ $quiz_table_headings = [['name' => '<i class="icon fa fa-download fa-fw " aria-h
 
 $quiz_table_body = [];
 foreach($miquizzes as $row) {
-    array_push($quiz_table_body, array(
+    array_push(
+        $quiz_table_body, array(
         "miquizcategoryid" => $row['miquizcategoryid'],
         "id" => $row['id'],
         "name" => $row['name'],
@@ -147,15 +149,18 @@ foreach($miquizzes as $row) {
         "answeredQuestions_total" => $row['answeredQuestions_total'],
         "answeredQuestions_correct" => $row['answeredQuestions_correct'],
         "answeredQuestions_wrong" => $row['answeredQuestions_wrong']
-    ));
+        )
+    );
 }
 
-echo $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/index', array(
+echo $PAGE->get_renderer('mod_miquiz')->render_from_template(
+    'miquiz/index', array(
     'overview_button' => ($cansee_overview && !$show_overview),
     'quiz_table_headings' => $quiz_table_headings,
     'quiz_table_body' => $quiz_table_body,    
     'i18n_miquiz_index_overview' => get_string('miquiz_index_overview', 'miquiz'),
-    'i18n_miquiz_index_download' => get_string('miquiz_index_download', 'miquiz')));
+    'i18n_miquiz_index_download' => get_string('miquiz_index_download', 'miquiz'))
+);
 $PAGE->requires->js_amd_inline('$y(document).ready(function() {$y("#datatable").DataTable();});');
 $downloadjs = 'generateAndFollowDownloadLink = function(){
     var downloadids = Array();

@@ -2,11 +2,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once("miquiz_api.php");
+require_once "miquiz_api.php";
 
 function miquiz_add_instance($miquiz)
 {
-    global $DB, $CFG;
+    global $DB;
 
     $miquiz->timemodified = time();
     try {
@@ -14,7 +14,7 @@ function miquiz_add_instance($miquiz)
     } catch (Exception $e) {
         echo $e->getMessage();
         error_log('Error during quiz creation: ' . $e->getMessage());
-        error_log(print_r($miquiz, TRUE));
+        error_log(print_r($miquiz, true));
         miquiz::forceDelete($miquiz);
         return;
     }
@@ -36,7 +36,7 @@ function miquiz_add_instance($miquiz)
 
 function miquiz_update_instance($miquiz)
 {
-    global $DB, $CFG;
+    global $DB;
 
     $miquiz->id = $miquiz->instance;
     $miquiz->timemodified = time();
