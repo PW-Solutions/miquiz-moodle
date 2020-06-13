@@ -7,7 +7,7 @@ $show_overview = !isset($_GET['id']);
 $context = context_user::instance($USER->id);
 $cansee_overview = has_capability('mod/miquiz:overview', $context);
 
-if(!$show_overview) {    
+if (!$show_overview) {
     $id = intval($_GET['id']); // Course ID
 
     // Ensure that the course specified is valid
@@ -23,7 +23,7 @@ if(!$show_overview) {
     //check if user has permissions to administrate course
     $context = context_course::instance($id);
     $is_manager =  has_capability('moodle/course:manageactivities', $context);
-    if(!$is_manager) {
+    if (!$is_manager) {
         $red_url = new moodle_url('/course/view.php', array('id'=>$course->id));
         header("Location: ".$red_url);
         die();
@@ -39,7 +39,7 @@ if(!$show_overview) {
     $PAGE->set_context(context_system::instance());
 
     //check if user has permissions to see course overviews
-    if(!$cansee_overview) {
+    if (!$cansee_overview) {
         $red_url = new moodle_url('/');
         header("Location: ".$red_url);
         die();
@@ -51,7 +51,7 @@ if(!$show_overview) {
 }
 
 $miquizzes = [];
-foreach($res as $a_cm_entry){
+foreach ($res as $a_cm_entry) {
     $a_cm = get_coursemodule_from_id('miquiz', $a_cm_entry->id, 0, false, MUST_EXIST);
     $miquiz = $DB->get_record('miquiz', array('id'=> $a_cm->instance));
 
@@ -98,12 +98,12 @@ if (isset($_GET['download_categories'])) {
     $data = $_GET['download_categories'];
     foreach (explode(",", $data) as $miquizcategoryid) {
         $found = false;
-        foreach($miquizzes as $row) {
-            if($row['miquizcategoryid'] == $miquizcategoryid) {
+        foreach ($miquizzes as $row) {
+            if ($row['miquizcategoryid'] == $miquizcategoryid) {
                 $found = true;
             }
         }
-        if(!$found) {
+        if (!$found) {
             die();
         }
     }
@@ -114,7 +114,7 @@ if (isset($_GET['download_categories'])) {
 }
 
 echo $OUTPUT->header();
-if(!$show_overview) {
+if (!$show_overview) {
     echo $OUTPUT->heading(get_string('miquiz_index_title', 'miquiz')." (".$course->fullname.")");
 } else {
     echo $OUTPUT->heading(get_string('miquiz_index_title_overview', 'miquiz'));
@@ -133,14 +133,15 @@ $quiz_table_headings = [['name' => '<i class="icon fa fa-download fa-fw " aria-h
                         ['name' => get_string('miquiz_cockpit_incorrect', 'miquiz')]];
 
 $quiz_table_body = [];
-foreach($miquizzes as $row) {
+foreach ($miquizzes as $row) {
     array_push(
-        $quiz_table_body, array(
+        $quiz_table_body,
+        array(
         "miquizcategoryid" => $row['miquizcategoryid'],
         "id" => $row['id'],
         "name" => $row['name'],
-        "course_id" => $row['course_id'],        
-        "course_name" => $row['course_name'],        
+        "course_id" => $row['course_id'],
+        "course_name" => $row['course_name'],
         "assesstimestart" => date("d.m.Y, H:i", $row['assesstimestart']),
         "assesstimefinish" => date("d.m.Y, H:i", $row['assesstimefinish']),
         "num_questions" => $row['num_questions'],
@@ -154,10 +155,11 @@ foreach($miquizzes as $row) {
 }
 
 echo $PAGE->get_renderer('mod_miquiz')->render_from_template(
-    'miquiz/index', array(
+    'miquiz/index',
+    array(
     'overview_button' => ($cansee_overview && !$show_overview),
     'quiz_table_headings' => $quiz_table_headings,
-    'quiz_table_body' => $quiz_table_body,    
+    'quiz_table_body' => $quiz_table_body,
     'i18n_miquiz_index_overview' => get_string('miquiz_index_overview', 'miquiz'),
     'i18n_miquiz_index_download' => get_string('miquiz_index_download', 'miquiz'))
 );

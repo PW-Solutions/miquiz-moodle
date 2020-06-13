@@ -98,7 +98,8 @@ class mod_miquiz_mod_form extends moodleform_mod
             foreach ($questions as $question) {
                 if ($question->qtype =='multichoice') {
                     array_push(
-                        $question_dtos, array(
+                        $question_dtos,
+                        array(
                         "question_id" => $question->id,
                         "question_name" => $question->name
                         )
@@ -113,7 +114,8 @@ class mod_miquiz_mod_form extends moodleform_mod
         }
 
         $customel_rendered = $PAGE->get_renderer('mod_miquiz')->render_from_template(
-            'miquiz/questionchooser', array(
+            'miquiz/questionchooser',
+            array(
             "i18n_miquiz_create_questions_search" => get_string("miquiz_create_questions_search", "miquiz"),
             "i18n_miquiz_create_questions_selected" => get_string("miquiz_create_questions_selected", "miquiz"),
             'i18n_miquiz_create_questions_no_questions' => get_string('miquiz_create_questions_no_questions', 'miquiz'),
@@ -187,7 +189,7 @@ class mod_miquiz_mod_form extends moodleform_mod
         }
 
         if ($data['has_training_phase']) {
-            if ($data['timeuntilproductive'] >= $data['assesstimefinish'] 
+            if ($data['timeuntilproductive'] >= $data['assesstimefinish']
                 || $data['timeuntilproductive'] < $data['assesstimestart']
             ) {
                 $errors['timeuntilproductive'] = get_string('miquiz_create_error_betweenendstart', 'miquiz');
@@ -200,7 +202,7 @@ class mod_miquiz_mod_form extends moodleform_mod
 
         // Check open and close times are consistent.
         if (isset($data['available'])) {
-            if ($data['available'] != 0 && $data['deadline'] != 0 
+            if ($data['available'] != 0 && $data['deadline'] != 0
                 && $data['deadline'] < $data['available']
             ) {
                 $errors['deadline'] = get_string('closebeforeopen', 'lesson');

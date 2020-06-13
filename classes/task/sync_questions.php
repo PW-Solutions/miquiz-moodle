@@ -21,7 +21,8 @@ class sync_questions extends \core\task\adhoc_task
 
             $currentTime = time();
             $activities = array_filter(
-                $allActivities, function ($miquiz) use ($currentTime) {
+                $allActivities,
+                function ($miquiz) use ($currentTime) {
                     return $currentTime > ($miquiz->assesstimestart - 60 * 10) && $currentTime <= $miquiz->assesstimefinish;
                 }
             );

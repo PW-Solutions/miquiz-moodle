@@ -13,7 +13,7 @@ if (!empty($additional_info)) {
     $string['modulename_help'] .= $additional_info;
 }
 
-//strings for Administration->Manage roles page 
+//strings for Administration->Manage roles page
 $string['miquiz:overview'] = 'Globale ' . $instance_name . ' Aktivit&auml;ts&uuml;bersicht';
 $string['miquiz:addinstance'] = 'Erstelle eine ' . $instance_name . ' Aktivit&auml;t';
 

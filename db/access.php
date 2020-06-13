@@ -31,7 +31,7 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         ),
         'clonepermissionsfrom' => 'moodle/course:manageactivities'
-    ),    
+    ),
     'mod/miquiz:overview' => array(
         'riskbitmask' => RISK_PERSONAL,
         'captype' => 'write',

@@ -1,8 +1,8 @@
 <?php
 
 /**
- * @package   mod_miquiz
- * @author 2017-2020, Pawelka Wollmann Solutions GbR <info@pw-solutions.de>
+ * @package mod_miquiz
+ * @author  2017-2020, Pawelka Wollmann Solutions GbR <info@pw-solutions.de>
  */
 
 defined('MOODLE_INTERNAL') || die();

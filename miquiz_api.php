@@ -131,7 +131,8 @@ class miquiz
     {
         global $DB;
         $filteredQuestionIds = array_filter(
-            $questionIds, function ($questionId) {
+            $questionIds,
+            function ($questionId) {
                 return !empty($questionId) && is_numeric($questionId);
             }
         );
@@ -190,7 +191,8 @@ class miquiz
         return array_map(
             function ($question) {
                 return (int) $question->miquizquestionid;
-            }, $existingQuestions
+            },
+            $existingQuestions
         );
     }
 
@@ -301,7 +303,8 @@ class miquiz
             }
             $hash = $file->get_contenthash();
             $filePath = implode(
-                '/', [
+                '/',
+                [
                 $CFG->dataroot,
                 'filedir',
                 substr($hash, 0, 2),
@@ -345,8 +348,9 @@ class miquiz
         $existingQuestionIds = miquiz::getQuestionIdsForMiQuizId($miquiz->id);
         $newQuestionIds = array_map(
             function ($id) {
-                return (int) $id; 
-            }, explode(',', $miquiz->questions)
+                return (int) $id;
+            },
+            explode(',', $miquiz->questions)
         );
 
         $questionIdsToAdd = array_diff($newQuestionIds, $existingQuestionIds);
@@ -366,7 +370,8 @@ class miquiz
                         'type' => 'questions',
                         'id' => (string) $questionId,
                         ];
-                    }, $miQuestionIdsToRemove
+                    },
+                    $miQuestionIdsToRemove
                 ),
             ];
             $response = miquiz::api_delete('api/categories/' . $miQuizCategoryId . '/relationships/questions', $removeRelationshipPayload);
@@ -394,7 +399,8 @@ class miquiz
         $questionIds = array_map(
             function ($question) {
                 return (int) $question->questionid;
-            }, $questions
+            },
+            $questions
         );
         return $questionIds;
     }
@@ -526,7 +532,8 @@ class miquiz
     {
         return array_keys(
             array_filter(
-                $stateTimestamps, function ($stateTimestamp) use ($timestamp) {
+                $stateTimestamps,
+                function ($stateTimestamp) use ($timestamp) {
                     return $stateTimestamp > $timestamp;
                 }
             )
