@@ -60,7 +60,7 @@ class mod_miquiz_mod_form extends moodleform_mod
         $gameModes[] = $mform->createElement('advcheckbox', 'game_mode_random_fight', get_string('miquiz_create_game_mode_random_fight', 'miquiz'));
         $gameModes[] = $mform->createElement('advcheckbox', 'game_mode_picked_fight', get_string('miquiz_create_game_mode_picked_fight', 'miquiz'));
         $gameModes[] = $mform->createElement('advcheckbox', 'game_mode_solo_fight', get_string('miquiz_create_game_mode_solo_fight', 'miquiz'));
-        $mform->addGroup($gameModes, 'game_modes', get_string('miquiz_create_game_modes', 'miquiz'), ['<br>'], false);
+        $mform->addGroup($gameModes, 'game_modes', get_string('miquiz_create_game_modes', 'miquiz'), [''], false);
         $mform->addHelpButton('game_modes', 'miquiz_create_game_modes', 'miquiz');
         $mform->setDefault('game_mode_random_fight', '1');
 
@@ -71,6 +71,10 @@ class mod_miquiz_mod_form extends moodleform_mod
         $mform->addHelpButton('has_training_phase', 'miquiz_create_activate_training_phase', 'miquiz');
         $mform->addElement('date_time_selector', 'timeuntilproductive', get_string('miquiz_create_timeuntilproductive', 'miquiz'));
         $mform->disabledIf('timeuntilproductive', 'has_training_phase');
+
+
+        $mform->addElement('advcheckbox', 'show_always_in_production', get_string('miquiz_create_show_always_in_production', 'miquiz'));
+        $mform->addHelpButton('show_always_in_production', 'miquiz_create_show_always_in_production', 'miquiz');
 
         $mform->addElement('date_time_selector', 'assesstimefinish', get_string('miquiz_create_assesstimefinish', 'miquiz'));
 

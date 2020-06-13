@@ -85,6 +85,8 @@ $string['miquiz_create_statsonlyforfinishedgames'] = 'Nur beendete Spiele in Sta
 $string['miquiz_create_statsonlyforfinishedgames_help'] = 'Wenn diese Option aktiv ist werden in den Statistiken nur beendete Spiele ber&uuml;cksichtigt. Dies umfasst unter Anderem die Punktvergabe und die Berechnung der beantworten Fragen.';
 $string['miquiz_create_activate_training_phase'] = 'Trainingsphase aktivieren';
 $string['miquiz_create_activate_training_phase_help'] = 'W&auml;hrend der Trainingsphase sind nur Einzelspiele m&ouml;glich (Training) und es werden keine Punkte vergeben.';
+$string['miquiz_create_show_always_in_production'] = 'Aktivit&auml;t in der Produktivphase immer zur Auswahl stellen';
+$string['miquiz_create_show_always_in_production_help'] = 'Wenn aktiviert, wird w&auml;hrend der Produktivphase in der Kategorieauswahl eines Duells diese Kategorie <b>immer</b> zur Auswahl gestellt';
 
 $string['miquiz_view_overview'] = '&Uuml;bersicht';
 $string['miquiz_view_coursename'] = 'Kurs';
