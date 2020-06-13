@@ -36,7 +36,7 @@ const fs = require('fs');
 
   async function addMiQuizActivity(page, config, navigationPromise) {
 
-    const {title, shortTitle, course, section} = config;
+    const { title, shortTitle, course, section } = config;
     await page.goto(`http://localhost:3000/course/modedit.php?add=miquiz&type=&course=${course}&section=${section}&return=0&sr=0`)
     await navigationPromise
 
@@ -44,7 +44,7 @@ const fs = require('fs');
     await enterValue('#id_short_name', shortTitle);
 
     const tomorrow = moment().add(1, 'd');
-    const dayAfterTomorrow = 	moment().add(2, 'd');
+    const dayAfterTomorrow = moment().add(2, 'd');
 
     await selectValue('#id_timeuntilproductive_day', (tomorrow.date()).toString());
     await selectValue('#id_timeuntilproductive_month', (tomorrow.month() + 1).toString());
@@ -53,12 +53,12 @@ const fs = require('fs');
     await selectValue('#id_assesstimefinish_month', (dayAfterTomorrow.month() + 1).toString());
 
     await click('.categorycheckbox');
-    await page.screenshot({path: `screenshots/activity_${shortTitle}_form.png`});
+    await page.screenshot({ path: `screenshots/activity_${shortTitle}_form.png` });
 
     await click('#id_submitbutton2');
 
     await navigationPromise
-    await page.screenshot({path: `screenshots/activity_${shortTitle}_ready.png`});
+    await page.screenshot({ path: `screenshots/activity_${shortTitle}_ready.png` });
   }
 
   async function enterValue(selector, value) {

@@ -2,7 +2,7 @@
 
 namespace mod_miquiz\task;
 
-require_once($CFG->dirroot.'/mod/miquiz/miquiz_api.php');
+require_once $CFG->dirroot.'/mod/miquiz/miquiz_api.php';
 
 class sync_users extends \core\task\scheduled_task
 {
@@ -23,8 +23,8 @@ class sync_users extends \core\task\scheduled_task
         $currentTime = time();
         foreach ($miquizs as $miquiz) {
             // Check if sync is necessary
-            if ($miquiz->assesstimefinish <= $currentTime ||
-                $miquiz->assesstimestart > ($currentTime + 60 * 10)
+            if ($miquiz->assesstimefinish <= $currentTime 
+                || $miquiz->assesstimestart > ($currentTime + 60 * 10)
             ) {
                 continue;
             }

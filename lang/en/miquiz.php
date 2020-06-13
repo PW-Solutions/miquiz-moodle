@@ -9,7 +9,7 @@ $instance_name = get_config('mod_miquiz', 'instancename');
 $string['modulename_help'] = 'Challenge your students in a ' . $instance_name . ' duel.';
 $additional_info = get_config('mod_miquiz', 'additional_info');
 if (!empty($additional_info)) {
-  $string['modulename_help'] .= $additional_info;
+    $string['modulename_help'] .= $additional_info;
 }
 
 //strings for Administration->Manage roles page 

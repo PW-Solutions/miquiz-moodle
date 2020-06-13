@@ -31,10 +31,10 @@ const _ = require('underscore');
     // await enterValue('input[name="password"]', 'Bob1234.');
     await enterValue('input[name="login"]', 'alice');
     await enterValue('input[name="password"]', 'Alice123.');
-    await page.screenshot({path: `screenshots/login.png`});
+    await page.screenshot({ path: `screenshots/login.png` });
     await click('button[type=submit]');
     await navigationPromise;
-    await page.screenshot({path: `screenshots/login_after.png`});
+    await page.screenshot({ path: `screenshots/login_after.png` });
   }
 
   async function playTrainingGame() {
@@ -94,7 +94,7 @@ const _ = require('underscore');
   }
 
   async function selectCategory() {
-    await page.screenshot({path: `screenshots/game_category.png`});
+    await page.screenshot({ path: `screenshots/game_category.png` });
     const cat = _.sample([
       '#cat1',
       '#cat2',
@@ -105,7 +105,7 @@ const _ = require('underscore');
   }
 
   async function answerQuestion() {
-    await page.screenshot({path: `screenshots/game_question.png`});
+    await page.screenshot({ path: `screenshots/game_question.png` });
     await click('#possibilities a.possibility');
     await click('a.btn-success.btn-next-action');
     await navigationPromise
@@ -122,7 +122,7 @@ const _ = require('underscore');
   }
 
   async function click(selector) {
-    await page.waitForSelector(selector, {visible: true});
+    await page.waitForSelector(selector, { visible: true });
     await page.click(selector);
   }
 })()
