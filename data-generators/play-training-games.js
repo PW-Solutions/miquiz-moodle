@@ -102,13 +102,13 @@ const _ = require('underscore');
   async function selectCategory()
   {
       await page.screenshot({ path: `screenshots/game_category.png` });
-    const cat = _.sample(
+      const cat = _.sample(
         [
         '#cat1',
         '#cat2',
         '#cat3',
         ]
-    )
+      )
       await click(cat);
       await navigationPromise
   }

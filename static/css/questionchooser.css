@@ -64,7 +64,6 @@
 
 .questionul .questiondiv {
     display: flex;
-    align-items: end;
 }
 
 .questionul {
