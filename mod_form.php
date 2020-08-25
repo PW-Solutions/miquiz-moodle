@@ -69,7 +69,9 @@ class mod_miquiz_mod_form extends moodleform_mod
         $mform->addElement('advcheckbox', 'has_training_phase', get_string('miquiz_create_activate_training_phase', 'miquiz'));
         $mform->setDefault('has_training_phase', '1');
         $mform->addHelpButton('has_training_phase', 'miquiz_create_activate_training_phase', 'miquiz');
+
         $mform->addElement('date_time_selector', 'timeuntilproductive', get_string('miquiz_create_timeuntilproductive', 'miquiz'));
+        $mform->setDefault('timeuntilproductive', time() + 60 * 60 * 24);
         $mform->disabledIf('timeuntilproductive', 'has_training_phase');
 
 
@@ -77,6 +79,7 @@ class mod_miquiz_mod_form extends moodleform_mod
         $mform->addHelpButton('show_always_in_production', 'miquiz_create_show_always_in_production', 'miquiz');
 
         $mform->addElement('date_time_selector', 'assesstimefinish', get_string('miquiz_create_assesstimefinish', 'miquiz'));
+        $mform->setDefault('assesstimefinish', time() + 60 * 60 * 24 * 2);
 
 
         $this->standard_intro_elements(get_string('description', 'miquiz'));
