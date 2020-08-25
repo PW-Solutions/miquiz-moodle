@@ -544,7 +544,7 @@ class miquiz
     {
         $active = in_array($state, ['training', 'productive']);
         $scoreStrategy = $state === 'productive' ? $scoreMode : 'no_rating';
-        $enabledModes = $state === 'productive' ? $gameModes : ['training'];
+        $enabledModes = $state === 'productive' ? $gameModes : ['solo-fight'];
         $show_always_in_duel = $state === 'productive' ? $show_always_in_production : true;
 
         return [
