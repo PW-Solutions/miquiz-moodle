@@ -85,6 +85,8 @@ $string['miquiz_create_statsonlyforfinishedgames'] = 'Consider only finished gam
 $string['miquiz_create_statsonlyforfinishedgames_help'] = 'If this flag is set, only finished games are considered in the statistics. This includes the rating and calculation of answered questions.';
 $string['miquiz_create_activate_training_phase'] = 'Enable training phase';
 $string['miquiz_create_activate_training_phase_help'] = 'During the training phase only single player games are available (training) and no points are given.';
+$string['miquiz_create_show_always_in_production'] = 'Always include activity during production phase';
+$string['miquiz_create_show_always_in_production_help'] = 'If activated, the category will be <b>always</b> included in the category selection during the production phase.';
 
 $string['miquiz_view_overview'] = 'Overview'; //&Uuml;bersicht
 $string['miquiz_view_coursename'] = 'Course';

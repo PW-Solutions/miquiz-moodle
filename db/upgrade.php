@@ -58,5 +58,17 @@ function xmldb_miquiz_upgrade($oldversion)
         upgrade_plugin_savepoint(true, 2020060900, 'mod', 'miquiz');
     }
 
+    if ($oldversion < 2020061300) {
+        $table = new xmldb_table('miquiz');
+
+        $field = new xmldb_field('show_always_in_production');
+        $field->set_attributes(XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2020061300, 'mod', 'miquiz');
+    }    
+
     return true;
 }

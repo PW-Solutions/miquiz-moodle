@@ -501,20 +501,20 @@ class miquiz
 
         // Configure current state
         $currentState = self::getStateAtTimestamp($stateTimestamps, $currentTime);
-        $currentStateConfig = self::getConfigForState($currentState, $scoremode, $gameModes);
+        $currentStateConfig = self::getConfigForState($currentState, $scoremode, $gameModes, $miquiz->show_always_in_production);
         self::scheduleTaskForCategory($categoryId, $stateTimestamps[$currentState], $currentStateConfig);
 
         // Configure future states
         $futureStates = self::getStatesAfterTimestamp($stateTimestamps, $currentTime);
         foreach ($futureStates as $state) {
-            $stateConfig = self::getConfigForState($state, $scoremode, $gameModes);
+            $stateConfig = self::getConfigForState($state, $scoremode, $gameModes, $miquiz->show_always_in_production);
             self::scheduleTaskForCategory($categoryId, $stateTimestamps[$state], $stateConfig);
         }
 
         $stateIndependentConfig = [
             'fullName' => $miquiz->name,
             'name' => $miquiz->short_name,
-            'stats_only_for_finished_games' => $miquiz->statsonlyforfinishedgames,
+            'stats_only_for_finished_games' => (boolean) $miquiz->statsonlyforfinishedgames,
         ];
         self::scheduleTaskForCategory($categoryId, $currentTime - 1, $stateIndependentConfig);
     }
@@ -540,16 +540,18 @@ class miquiz
         );
     }
 
-    private static function getConfigForState($state, $scoreMode, $gameModes)
+    private static function getConfigForState($state, $scoreMode, $gameModes, $show_always_in_production)
     {
         $active = in_array($state, ['training', 'productive']);
         $scoreStrategy = $state === 'productive' ? $scoreMode : 'no_rating';
-        $enabledModes = $state === 'productive' ? $gameModes : ['training'];
+        $enabledModes = $state === 'productive' ? $gameModes : ['solo-fight'];
+        $show_always_in_duel = $state === 'productive' ? $show_always_in_production : true;
 
         return [
-            'active' => $active,
+            'active' => (boolean) $active,
             'scoreStrategy' => $scoreStrategy,
             'enabledModes' => implode(',', $enabledModes),
+            'show_always_in_duel' => (boolean) $show_always_in_duel,
         ];
     }
 

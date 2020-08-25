@@ -54,6 +54,7 @@ function miquiz_update_instance($miquiz)
     $miquiz_fresh->game_mode_random_fight = $miquiz->game_mode_random_fight;
     $miquiz_fresh->game_mode_picked_fight = $miquiz->game_mode_picked_fight;
     $miquiz_fresh->game_mode_solo_fight = $miquiz->game_mode_solo_fight;
+    $miquiz_fresh->show_always_in_production = $miquiz->show_always_in_production;
 
     $updateResponse = [];
     try {
