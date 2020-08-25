@@ -514,7 +514,7 @@ class miquiz
         $stateIndependentConfig = [
             'fullName' => $miquiz->name,
             'name' => $miquiz->short_name,
-            'stats_only_for_finished_games' => $miquiz->statsonlyforfinishedgames,
+            'stats_only_for_finished_games' => (boolean) $miquiz->statsonlyforfinishedgames,
         ];
         self::scheduleTaskForCategory($categoryId, $currentTime - 1, $stateIndependentConfig);
     }
@@ -548,10 +548,10 @@ class miquiz
         $show_always_in_duel = $state === 'productive' ? $show_always_in_production : true;
 
         return [
-            'active' => $active,
+            'active' => (boolean) $active,
             'scoreStrategy' => $scoreStrategy,
             'enabledModes' => implode(',', $enabledModes),
-            'show_always_in_duel' => $show_always_in_duel,
+            'show_always_in_duel' => (boolean) $show_always_in_duel,
         ];
     }
 
