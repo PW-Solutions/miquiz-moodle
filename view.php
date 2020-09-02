@@ -8,14 +8,20 @@ $id = required_param('id', PARAM_INT);  // Course Module ID
 // check permissions and retrieve context
 $url = new moodle_url('/mod/miquiz/view.php', array('id'=>$id));
 $PAGE->set_url($url);
+try {
+    miquiz::api_get('api');
+} catch (\Throwable $th) {
+    print_error('error_unavailable', 'mod_miquiz');
+}
+
 if (!$cm = get_coursemodule_from_id('miquiz', $id)) {
-    print_error('Course Module ID was incorrect'); // NOTE this is invalid use of print_error, must be a lang string id
+    print_error('error_incorrect_module_id', 'mod_miquiz');
 }
 if (!$course = $DB->get_record('course', array('id'=> $cm->course))) {
-    print_error('course is misconfigured');  // NOTE As above
+    print_error('error_incorrect_course_id', 'mod_miquiz');
 }
 if (!$miquiz = $DB->get_record('miquiz', array('id'=> $cm->instance))) {
-    print_error('course module is incorrect'); // NOTE As above
+    print_error('error_incorrect_module', 'mod_miquiz');
 }
 require_login($course, false, $cm);
 

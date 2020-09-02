@@ -7,12 +7,18 @@ $show_overview = !isset($_GET['id']);
 $context = context_user::instance($USER->id);
 $cansee_overview = has_capability('mod/miquiz:overview', $context);
 
+try {
+    miquiz::api_get('api');
+} catch (\Throwable $th) {
+    print_error('error_unavailable', 'mod_miquiz');
+}
+
 if (!$show_overview) {
     $id = intval($_GET['id']); // Course ID
 
     // Ensure that the course specified is valid
     if (!$course = $DB->get_record('course', array('id'=> $id))) {
-        print_error('Course ID is incorrect');
+        print_error('error_incorrect_course_id', 'mod_miquiz');
     }
 
     $url = new moodle_url('/mod/miquiz/index.php', array('id'=>$id));
