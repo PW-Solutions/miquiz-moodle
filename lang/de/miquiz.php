@@ -19,6 +19,7 @@ $string['miquiz:addinstance'] = 'Erstelle eine ' . $instance_name . ' Aktivit&au
 
 $string['miquiz_index_title_overview'] = $instance_name .' &Uuml;bersicht';
 $string['miquiz_index_title'] = $instance_name .' Kurs &Uuml;bersicht';
+$string['miquiz_index_table_status'] = 'Status';
 $string['miquiz_index_reports'] = 'Anzahl Reports';
 $string['miquiz_index_download'] = 'Statistiken herunterladen';
 $string['miquiz_index_noquizselected'] = 'Bitte w&auml;hlen sie mindestens ein Quiz aus!';
@@ -90,6 +91,7 @@ $string['miquiz_create_show_always_in_production_help'] = 'Wenn aktiviert, wird 
 
 $string['miquiz_view_overview'] = '&Uuml;bersicht';
 $string['miquiz_view_coursename'] = 'Kurs';
+$string['miquiz_view_name'] = 'Name';
 $string['miquiz_view_shortname'] = 'Abk&uuml;rzung';
 $string['miquiz_view_scoremode'] = 'Bewertungsmodus (wenn produktiv)';
 $string['miquiz_view_questions'] = 'Fragen';
@@ -109,6 +111,9 @@ $string['miquiz_view_game_modes'] = 'Spielmodus (wenn produktiv)';
 $string['miquiz_view_openlink'] =  $instance_name . ' &ouml;ffnen';
 $string['miquiz_view_sync_questions'] = 'Fragen synchronisieren';
 
+$string['description'] = 'Beschreibung';
+$string['task_sync_users_name'] = 'Synchronisiere Quiz-User mit Instanz';
+
 $string['miquiz_status_not_started'] = 'Inaktiv';
 $string['miquiz_status_training'] = 'Training';
 $string['miquiz_status_productive'] = 'Produktiv';
@@ -119,7 +124,10 @@ $string['miquiz_cockpit_correct'] = 'Richtig';
 $string['miquiz_cockpit_incorrect'] = 'Falsch';
 $string['miquiz_cockpit_with_reports'] = 'Mit R&uuml;ckmeldungen';
 
-$string['description'] = 'Beschreibung';
-$string['task_sync_users_name'] = 'Synchronisiere Quiz-User mit Instanz';
+$string['pluginname'] = 'MI-Quiz';
+$string['pluginadministration'] = 'MI-Quiz Plugin-Administration';
 
-$string['pluginadministration'] = 'MI-Quiz Plugin administration';
+$string['error_unavailable'] = 'Der Quiz-Server ist nicht erreichbar. Bitte Server-URL in Plugin-Einstellungen &uuml;berpr&uuml;fen oder Administrator kontaktieren.';
+$string['error_incorrect_module_id'] = 'Kursmodul-ID ist ung&uuml;ltig';
+$string['error_incorrect_course_id'] = 'Kurs-ID ist ung&uuml;ltig';
+$string['error_incorrect_module'] = 'Kursmodul ist ung&uuml;ltig';

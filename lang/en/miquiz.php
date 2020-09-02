@@ -5,6 +5,7 @@ defined('MOODLE_INTERNAL') || die();
 $string['modulename'] = 'MI-Quiz';
 $string['modulenameplural'] = 'MI-Quizzes';
 
+//$instance_name ='';
 $instance_name = get_config('mod_miquiz', 'instancename');
 $string['modulename_help'] = 'Challenge your students in a ' . $instance_name . ' duel.';
 $additional_info = get_config('mod_miquiz', 'additional_info');
@@ -125,3 +126,8 @@ $string['miquiz_cockpit_with_reports'] = 'With reports';
 
 $string['pluginname'] = 'MI-Quiz';
 $string['pluginadministration'] = 'MI-Quiz Plugin administration';
+
+$string['error_unavailable'] = 'The quiz server is not available. Please make sure to use the correct URL in the plugin settings or contact an administrator';
+$string['error_incorrect_module_id'] = 'Course module ID is incorrect';
+$string['error_incorrect_course_id'] = 'Course ID is incorrect';
+$string['error_incorrect_module'] = 'Course module is incorrect';
