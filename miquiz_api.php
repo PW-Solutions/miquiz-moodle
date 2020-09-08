@@ -44,7 +44,7 @@ class miquiz
                 "url" => $info['url'],
                 'http_code' => $info['http_code'],
             ];
-            if ($info['http_code'] == 422) {  # print response if api was not used properly
+            if ($info['http_code'] == 422) {  // print response if api was not used properly
                 $error_ob['reply'] = $reply;
             }
             if ($info['http_code'] == 401) {
@@ -59,8 +59,9 @@ class miquiz
 
         curl_close($crl);
 
-        if (!empty($config['return_raw']))
+        if (!empty($config['return_raw'])) {
             return $reply;
+        }
         return json_decode($reply, true);
     }
 
@@ -100,11 +101,15 @@ class miquiz
 
     public static function create($miquiz)
     {
+        global $DB;
+
         $categoryObject = [
             'active' => false,
             'fullName' => $miquiz->name,
             'name' => $miquiz->short_name,
             'stats_only_for_finished_games' => $miquiz->statsonlyforfinishedgames,
+            'external_parent_id' => $miquiz->coursemodule,
+            'external_parent_name' => $DB->get_record('course', array('id'=> $miquiz->coursemodule))
         ];
         $resp = miquiz::api_post('api/categories', $categoryObject);
         $catid = (int)$resp['id'];
@@ -125,9 +130,12 @@ class miquiz
     public static function getQuestionsById($questionIds)
     {
         global $DB;
-        $filteredQuestionIds = array_filter($questionIds, function ($questionId) {
-            return !empty($questionId) && is_numeric($questionId);
-        });
+        $filteredQuestionIds = array_filter(
+            $questionIds,
+            function ($questionId) {
+                return !empty($questionId) && is_numeric($questionId);
+            }
+        );
         if (empty($filteredQuestionIds)) {
             return [];
         }
@@ -180,9 +188,12 @@ class miquiz
         if (empty($existingQuestions)) {
             return [];
         }
-        return array_map(function ($question) {
-            return (int) $question->miquizquestionid;
-        }, $existingQuestions);
+        return array_map(
+            function ($question) {
+                return (int) $question->miquizquestionid;
+            },
+            $existingQuestions
+        );
     }
 
     private static function getMiQuizQuestionRelationTimestamp($questionId)
@@ -260,7 +271,7 @@ class miquiz
                 ],
             ],
         ];
-        $response = miquiz::api_post('api/categories/' . $miQuizCategoryId . '/relationships/questions', $addRelationshipPayload);
+        miquiz::api_post('api/categories/' . $miQuizCategoryId . '/relationships/questions', $addRelationshipPayload);
     }
 
     private static function miQuizQuestionExistsInMiQuiz($miQuizQuestionId)
@@ -291,13 +302,16 @@ class miquiz
                 continue;
             }
             $hash = $file->get_contenthash();
-            $filePath = implode('/', [
+            $filePath = implode(
+                '/',
+                [
                 $CFG->dataroot,
                 'filedir',
                 substr($hash, 0, 2),
                 substr($hash, 2, 2),
                 $hash
-            ]);
+                ]
+            );
             if (!file_exists($filePath)) {
                 error_log('miquiz: could not find file: ' . $filePath . ' (MIME: ' . $file->get_mimetype() . ')');
                 continue;
@@ -332,7 +346,12 @@ class miquiz
         $miQuizCategoryId = $miquiz->miquizcategoryid;
 
         $existingQuestionIds = miquiz::getQuestionIdsForMiQuizId($miquiz->id);
-        $newQuestionIds = array_map(function ($id) { return (int) $id; }, explode(',', $miquiz->questions));
+        $newQuestionIds = array_map(
+            function ($id) {
+                return (int) $id;
+            },
+            explode(',', $miquiz->questions)
+        );
 
         $questionIdsToAdd = array_diff($newQuestionIds, $existingQuestionIds);
         $questionsToAdd = miquiz::getQuestionsById($questionIdsToAdd);
@@ -345,12 +364,15 @@ class miquiz
         $miQuestionIdsToRemove = miquiz::getMiQuizQuestionIds($questionIdsToRemove, $miquiz->id);
         if (!empty($miQuestionIdsToRemove)) {
             $removeRelationshipPayload = [
-                'data' => array_map(function ($questionId) {
-                    return [
+                'data' => array_map(
+                    function ($questionId) {
+                        return [
                         'type' => 'questions',
                         'id' => (string) $questionId,
-                    ];
-                }, $miQuestionIdsToRemove),
+                        ];
+                    },
+                    $miQuestionIdsToRemove
+                ),
             ];
             $response = miquiz::api_delete('api/categories/' . $miQuizCategoryId . '/relationships/questions', $removeRelationshipPayload);
         }
@@ -374,9 +396,12 @@ class miquiz
     public static function getQuestionIdsForMiQuizId($miquizId)
     {
         $questions = miquiz::getQuestionsForMiQuizId($miquizId);
-        $questionIds = array_map(function ($question) {
-            return (int) $question->questionid;
-        }, $questions);
+        $questionIds = array_map(
+            function ($question) {
+                return (int) $question->questionid;
+            },
+            $questions
+        );
         return $questionIds;
     }
 
@@ -384,7 +409,7 @@ class miquiz
     public static function delete($miquiz)
     {
         miquiz::deleteTasks($miquiz);
-        $resp = miquiz::api_put("api/categories/" . $miquiz->miquizcategoryid, array("active" => false));
+        miquiz::api_put("api/categories/" . $miquiz->miquizcategoryid, array("active" => false));
         return true;
     }
 
@@ -467,25 +492,29 @@ class miquiz
             $gameModes[] = 'picked-fight';
         }
 
+        if (!empty($miquiz->game_mode_solo_fight)) {
+            $gameModes[] = 'solo-fight';
+        }
+
         // Delete old tasks for this category
         miquiz::deleteTasks($miquiz);
 
         // Configure current state
         $currentState = self::getStateAtTimestamp($stateTimestamps, $currentTime);
-        $currentStateConfig = self::getConfigForState($currentState, $scoremode, $gameModes);
+        $currentStateConfig = self::getConfigForState($currentState, $scoremode, $gameModes, $miquiz->show_always_in_production);
         self::scheduleTaskForCategory($categoryId, $stateTimestamps[$currentState], $currentStateConfig);
 
         // Configure future states
         $futureStates = self::getStatesAfterTimestamp($stateTimestamps, $currentTime);
         foreach ($futureStates as $state) {
-            $stateConfig = self::getConfigForState($state, $scoremode, $gameModes);
+            $stateConfig = self::getConfigForState($state, $scoremode, $gameModes, $miquiz->show_always_in_production);
             self::scheduleTaskForCategory($categoryId, $stateTimestamps[$state], $stateConfig);
         }
 
         $stateIndependentConfig = [
             'fullName' => $miquiz->name,
             'name' => $miquiz->short_name,
-            'stats_only_for_finished_games' => $miquiz->statsonlyforfinishedgames,
+            'stats_only_for_finished_games' => (boolean) $miquiz->statsonlyforfinishedgames,
         ];
         self::scheduleTaskForCategory($categoryId, $currentTime - 1, $stateIndependentConfig);
     }
@@ -502,22 +531,27 @@ class miquiz
     private static function getStatesAfterTimestamp($stateTimestamps, $timestamp)
     {
         return array_keys(
-            array_filter($stateTimestamps, function ($stateTimestamp) use ($timestamp) {
-                return $stateTimestamp > $timestamp;
-            })
+            array_filter(
+                $stateTimestamps,
+                function ($stateTimestamp) use ($timestamp) {
+                    return $stateTimestamp > $timestamp;
+                }
+            )
         );
     }
 
-    private static function getConfigForState($state, $scoreMode, $gameModes)
+    private static function getConfigForState($state, $scoreMode, $gameModes, $show_always_in_production)
     {
         $active = in_array($state, ['training', 'productive']);
         $scoreStrategy = $state === 'productive' ? $scoreMode : 'no_rating';
-        $enabledModes = $state === 'productive' ? $gameModes : ['training'];
+        $enabledModes = $state === 'productive' ? $gameModes : ['solo-fight'];
+        $show_always_in_duel = $state === 'productive' ? $show_always_in_production : true;
 
         return [
-            'active' => $active,
+            'active' => (boolean) $active,
             'scoreStrategy' => $scoreStrategy,
             'enabledModes' => implode(',', $enabledModes),
+            'show_always_in_duel' => (boolean) $show_always_in_duel,
         ];
     }
 

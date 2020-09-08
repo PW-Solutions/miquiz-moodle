@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/PW-Solutions/miquiz-moodle.svg?branch=master)](https://travis-ci.org/PW-Solutions/miquiz-moodle)
+
 # MI-Quiz-Moodle-Plugin
 Activity module for Moodle that enables you to use already existing Moodle
 structures like questions and courses to create quizzes in MI-Quiz.
@@ -51,6 +53,3 @@ Default host: http://host.docker.internal:8000 (Moodle plugin settings)
 If you use another port for MI-Quiz in your docker port, change it in the moodle plugin settings.
 *Important*: If you use Docker on Linux, you need to add the host ip in the `/etc/hosts` file yourself (see
 [open issue](https://github.com/docker/for-linux/issues/264)).
-
-# TODOs
-- clean up code

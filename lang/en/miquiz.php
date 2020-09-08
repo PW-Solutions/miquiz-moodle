@@ -9,14 +9,20 @@ $instance_name = get_config('mod_miquiz', 'instancename');
 $string['modulename_help'] = 'Challenge your students in a ' . $instance_name . ' duel.';
 $additional_info = get_config('mod_miquiz', 'additional_info');
 if (!empty($additional_info)) {
-  $string['modulename_help'] .= $additional_info;
+    $string['modulename_help'] .= $additional_info;
 }
 
+//strings for Administration->Manage roles page
+$string['miquiz:overview'] = 'Display ' . $instance_name . ' activity overview';
+$string['miquiz:addinstance'] = 'Challenge your students in a ' . $instance_name . ' activity';
+
+$string['miquiz_index_title_overview'] = $instance_name .' Overview';
 $string['miquiz_index_title'] = $instance_name .' Course Overview';
 $string['miquiz_index_table_status'] = 'Status';
 $string['miquiz_index_reports'] = 'Number of reports'; //Anzahl Reports
 $string['miquiz_index_download'] = 'Download statistics';
 $string['miquiz_index_noquizselected'] = 'Please select at least one quiz!';
+$string['miquiz_index_overview'] = 'Display all activities';
 
 $string['miquiz_setting_info_title'] = 'Additional info';
 $string['miquiz_setting_info_helper'] = 'Visible when creating a new instance.';
@@ -63,6 +69,7 @@ $string['miquiz_create_game_modes_help'] = 'Playable game modes during the produ
 ';
 $string['miquiz_create_game_mode_random_fight'] = 'Random duel';
 $string['miquiz_create_game_mode_picked_fight'] = 'Picked duel';
+$string['miquiz_create_game_mode_solo_fight'] = 'Solo';
 $string['miquiz_create_questions'] = 'Questions';
 $string['miquiz_create_questions_error'] = 'A quiz requires at least three questions!';
 $string['miquiz_create_questions_selected'] = '${numquestions} questions selected';
@@ -71,7 +78,6 @@ $string['miquiz_create_questions_no_questions'] = 'No questions in this course a
 $string['miquiz_create_questions_create_questions'] = 'Please first create at least three questions in this course.';
 $string['miquiz_create_assesstimestart'] = 'Quiz Start Date';
 $string['miquiz_create_assesstimefinish'] = 'Quiz Stop Date';
-$string['miquiz_create_error_unique'] = 'Has to be unique.';
 $string['miquiz_create_error_endbeforestart'] = 'Quiz end date date has to be later than quiz start date.';
 $string['miquiz_create_error_betweenendstart'] = 'Training phase ending time has to be between quiz start and end date.';
 $string['miquiz_create_error_game_modes'] = 'Select at least one game mode!';
@@ -79,8 +85,11 @@ $string['miquiz_create_statsonlyforfinishedgames'] = 'Consider only finished gam
 $string['miquiz_create_statsonlyforfinishedgames_help'] = 'If this flag is set, only finished games are considered in the statistics. This includes the rating and calculation of answered questions.';
 $string['miquiz_create_activate_training_phase'] = 'Enable training phase';
 $string['miquiz_create_activate_training_phase_help'] = 'During the training phase only single player games are available (training) and no points are given.';
+$string['miquiz_create_show_always_in_production'] = 'Always include activity during production phase';
+$string['miquiz_create_show_always_in_production_help'] = 'If activated, the category will be <b>always</b> included in the category selection during the production phase.';
 
 $string['miquiz_view_overview'] = 'Overview'; //&Uuml;bersicht
+$string['miquiz_view_coursename'] = 'Course';
 $string['miquiz_view_name'] = 'Name';
 $string['miquiz_view_shortname'] = 'Short name'; //Abk&uuml;rzung
 $string['miquiz_view_scoremode'] = 'Rating mode (if productive)'; //Bewertungsmodus

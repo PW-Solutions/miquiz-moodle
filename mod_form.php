@@ -2,10 +2,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/course/moodleform_mod.php');
-require_once($CFG->dirroot.'/question/editlib.php');
-require_once($CFG->dirroot.'/question/category_class.php');
-require_once("lib.php");
+require_once $CFG->dirroot.'/course/moodleform_mod.php';
+require_once $CFG->dirroot.'/question/editlib.php';
+require_once $CFG->dirroot.'/question/category_class.php';
+require_once "lib.php";
 
 class mod_miquiz_mod_form extends moodleform_mod
 {
@@ -19,7 +19,7 @@ class mod_miquiz_mod_form extends moodleform_mod
 
     public function definition()
     {
-        global $CFG, $COURSE, $DB, $OUTPUT, $PAGE;
+        global $CFG, $COURSE, $DB, $PAGE;
 
         $mform =& $this->_form;
 
@@ -59,7 +59,8 @@ class mod_miquiz_mod_form extends moodleform_mod
         $gameModes = [];
         $gameModes[] = $mform->createElement('advcheckbox', 'game_mode_random_fight', get_string('miquiz_create_game_mode_random_fight', 'miquiz'));
         $gameModes[] = $mform->createElement('advcheckbox', 'game_mode_picked_fight', get_string('miquiz_create_game_mode_picked_fight', 'miquiz'));
-        $mform->addGroup($gameModes, 'game_modes', get_string('miquiz_create_game_modes', 'miquiz'), ['<br>'], false);
+        $gameModes[] = $mform->createElement('advcheckbox', 'game_mode_solo_fight', get_string('miquiz_create_game_mode_solo_fight', 'miquiz'));
+        $mform->addGroup($gameModes, 'game_modes', get_string('miquiz_create_game_modes', 'miquiz'), [''], false);
         $mform->addHelpButton('game_modes', 'miquiz_create_game_modes', 'miquiz');
         $mform->setDefault('game_mode_random_fight', '1');
 
@@ -68,10 +69,17 @@ class mod_miquiz_mod_form extends moodleform_mod
         $mform->addElement('advcheckbox', 'has_training_phase', get_string('miquiz_create_activate_training_phase', 'miquiz'));
         $mform->setDefault('has_training_phase', '1');
         $mform->addHelpButton('has_training_phase', 'miquiz_create_activate_training_phase', 'miquiz');
+
         $mform->addElement('date_time_selector', 'timeuntilproductive', get_string('miquiz_create_timeuntilproductive', 'miquiz'));
+        $mform->setDefault('timeuntilproductive', time() + 60 * 60 * 24);
         $mform->disabledIf('timeuntilproductive', 'has_training_phase');
 
+
+        $mform->addElement('advcheckbox', 'show_always_in_production', get_string('miquiz_create_show_always_in_production', 'miquiz'));
+        $mform->addHelpButton('show_always_in_production', 'miquiz_create_show_always_in_production', 'miquiz');
+
         $mform->addElement('date_time_selector', 'assesstimefinish', get_string('miquiz_create_assesstimefinish', 'miquiz'));
+        $mform->setDefault('assesstimefinish', time() + 60 * 60 * 24 * 2);
 
 
         $this->standard_intro_elements(get_string('description', 'miquiz'));
@@ -96,10 +104,13 @@ class mod_miquiz_mod_form extends moodleform_mod
             $question_dtos = array();
             foreach ($questions as $question) {
                 if ($question->qtype =='multichoice') {
-                    array_push($question_dtos, array(
+                    array_push(
+                        $question_dtos,
+                        array(
                         "question_id" => $question->id,
                         "question_name" => $question->name
-                    ));
+                        )
+                    );
                 }
             }
             $questionchooser_categories[] = array(
@@ -109,7 +120,9 @@ class mod_miquiz_mod_form extends moodleform_mod
             );
         }
 
-        $customel_rendered = $PAGE->get_renderer('mod_miquiz')->render_from_template('miquiz/questionchooser', array(
+        $customel_rendered = $PAGE->get_renderer('mod_miquiz')->render_from_template(
+            'miquiz/questionchooser',
+            array(
             "i18n_miquiz_create_questions_search" => get_string("miquiz_create_questions_search", "miquiz"),
             "i18n_miquiz_create_questions_selected" => get_string("miquiz_create_questions_selected", "miquiz"),
             'i18n_miquiz_create_questions_no_questions' => get_string('miquiz_create_questions_no_questions', 'miquiz'),
@@ -117,7 +130,8 @@ class mod_miquiz_mod_form extends moodleform_mod
             "categories" => $questionchooser_categories,
             'course_id' => $this->course->id,
             'hasCategories' => count($questionchooser_categories) > 0,
-        ));
+            )
+        );
         $questionIds = $this->_instance === '' ? '' : implode(',', miquiz::getQuestionIdsForMiQuizId($this->_instance));
         // $questionIds = '';
         $fields = array(
@@ -134,7 +148,7 @@ class mod_miquiz_mod_form extends moodleform_mod
     /**
      * Enforce defaults here
      *
-     * @param array $defaultvalues Form defaults
+     * @param  array $defaultvalues Form defaults
      * @return void
      **/
     public function data_preprocessing(&$defaultvalues)
@@ -161,7 +175,7 @@ class mod_miquiz_mod_form extends moodleform_mod
     /**
      * Enforce validation rules here
      *
-     * @param object $data Post data to validate
+     * @param  object $data Post data to validate
      * @return array
      **/
     public function validation($data, $files)
@@ -169,7 +183,8 @@ class mod_miquiz_mod_form extends moodleform_mod
         $errors = parent::validation($data, $files);
 
         $this->local_validation($errors, $data, $files);
-        $this->external_validation($errors, $data, $files);
+        // Keep for documentation purpose
+        // $this->external_validation($errors, $data, $files);
 
         return $errors;
     }
@@ -181,20 +196,22 @@ class mod_miquiz_mod_form extends moodleform_mod
         }
 
         if ($data['has_training_phase']) {
-            if ($data['timeuntilproductive'] >= $data['assesstimefinish'] ||
-               $data['timeuntilproductive'] < $data['assesstimestart']) {
+            if ($data['timeuntilproductive'] >= $data['assesstimefinish']
+                || $data['timeuntilproductive'] < $data['assesstimestart']
+            ) {
                 $errors['timeuntilproductive'] = get_string('miquiz_create_error_betweenendstart', 'miquiz');
             }
         }
 
-        if (empty($data['game_mode_random_fight']) && empty($data['game_mode_picked_fight'])) {
+        if (empty($data['game_mode_random_fight']) && empty($data['game_mode_picked_fight']) && empty($data['game_mode_solo_fight'])) {
             $errors['game_modes'] = get_string('miquiz_create_error_game_modes', 'miquiz');
         }
 
         // Check open and close times are consistent.
         if (isset($data['available'])) {
-            if ($data['available'] != 0 && $data['deadline'] != 0 &&
-                    $data['deadline'] < $data['available']) {
+            if ($data['available'] != 0 && $data['deadline'] != 0
+                && $data['deadline'] < $data['available']
+            ) {
                 $errors['deadline'] = get_string('closebeforeopen', 'lesson');
             }
         }
@@ -209,34 +226,36 @@ class mod_miquiz_mod_form extends moodleform_mod
         }
     }
 
-    private function external_validation(&$errors, $data, $files)
-    {
-        global $DB;
-        if ($this->current->instance) {
-            $activities = $DB->get_records("miquiz", array("short_name" => $data["short_name"]));
-            if (!empty($activities)) {
-                $activity = array_pop($activities);
-            }
-        }
+    // Keep for documentation purpose (in case we need it for some other external validation rules)
+    // private function external_validation(&$errors, $data, $files)
+    // {
+    //     global $DB;
+    //     if ($this->current->instance) {
+    //         $activities = $DB->get_records("miquiz", array("short_name" => $data["short_name"]));
+    //         if (!empty($activities)) {
+    //             $activity = array_pop($activities);
+    //         }
+    //     }
 
-        # check categories in miquiz
-        $categories = miquiz::api_get("api/categories");
-        $exists_in_miquiz = false;
-        foreach ($categories as $category) {
-            if ($category["name"] === $data["short_name"]) {
-                $exists_in_miquiz = !isset($activity) || strval($category['id']) !== $activity->miquizcategoryid;
-                break;
-            }
-        }
+    //     # check categories in miquiz
+    //     $categories = miquiz::api_get("api/categories");
+    //     $exists_in_miquiz = false;
+    //     foreach ($categories as $category) {
+    //         if ($category["name"] === $data["short_name"]) {
+    //             $exists_in_miquiz = !isset($activity) || strval($category['id']) !== $activity->miquizcategoryid;
+    //             break;
+    //         }
+    //     }
 
-        if ($exists_in_miquiz) {
-            $errors['short_name'] = get_string('miquiz_create_error_unique', 'miquiz');
-        }
-    }
+    //     if ($exists_in_miquiz) {
+    //         $errors['short_name'] = get_string('miquiz_create_error_unique', 'miquiz');
+    //     }
+    // }
 
     /**
      * Display module-specific activity completion rules.
      * Part of the API defined by moodleform_mod
+     *
      * @return array Array of string IDs of added items, empty array if none
      */
     public function add_completion_rules()
@@ -247,7 +266,7 @@ class mod_miquiz_mod_form extends moodleform_mod
             'checkbox',
             'completionendreached',
             get_string('completionendreached', 'lesson'),
-                get_string('completionendreached_desc', 'lesson')
+            get_string('completionendreached_desc', 'lesson')
         );
         // Enable this completion rule by default.
         $mform->setDefault('completionendreached', 1);
@@ -257,7 +276,7 @@ class mod_miquiz_mod_form extends moodleform_mod
             'checkbox',
             'completiontimespentenabled',
             '',
-                get_string('completiontimespent', 'lesson')
+            get_string('completiontimespent', 'lesson')
         );
         $group[] =& $mform->createElement('duration', 'completiontimespent', '', array('optional' => false));
         $mform->addGroup($group, 'completiontimespentgroup', get_string('completiontimespentgroup', 'lesson'), array(' '), false);
@@ -270,7 +289,7 @@ class mod_miquiz_mod_form extends moodleform_mod
     /**
      * Called during validation. Indicates whether a module-specific completion rule is selected.
      *
-     * @param array $data Input data (not yet validated)
+     * @param  array $data Input data (not yet validated)
      * @return bool True if one or more rules is enabled, false if none are.
      */
     public function completion_rule_enabled($data)
