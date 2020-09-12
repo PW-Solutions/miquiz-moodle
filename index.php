@@ -164,6 +164,7 @@ echo $PAGE->get_renderer('mod_miquiz')->render_from_template(
     'i18n_miquiz_index_download' => get_string('miquiz_index_download', 'miquiz'))
 );
 $PAGE->requires->js_amd_inline('$y(document).ready(function() {$y("#datatable").DataTable();});');
+$downloadUrl = $url . $show_overview ? '?' : '&';
 $downloadjs = 'generateAndFollowDownloadLink = function(){
     var downloadids = Array();
     $("input:checkbox[name=add2download]:checked").each(function(){
@@ -173,7 +174,7 @@ $downloadjs = 'generateAndFollowDownloadLink = function(){
         alert("'.get_string('miquiz_index_noquizselected', 'miquiz').'");
         return;
     }
-    window.location = "'.$url.'&download_categories="+downloadids;
+    window.location = "'. $downloadUrl .'download_categories="+downloadids;
 };';
 $PAGE->requires->js_amd_inline($downloadjs);
 echo $OUTPUT->footer();
