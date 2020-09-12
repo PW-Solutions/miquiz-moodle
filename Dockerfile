@@ -31,6 +31,7 @@ echo "\nlog_errors = on" >> $PHP_INI_DIR/php.ini &&\
 echo "display_errors = On" >> $PHP_INI_DIR/php.ini &&\
 echo "display_startup_errors = On" >> $PHP_INI_DIR/php.ini &&\
 echo "error_log = /var/log/php/errors/php_error.log" >> $PHP_INI_DIR/php.ini &&\
+echo "max_input_vars = 2000" >> $PHP_INI_DIR/php.ini &&\
 echo "<? phpinfo();" > /var/www/html/info.php &&\
 echo "\nini_set ('display_errors', 'on');\nini_set ('log_errors', 'on');\nini_set ('display_startup_errors', 'on');\nini_set ('error_reporting', E_ALL);\n\$CFG->debug = 30719; // DEBUG_ALL, but that constant is not defined here." >> /var/www/html/config.php
 
