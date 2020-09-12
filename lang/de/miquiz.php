@@ -62,6 +62,7 @@ $string['miquiz_create_game_modes'] = 'Spielmodus';
 $string['miquiz_create_game_modes_help'] = 'Spielbare Formate w&auml;hrend der Produktivphase.
   Kann jederzeit ge&auml;ndert werden.
   <br><br>
+  <strong>Einzelspiel</strong>: Ein Spiel ohne Gegner/in.<br>
   <strong>Zufallsduell</strong>: Ein/e zuf&auml;llige/r Gegner/in wird ausgew&auml;hlt.<br>
   <strong>Gezieltes Duell</strong>: Gegner/in kann ausgew&auml;hlt werden.<br>
   <br>

@@ -62,6 +62,7 @@ $string['miquiz_create_game_modes'] = 'Game Mode';
 $string['miquiz_create_game_modes_help'] = 'Playable game modes during the productive phase.
   Can be changed later.
   <br><br>
+  <strong>Solo game</strong>: A game without an opponent.<br>
   <strong>Random duel</strong>: A random opponent is selected.<br>
   <strong>Picked duel</strong>: A specifc opponent can be selected.<br>
   <br>
