@@ -50,31 +50,16 @@ if (!$show_overview) {
     $res = $DB->get_records_sql($sql);
 }
 
+// Build basic miquiz objects
 $miquizzes = [];
 foreach ($res as $a_cm_entry) {
     $a_cm = get_coursemodule_from_id('miquiz', $a_cm_entry->id, 0, false, MUST_EXIST);
     $miquiz = $DB->get_record('miquiz', array('id'=> $a_cm->instance));
-
-    $reports = [];
-    $resp = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/reports");
+    $a_course = $DB->get_record('course', array('id'=> $a_cm->course));
 
     $now = time();
     $currentState = miquiz::getCurrentStateForQuiz($miquiz);
     $status = get_string('miquiz_status_' . $currentState, 'miquiz');
-
-    $resp = miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/stats");
-    $answeredQuestions_training_total = $resp["answeredQuestions"]["training"]["total"];
-    $answeredQuestions_training_correct = $resp["answeredQuestions"]["training"]["correct"];
-    $answeredQuestions_training_wrong = $answeredQuestions_training_total - $answeredQuestions_training_correct;
-    $answeredQuestions_duel_total = $resp["answeredQuestions"]["duel"]["total"];
-    $answeredQuestions_duel_correct = $resp["answeredQuestions"]["duel"]["correct"];
-    $answeredQuestions_duel_wrong = $answeredQuestions_duel_total - $answeredQuestions_duel_correct;
-
-    $answeredQuestions_total = number_format($answeredQuestions_training_total + $answeredQuestions_duel_total, 0);
-    $answeredQuestions_correct = number_format($answeredQuestions_training_correct + $answeredQuestions_duel_correct, 0);
-    $answeredQuestions_wrong = number_format($answeredQuestions_training_wrong + $answeredQuestions_duel_wrong, 0);
-
-    $a_course = $DB->get_record('course', array('id'=> $a_cm->course));
 
     $miquizzes[] = [
         'id' => $a_cm->id,
@@ -84,13 +69,38 @@ foreach ($res as $a_cm_entry) {
         'assesstimestart' => $miquiz->assesstimestart,
         'assesstimefinish' => $miquiz->assesstimefinish,
         'num_questions' => count($DB->get_records('miquiz_questions', array('quizid' => $miquiz->id))),
-        'num_questions_with_reports' => count(miquiz::api_get("api/categories/" . $miquiz->miquizcategoryid . "/reports")),
         'status' => $status,
-        'answeredQuestions_total' => "$answeredQuestions_total ($answeredQuestions_training_total / $answeredQuestions_duel_total)",
-        'answeredQuestions_correct' => "$answeredQuestions_correct ($answeredQuestions_training_correct / $answeredQuestions_duel_correct)",
-        'answeredQuestions_wrong' => "$answeredQuestions_wrong ($answeredQuestions_training_wrong / $answeredQuestions_duel_wrong)",
         'miquizcategoryid' => $miquiz->miquizcategoryid,
     ];
+}
+
+// Add stats and number of reports from miquiz server
+$categoryIds = implode(',',array_map(function ($miquiz) {
+    return $miquiz['miquizcategoryid'];
+}, $miquizzes));
+$stats = miquiz::api_get('api/categories/stats?categories=' . $categoryIds);
+$reports = miquiz::api_get('api/categories/reports?categories=' . $categoryIds);
+foreach ($miquizzes as &$miquiz) {
+    $categoryId = $miquiz['miquizcategoryid'];
+    $numberOfReports = count($reports[$categoryId]);
+
+    $miquizStats = $stats[$categoryId];
+    $answeredQuestions_training_total = $miquizStats["answeredQuestions"]["training"]["total"];
+    $answeredQuestions_training_correct = $miquizStats["answeredQuestions"]["training"]["correct"];
+    $answeredQuestions_training_wrong = $answeredQuestions_training_total - $answeredQuestions_training_correct;
+    $answeredQuestions_duel_total = $miquizStats["answeredQuestions"]["duel"]["total"];
+    $answeredQuestions_duel_correct = $miquizStats["answeredQuestions"]["duel"]["correct"];
+    $answeredQuestions_duel_wrong = $answeredQuestions_duel_total - $answeredQuestions_duel_correct;
+
+    $answeredQuestions_total = number_format($answeredQuestions_training_total + $answeredQuestions_duel_total, 0);
+    $answeredQuestions_correct = number_format($answeredQuestions_training_correct + $answeredQuestions_duel_correct, 0);
+    $answeredQuestions_wrong = number_format($answeredQuestions_training_wrong + $answeredQuestions_duel_wrong, 0);
+
+    // TODO: There could be more than one report for a question
+    $miquiz['num_questions_with_reports'] = $numberOfReports;
+    $miquiz['answeredQuestions_total'] = "$answeredQuestions_total ($answeredQuestions_training_total / $answeredQuestions_duel_total)";
+    $miquiz['answeredQuestions_correct'] = "$answeredQuestions_correct ($answeredQuestions_training_correct / $answeredQuestions_duel_correct)";
+    $miquiz['answeredQuestions_wrong'] = "$answeredQuestions_wrong ($answeredQuestions_training_wrong / $answeredQuestions_duel_wrong)";
 }
 
 if (isset($_GET['download_categories'])) {
