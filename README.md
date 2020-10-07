@@ -26,8 +26,9 @@ as Moodle tries to get the config value from the database before any tables are 
 
 ### Available users
 - admin:Admin123. = Admin
-- alice:Alice123. = User
-- bob:Bob1234. = Teacher
+- alice:Alice123. = Student (Course A), Teacher (Course B)
+- bob:Bob1234. = Teacher (Course A), Student (Course B)
+- carol:Carol123. = User with 'mod/miquiz:overview' capability (via system role "MI-Quiz Manager")
 
 ### Reset DB
 `docker-compose down -v`
