@@ -24,8 +24,6 @@ $string['miquiz_index_download'] = 'Download statistics';
 $string['miquiz_index_noquizselected'] = 'Please select at least one quiz!';
 $string['miquiz_index_overview'] = 'Display all activities';
 
-$string['miquiz_setting_info_title'] = 'Additional info';
-$string['miquiz_setting_info_helper'] = 'Visible when creating a new instance.';
 $string['miquiz_setting_instanceurl_title'] = 'URL for quiz instance';
 $string['miquiz_setting_instanceurl_helper'] = 'Please add the full url to the quiz instance';
 $string['miquiz_setting_apikey_title'] = 'API key for quiz instance';
@@ -36,6 +34,8 @@ $string['miquiz_setting_questiontimetag_title'] = 'Tag name for time to answer';
 $string['miquiz_setting_questiontimetag_helper'] = 'First part of the question tag that determines the time to answer. The complete tag is structered like this: [tagname]:[time_to_answer]';
 $string['miquiz_setting_questiondefaulttime_title'] = 'Default time to answer (in s)';
 $string['miquiz_setting_questiondefaulttime_helper'] = 'In case no specific time to answer is set, this default time (in seconds) will be used.';
+$string['miquiz_setting_info_title'] = 'Additional info';
+$string['miquiz_setting_info_helper'] = 'Visible when creating a new instance.';
 
 $string['miquiz_create_name'] = 'Quiz Name';
 $string['miquiz_create_short_name'] = 'Short Name';
