@@ -5,7 +5,13 @@ Activity module for Moodle that enables you to use already existing Moodle
 structures like questions and courses to create quizzes in MI-Quiz.
 
 ## Install plugin in Moodle
-TODO
+
+1. Download ZIP of master branch: https://github.com/PW-Solutions/miquiz-moodle/archive/master.zip
+2. Open Moodle Plugin installer: /admin/tool/installaddon/index.php
+3. Select downloaded ZIP files as ZIP package
+4. Select "Activity Module (mod)" as Plugin type
+5. Enter `miquiz` in the "Rename the root directory" field
+6. Follow the installation process.
 
 Make sure to enable web services and the external service `moodle_mobile_app`,
 so that MI-Quiz can authenticate users with Moodle credentials. See:
