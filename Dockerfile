@@ -21,7 +21,11 @@ sed -e "s/pgsql/mariadb/" \
   -e "s/password/moodle/" \
   -e "s/localhost/db/" \
   -e "s|http://example.com/moodle|$MOODLE_URL|" \
-  -e "s|/home/example/moodledata|/var/www/moodledata|" /var/www/html/config-dist.php > /var/www/html/config.php && \
+  -e "s|/home/example/moodledata|/var/www/moodledata|" /var/www/html/config-dist.php > /var/www/html/config.php &&\
+cd /var/www/html/question/type &&\
+curl https://moodle.org/plugins/download.php/24700/qtype_multichoiceset_moodle40_2021071200.zip > qtype_multichoiceset.zip &&\
+unzip qtype_multichoiceset.zip &&\
+rm qtype_multichoiceset.zip &&\
 chown -R www-data:www-data /var/www/html &&\
 mkdir -p /var/log/php/errors &&\
 touch /var/log/php/errors/php_error.log &&\
