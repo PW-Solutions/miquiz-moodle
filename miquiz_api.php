@@ -230,7 +230,11 @@ class miquiz
         $possibilities = $DB->get_records('question_answers', ['question' => $question->id]);
         $json_possibilities = [];
         foreach ($possibilities as $possibility) {
-            $possibilityDescription = miquiz::addImage($possibility->answer, $context->id, 'question', 'answer', $possibility->id);
+            if ($question->qtype === 'truefalse') {
+                $possibilityDescription = get_string('miquiz_question_truefalse_' . $possibility->answer, 'miquiz');
+            } else {
+                $possibilityDescription = miquiz::addImage($possibility->answer, $context->id, 'question', 'answer', $possibility->id);
+            }
             $json_possibilities[] = [
                 'description' => $possibilityDescription,
                 'isCorrect' => ((float) $possibility->fraction) > 0,
