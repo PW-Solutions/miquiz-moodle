@@ -96,6 +96,8 @@ class mod_miquiz_mod_form extends moodleform_mod
         // $contexts = new question_edit_contexts($context2);
         // question_category_select_menu($contexts);
         $questionchooser_categories = array();
+
+        $enabled_question_types = ['multichoiceset', 'multichoice', 'truefalse'];
         foreach ($categories as $category) {
             $questions = $DB->get_records('question', array('category' => $category->id));
             if (empty($questions)) {
@@ -103,7 +105,7 @@ class mod_miquiz_mod_form extends moodleform_mod
             }
             $question_dtos = array();
             foreach ($questions as $question) {
-                if ($question->qtype =='multichoice') {
+                if (in_array($question->qtype, $enabled_question_types)) {
                     array_push(
                         $question_dtos,
                         array(
