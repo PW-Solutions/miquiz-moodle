@@ -145,7 +145,7 @@ class miquiz
     public static function createOrUpdateMiQuizQuestion($question, $miQuizCategoryId)
     {
         $miQuizQuestionId = miquiz::getMiQuizQuestionId($question->id);
-        if (is_null($miQuizQuestionId) || !miquiz::miQuizQuestionExistsInMiQuiz($miQuizQuestionId)) {
+        if (is_null($miQuizQuestionId)) {
             $questionData = miquiz::getQuestionData($question, $miQuizCategoryId);
             $miQuizQuestion = miquiz::createMiQuizQuestion($questionData);
             $miQuizQuestionId = (int) $miQuizQuestion['id'];
@@ -276,11 +276,6 @@ class miquiz
             ],
         ];
         miquiz::api_post('api/categories/' . $miQuizCategoryId . '/relationships/questions', $addRelationshipPayload);
-    }
-
-    private static function miQuizQuestionExistsInMiQuiz($miQuizQuestionId)
-    {
-        return !is_null(miquiz::getMiQuizQuestion($miQuizQuestionId));
     }
 
     private static function getMiQuizQuestion($miQuizQuestionId)
