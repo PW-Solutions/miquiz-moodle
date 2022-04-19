@@ -145,7 +145,7 @@ class miquiz
     public static function createOrUpdateMiQuizQuestion($question, $miQuizCategoryId)
     {
         $miQuizQuestionId = miquiz::getMiQuizQuestionId($question->id);
-        if (is_null($miQuizQuestionId) || !miquiz::miQuizQuestionExistsInMiQuiz($miQuizQuestionId)) {
+        if (is_null($miQuizQuestionId)) {
             $questionData = miquiz::getQuestionData($question, $miQuizCategoryId);
             $miQuizQuestion = miquiz::createMiQuizQuestion($questionData);
             $miQuizQuestionId = (int) $miQuizQuestion['id'];
@@ -230,7 +230,11 @@ class miquiz
         $possibilities = $DB->get_records('question_answers', ['question' => $question->id]);
         $json_possibilities = [];
         foreach ($possibilities as $possibility) {
-            $possibilityDescription = miquiz::addImage($possibility->answer, $context->id, 'question', 'answer', $possibility->id);
+            if ($question->qtype === 'truefalse') {
+                $possibilityDescription = get_string('miquiz_question_truefalse_' . $possibility->answer, 'miquiz');
+            } else {
+                $possibilityDescription = miquiz::addImage($possibility->answer, $context->id, 'question', 'answer', $possibility->id);
+            }
             $json_possibilities[] = [
                 'description' => $possibilityDescription,
                 'isCorrect' => ((float) $possibility->fraction) > 0,
@@ -272,11 +276,6 @@ class miquiz
             ],
         ];
         miquiz::api_post('api/categories/' . $miQuizCategoryId . '/relationships/questions', $addRelationshipPayload);
-    }
-
-    private static function miQuizQuestionExistsInMiQuiz($miQuizQuestionId)
-    {
-        return !is_null(miquiz::getMiQuizQuestion($miQuizQuestionId));
     }
 
     private static function getMiQuizQuestion($miQuizQuestionId)

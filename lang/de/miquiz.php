@@ -89,6 +89,9 @@ $string['miquiz_create_activate_training_phase_help'] = 'W&auml;hrend der Traini
 $string['miquiz_create_show_always_in_production'] = 'Aktivit&auml;t in der Produktivphase immer zur Auswahl stellen';
 $string['miquiz_create_show_always_in_production_help'] = 'Wenn aktiviert, wird w&auml;hrend der Produktivphase in der Kategorieauswahl eines Duells diese Kategorie <b>immer</b> zur Auswahl gestellt';
 
+$string['miquiz_question_truefalse_True'] = 'Wahr';
+$string['miquiz_question_truefalse_False'] = 'Falsch';
+
 $string['miquiz_view_overview'] = '&Uuml;bersicht';
 $string['miquiz_view_coursename'] = 'Kurs';
 $string['miquiz_view_shortname'] = 'Abk&uuml;rzung';

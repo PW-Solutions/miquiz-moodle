@@ -89,6 +89,9 @@ $string['miquiz_create_activate_training_phase_help'] = 'During the training pha
 $string['miquiz_create_show_always_in_production'] = 'Always include activity during production phase';
 $string['miquiz_create_show_always_in_production_help'] = 'If activated, the category will be <b>always</b> included in the category selection during the production phase.';
 
+$string['miquiz_question_truefalse_True'] = 'True';
+$string['miquiz_question_truefalse_False'] = 'False';
+
 $string['miquiz_view_overview'] = 'Overview'; //&Uuml;bersicht
 $string['miquiz_view_coursename'] = 'Course';
 $string['miquiz_view_name'] = 'Name';
