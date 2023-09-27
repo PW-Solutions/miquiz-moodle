@@ -6,7 +6,8 @@ structures like questions and courses to create quizzes in MI-Quiz.
 
 ## Install plugin in Moodle
 
-1. Download ZIP of master branch: https://github.com/PW-Solutions/miquiz-moodle/archive/master.zip
+1. Download ZIP of master branch: https://github.com/PW-Solutions/miquiz-moodle/archive/master.zip (for Moodle v4+)
+    - Use v3 for Moodle < v4
 2. Open Moodle Plugin installer: /admin/tool/installaddon/index.php
 3. Select downloaded ZIP files as ZIP package
 4. Select "Activity Module (mod)" as Plugin type
