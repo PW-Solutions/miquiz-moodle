@@ -80,7 +80,8 @@ if (count($quiz_questions) > 0) {
 
     $questionsbycategory = array();
     foreach ($questions as $question) {
-        $category = $DB->get_record('question_categories', array('id' => $question->category));
+        $query = 'select qc.* from {question_categories} qc left join {question_bank_entries} qbe on (qbe.questioncategoryid = qc.id) left join {question_versions} qv on (qbe.id = qv.questionbankentryid) where qv.questionid = :id';
+        $category = $DB->get_record_sql($query, ['id' => $question->id]);
         if (!array_key_exists($category->name, $questionsbycategory)) {
             $questionsbycategory[$category->name] = [$question];
         } else {
@@ -92,8 +93,7 @@ if (count($quiz_questions) > 0) {
         if (count($questions) == 0) {
             continue;
         }
-
-        $category = $DB->get_record('question_categories', array('id' => $questions[0]->category));
+        $category = $DB->get_record('question_categories', array('name' => $catname));
         $questions_dto = array();
         foreach ($questions as $question) {
             $miquiz_question = $DB->get_record_sql('SELECT miquizquestionid FROM {miquiz_questions} WHERE questionid='. $question->id.' AND quizid='.$miquiz->id);
@@ -115,7 +115,8 @@ if (count($quiz_questions) > 0) {
                 array(
                 'question_id' =>$question->id,
                 'question_name' =>$question->name,
-                'reports' => $reports_dto
+                'reports' => $reports_dto,
+                'category_id' => $category->id,
                 )
             );
         }
