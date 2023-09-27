@@ -87,7 +87,7 @@ class mod_miquiz_mod_form extends moodleform_mod
         $mform->addElement('header', 'modstandardelshdr', get_string("miquiz_create_questions", "miquiz").'<i class="icon fa fa-exclamation-circle text-danger fa-fw " aria-hidden="true" title="Required" aria-label="Required"></i>');
         $mform->setExpanded('modstandardelshdr');
 
-        // https://docs.moodle.org/dev/Question_database_structure
+        // https://www.examulator.com/er/4.1/tables/question_versions.html#Relationships
         $PAGE->requires->css(new moodle_url('/mod/miquiz/static/css/questionchooser.css'));
         $context = context_course::instance($COURSE->id);
         $categories = $DB->get_records('question_categories', array('contextid' => $context->id));
@@ -97,7 +97,21 @@ class mod_miquiz_mod_form extends moodleform_mod
         // question_category_select_menu($contexts);
         $questionchooser_categories = array();
         foreach ($categories as $category) {
-            $questions = $DB->get_records('question', array('category' => $category->id));
+            $query = 'select q.id, q.name , q.qtype, v.version
+                from {question} q 
+                join {question_versions} v on q.id = v.questionid
+                join {question_bank_entries} e on e.id = v.questionbankentryid
+                where e.questioncategoryid = :category
+                and v.status = :status
+                order by e.id, v.version';
+            // TODO: get only latest version of questions that are not in draft
+            $questions = $DB->get_records_sql(
+                $query,
+                [
+                    'category' => $category->id,
+                    'status' => \core_question\local\bank\question_version_status::QUESTION_STATUS_READY 
+                ]
+            );
             if (empty($questions)) {
                 continue;
             }
@@ -106,10 +120,11 @@ class mod_miquiz_mod_form extends moodleform_mod
                 if ($question->qtype =='multichoice') {
                     array_push(
                         $question_dtos,
-                        array(
-                        "question_id" => $question->id,
-                        "question_name" => $question->name
-                        )
+                        [
+                            'question_id' => $question->id,
+                            'question_name' => $question->name,
+                            'question_version' => $question->version,
+                        ]
                     );
                 }
             }

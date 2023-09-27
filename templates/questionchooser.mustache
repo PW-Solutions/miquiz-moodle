@@ -1,15 +1,30 @@
 <div>
   {{#hasCategories}}
   <input type="text" id="questionsearch" size="15" onkeyup="updatequestionview(undefined);" placeholder="{{{ i18n_miquiz_create_questions_search }}}"></input>
-  <ul class="questionul collapsible-actions">
+  <ul class="questionul">
   {{#categories}}
     <li>
-      <div class="questiondiv mod-mi--collapsible collapseexpand"><label class="questionlabel"><input type="checkbox" onclick="updatequestionview(this);" class="categorycheckbox">&nbsp;{{category_name}}</label></div>
-      <ul class="nested">
+      <div class="questiondiv">
+        <a data-toggle="collapse" href="#category_{{category_id}}_questions" role="button" aria-expanded="false" class="btn btn-icon mr-1 icons-collapse-expand icon-size-2" id="category_{{category_id}}_collapse">
+            <span class="expanded-icon icon-no-margin p-2" title="Collapse">
+              <i class="icon fa fa-chevron-down fa-fw " aria-hidden="true"></i>
+            </span>
+            <span class="collapsed-icon icon-no-margin p-2" title="Expand">
+              <span class="dir-rtl-hide"><i class="icon fa fa-chevron-right fa-fw " aria-hidden="true"></i></span>
+              <span class="dir-ltr-hide"><i class="icon fa fa-chevron-left fa-fw " aria-hidden="true"></i></span>
+            </span>
+        </a>
+        <label class="questionlabel">
+          <input type="checkbox" onclick="updatequestionview(this);" class="categorycheckbox">&nbsp;{{category_name}}
+        </label>
+      </div>
+      <ul class="nested collapseable collapse show" id="category_{{category_id}}_questions">
       {{#questions}}
         <li>
-          <label class="questionlabel"><input type="checkbox" class="questioncheckbox" onclick="updatequestionview(this);" value="{{question_id}}">&nbsp;{{question_name}}</label>&nbsp;
-          <a href="/question/preview.php?id={{question_id}}&courseid={{category_id}}" target="popup" onclick="window.open('/question/preview.php?id={{question_id}}&courseid={{category_id}}','popup','width=600,height=600'); return false;" style="cursor: pointer;">
+          <label class="questionlabel">
+            <input type="checkbox" class="questioncheckbox" onclick="updatequestionview(this);" value="{{question_id}}">&nbsp;{{question_name}} (v{{question_version}})
+          </label>&nbsp;
+          <a href="/question/bank/previewquestion/preview.php?id={{question_id}}&courseid={{category_id}}" target="popup" onclick="window.open('/question/bank/previewquestion/preview.php?id={{question_id}}&courseid={{category_id}}','popup','width=600,height=600'); return false;" style="cursor: pointer;">
             <i class="icon fa fa-search-plus fa-fw iconsmall" aria-hidden="true" title="Preview" aria-label="Preview"></i>
           </a>
         </li>
@@ -25,14 +40,6 @@
   {{/hasCategories}}
 </div>
 <script>
-var toggler = document.getElementsByClassName('mod-mi--collapsible');
-var i;
-for (i=0; i<toggler.length; i++) {
-  toggler[i].addEventListener("click", function() {
-    this.parentElement.querySelector(".nested").classList.toggle("active");
-    this.classList.toggle("collapse-all");
-  });
-}
 updatequestionview = function(el, init){
   // check all questions in category if category checkbox is clicked
   if(el!=undefined && el.classList.contains("categorycheckbox")){
