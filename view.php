@@ -117,6 +117,7 @@ if (count($quiz_questions) > 0) {
                 'question_name' =>$question->name,
                 'reports' => $reports_dto,
                 'category_id' => $category->id,
+                'course_id' => $id
                 )
             );
         }
