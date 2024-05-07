@@ -130,6 +130,7 @@ class mod_miquiz_mod_form extends moodleform_mod
             }
             $questionchooser_categories[] = array(
                 "category_id" => $category->id,
+                'course_id' => $this->course->id,
                 "category_name" => $category->name,
                 "questions" => $question_dtos
             );
