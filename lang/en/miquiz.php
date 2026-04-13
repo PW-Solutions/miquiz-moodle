@@ -36,6 +36,8 @@ $string['miquiz_setting_questiondefaulttime_title'] = 'Default time to answer (i
 $string['miquiz_setting_questiondefaulttime_helper'] = 'In case no specific time to answer is set, this default time (in seconds) will be used.';
 $string['miquiz_setting_info_title'] = 'Additional info';
 $string['miquiz_setting_info_helper'] = 'Visible when creating a new instance.';
+$string['miquiz_setting_usernamedomain_title'] = 'Enabled email domains for usernames';
+$string['miquiz_setting_usernamedomain_helper'] = 'A comma-separated list of email domains for which the local part of the email address should be used as the username (instead of the Moodle username)';
 
 $string['miquiz_create_name'] = 'Quiz Name';
 $string['miquiz_create_short_name'] = 'Short Name';

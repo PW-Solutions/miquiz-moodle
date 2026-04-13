@@ -44,8 +44,7 @@ as Moodle tries to get the config value from the database before any tables are 
 `docker-compose build --no-cache`
 
 ### Create new startup_db
-`docker exec -it moodle_db_1 mysqldump -u moodle -pmoodle moodle -r startup_db.sql`
-`docker cp moodle_db_1:startup_db.sql ./`
+`docker exec -it moodle-db-1 mysqldump -u moodle -pmoodle moodle > startup_db.sql`
 
 See https://stackoverflow.com/a/20086949/5816097 on why we cannot use `... > startup_db.sql`.
 
