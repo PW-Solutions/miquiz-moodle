@@ -98,7 +98,7 @@ class mod_miquiz_mod_form extends moodleform_mod
         $questionchooser_categories = array();
         foreach ($categories as $category) {
             $query = 'select q.id, q.name , q.qtype, v.version
-                from {question} q 
+                from {question} q
                 join {question_versions} v on q.id = v.questionid
                 join {question_bank_entries} e on e.id = v.questionbankentryid
                 where e.questioncategoryid = :category
@@ -109,7 +109,7 @@ class mod_miquiz_mod_form extends moodleform_mod
                 $query,
                 [
                     'category' => $category->id,
-                    'status' => \core_question\local\bank\question_version_status::QUESTION_STATUS_READY 
+                    'status' => \core_question\local\bank\question_version_status::QUESTION_STATUS_READY
                 ]
             );
             if (empty($questions)) {
