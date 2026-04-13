@@ -36,6 +36,8 @@ $string['miquiz_setting_questiontimetag_title'] = 'Tagname f&uuml;r Beantwortung
 $string['miquiz_setting_questiontimetag_helper'] = 'Name des Fragetags, dass die Beantwortungszeit festlegt. Der Tag setzt sich folgendermaßen zusammen: [tagname]:[beantwortungszeit]';
 $string['miquiz_setting_questiondefaulttime_title'] = 'Default-Beantwortungszeit (in s)';
 $string['miquiz_setting_questiondefaulttime_helper'] = 'Falls f&uuml;r eine Frage keine Beantwortungszeit festgelegt wurde, wird diese Zeit in Sekunden verwendet.';
+$string['miquiz_setting_usernamedomain_title'] = 'Aktivierte E-Mail-Domains für Benutzernamen';
+$string['miquiz_setting_usernamedomain_helper'] = 'Kommagetrennte Liste an E-Mail-Domains, für die der Lokale-Part der E-Mail-Adresse als Benutzername verwendet werden soll (anstelle des Moodle-Benutzernamens)';
 
 $string['miquiz_create_name'] = 'Quiz-Name';
 $string['miquiz_create_short_name'] = 'Abk&uuml;rzung';

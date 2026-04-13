@@ -56,6 +56,16 @@ if ($hassiteconfig) {
     );
 
     $settings->add(
+        new admin_setting_configtext(
+            'mod_miquiz/usernamedomain',
+            get_string('miquiz_setting_usernamedomain_title', 'miquiz'),
+            get_string('miquiz_setting_usernamedomain_helper', 'miquiz'),
+            '',
+            PARAM_TEXT
+        )
+    );
+
+    $settings->add(
         new admin_setting_confightmleditor(
             'mod_miquiz/additional_info',
             get_string('miquiz_setting_info_title', 'miquiz'),

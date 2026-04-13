@@ -594,7 +594,7 @@ class miquiz
         $miquiz_users = miquiz::api_get('api/users?fields[users]=id,externalLogin');
         $miquiz_users_dirty = false;
         foreach ($enrolled as $user) {
-            $username = $user->username;
+            $username = miquiz::get_username_from_moodle_user($user);
             if (defined('CLI_SCRIPT') && CLI_SCRIPT === true) {
                 cli_write("    $username");
             } else {
@@ -669,7 +669,8 @@ class miquiz
         // send patch to miquiz to update user links
         $user_patch = [];
         foreach ($enrolled as $a_user) {
-            $a_user_id = miquiz::get_user_id($a_user->username, $miquiz_users);
+            $a_username = miquiz::get_username_from_moodle_user($a_user);
+            $a_user_id = miquiz::get_user_id($a_username, $miquiz_users);
             if (is_null($a_user_id)) {
                 continue;
             }
@@ -680,6 +681,22 @@ class miquiz
         }
         $resp = miquiz::api_post('api/categories/' . $miquiz->miquizcategoryid . '/relationships/players', ['data' => $user_patch]);
         return $enrolled;
+    }
+
+    public static function get_username_from_moodle_user($user)
+    {
+        $emailDomainConfig = get_config('mod_miquiz', 'usernamedomain');
+        if (empty($emailDomainConfig) || empty($user->email)) {
+            return $user->username;
+        }
+        $emailDomains = explode(',', $emailDomainConfig);
+        $emailParts = explode('@', $user->email);
+        foreach ($emailDomains as $emailDomain) {
+            if ($emailParts[1] === $emailDomain) {
+                return $emailParts[0];
+            }
+        }
+        return $user->username;
     }
 
     public static function get_user_id($username, $miquiz_users = null)
