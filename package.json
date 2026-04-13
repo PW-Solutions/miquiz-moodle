@@ -20,8 +20,8 @@
   },
   "homepage": "https://github.com/PW-Solutions/miquiz-moodle#readme",
   "devDependencies": {
-    "moment": "^2.29.2",
-    "puppeteer": "^13.5.2",
-    "underscore": "^1.13.2"
+    "moment": "^2.30.1",
+    "puppeteer": "^13.7.0",
+    "underscore": "^1.13.8"
   }
 }
