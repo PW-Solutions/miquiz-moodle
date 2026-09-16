@@ -1,6 +1,6 @@
 services:
   db:
-    image: mariadb:10.4
+    image: mariadb:10.11
     environment:
       - MARIADB_ROOT_PASSWORD=admin
       - MARIADB_USER=moodle
@@ -15,7 +15,5 @@ services:
         - MOODLE_URL=$SERVER
     ports:
       - ${PORT}:80
-    links:
-      - db
     volumes:
-      - ./:/var/www/html/mod/miquiz/
+      - ./:/var/www/html/public/mod/miquiz/

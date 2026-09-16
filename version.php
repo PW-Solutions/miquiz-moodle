@@ -9,6 +9,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_miquiz'; // Full name of the plugin (used for diagnostics).
 $plugin->version   = 2026041400;  // The current module version (Date: YYYYMMDDXX).
-$plugin->requires  = 2022112800;  // Requires Moodle 4.1.
-$plugin->release   = 'v4.4';
+$plugin->requires  = 2025100600;  // Requires Moodle 5.1.
+$plugin->release   = 'v5.0';
 $plugin->maturity = MATURITY_BETA;

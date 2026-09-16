@@ -8,19 +8,17 @@
 
 <div class="mod-mi--view">
 
-  <div class="clearfix">
-    <form action="{{ miquizurl }}" target="_blank" class="pull-left">
+  <div class="d-flex align-items-center gap-2 flex-wrap">
+    <form action="{{ miquizurl }}" target="_blank" class="m-0">
       <input class="btn btn-primary" type="submit" value="{{{ i18n_miquiz_view_openlink }}}">
     </form>
     {{#is_manager}}
-    <div class="pull-right">
-      <a href="{{url}}&download" class="btn btn-primary">
-        <i class="icon fa fa-download fa-fw" aria-hidden="true" aria-label=""></i> {{{ i18n_miquiz_index_download }}}
-      </a>
-      <button onclick="miquizSyncQuestions()" id="mod-mi--btn-sync-questions" class="btn btn-primary">
-        <i class="icon fa fa-refresh fa-fw" aria-hidden="true" aria-label=""></i> {{{ i18n_miquiz_sync_questions }}}
-      </button>
-    </div>
+    <a href="{{url}}&download" class="btn btn-primary">
+      <i class="icon fa fa-download fa-fw" aria-hidden="true" aria-label=""></i> {{{ i18n_miquiz_index_download }}}
+    </a>
+    <button onclick="miquizSyncQuestions()" id="mod-mi--btn-sync-questions" class="btn btn-primary">
+      <i class="icon fa fa-refresh fa-fw" aria-hidden="true" aria-label=""></i> {{{ i18n_miquiz_sync_questions }}}
+    </button>
     {{/is_manager}}
   </div><br>
 
@@ -65,10 +63,18 @@
 
   {{#is_manager}}
 
-  <div data-toggle="collapse" href="#mod-mi--section-questions">
+  <div class="d-flex align-items-center mb-2">
+    <a data-bs-toggle="collapse" href="#mod-mi--section-questions" role="button" aria-expanded="true" aria-controls="mod-mi--section-questions" class="btn btn-icon me-1 icons-collapse-expand">
+      <span class="expanded-icon icon-no-margin p-2" title="Collapse">
+        <i class="icon fa fa-chevron-down fa-fw" aria-hidden="true"></i>
+      </span>
+      <span class="collapsed-icon icon-no-margin p-2" title="Expand">
+        <i class="icon fa fa-chevron-right fa-fw" aria-hidden="true"></i>
+      </span>
+    </a>
     <span>{{{ i18n_miquiz_view_questions }}}</span>
   </div>
-  <div class="mod-mi--section collapse in show" id="mod-mi--section-questions">
+  <div class="mod-mi--section collapse show" id="mod-mi--section-questions">
   {{#categories}}
     <span class="badge">{{ category_name }}</span>
     <ul class="list-group">
@@ -90,10 +96,18 @@
   {{/categories}}
   </div>
 
-  <div data-toggle="collapse" href="#mod-mi--section-statistics">
+  <div class="d-flex align-items-center mb-2">
+    <a data-bs-toggle="collapse" href="#mod-mi--section-statistics" role="button" aria-expanded="true" aria-controls="mod-mi--section-statistics" class="btn btn-icon me-1 icons-collapse-expand">
+      <span class="expanded-icon icon-no-margin p-2" title="Collapse">
+        <i class="icon fa fa-chevron-down fa-fw" aria-hidden="true"></i>
+      </span>
+      <span class="collapsed-icon icon-no-margin p-2" title="Expand">
+        <i class="icon fa fa-chevron-right fa-fw" aria-hidden="true"></i>
+      </span>
+    </a>
     <span>{{{ i18n_miquiz_view_statistics_user }}}</span>
   </div>
-  <div class="mod-mi--section collapse in show" id="mod-mi--section-statistics">
+  <div class="mod-mi--section collapse show" id="mod-mi--section-statistics">
     <table id="userdatatable" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
       <thead>
         <tr>
@@ -299,7 +313,7 @@
       return;
     }
     button.disabled = true;
-    $.getJSON('{{ url }}&queue_adhoc_task=sync_questions', function (response) {
+    fetch('{{ url }}&queue_adhoc_task=sync_questions').then(response => response.json()).then(function (response) {
       button.disabled = false;
       if (!response.success) {
         console.warn('Sync of questions did not succeed!', response.error);
