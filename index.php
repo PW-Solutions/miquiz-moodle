@@ -12,7 +12,7 @@ if (!$show_overview) {
 
     // Ensure that the course specified is valid
     if (!$course = $DB->get_record('course', array('id'=> $id))) {
-        print_error('Course ID is incorrect');
+        throw new moodle_exception('invalidcourseid');
     }
 
     $url = new moodle_url('/mod/miquiz/index.php', array('id'=>$id));

@@ -4,8 +4,9 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once $CFG->dirroot.'/course/moodleform_mod.php';
 require_once $CFG->dirroot.'/question/editlib.php';
-require_once $CFG->dirroot.'/question/category_class.php';
 require_once "lib.php";
+
+use core_question\local\bank\question_bank_helper;
 
 class mod_miquiz_mod_form extends moodleform_mod
 {
@@ -90,11 +91,17 @@ class mod_miquiz_mod_form extends moodleform_mod
         // https://www.examulator.com/er/4.1/tables/question_versions.html#Relationships
         $PAGE->requires->css(new moodle_url('/mod/miquiz/static/css/questionchooser.css'));
         $context = context_course::instance($COURSE->id);
-        $categories = $DB->get_records('question_categories', array('contextid' => $context->id));
-        // require_once($CFG->libdir . '/questionlib.php');
-        // list($context2, $course2, $cm2) = get_context_info_array($context->id);
-        // $contexts = new question_edit_contexts($context2);
-        // question_category_select_menu($contexts);
+
+        $contextIds = [];
+
+        // get all question banks from the course
+        $shareableQuestionBanks = question_bank_helper::get_activity_instances_with_shareable_questions([$COURSE->id]);
+        $privateQuestionBanks = question_bank_helper::get_activity_instances_with_private_questions([$COURSE->id]);
+        foreach (array_merge($shareableQuestionBanks, $privateQuestionBanks) as $questionBank) {
+            $contextIds[] = $questionBank->contextid;
+        }
+
+        $categories = $DB->get_records_list('question_categories', 'contextid', $contextIds);
         $questionchooser_categories = array();
         foreach ($categories as $category) {
             $query = 'select q.id, q.name , q.qtype, v.version
@@ -183,7 +190,7 @@ class mod_miquiz_mod_form extends moodleform_mod
         if ($this->current->instance) {
             // Editing existing instance - copy existing files into draft area.
             $draftitemid = file_get_submitted_draft_itemid('mediafile');
-            file_prepare_draft_area($draftitemid, $this->context->id, 'mod_lesson', 'mediafile', 0, array('subdirs'=>0, 'maxbytes' => $this->course->maxbytes, 'maxfiles' => 1));
+            file_prepare_draft_area($draftitemid, $this->context->id, 'mod_miquiz', 'mediafile', 0, array('subdirs'=>0, 'maxbytes' => $this->course->maxbytes, 'maxfiles' => 1));
             $defaultvalues['mediafile'] = $draftitemid;
         }
     }

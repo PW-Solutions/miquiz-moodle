@@ -9,13 +9,13 @@ $id = required_param('id', PARAM_INT);  // Course Module ID
 $url = new moodle_url('/mod/miquiz/view.php', array('id'=>$id));
 $PAGE->set_url($url);
 if (!$cm = get_coursemodule_from_id('miquiz', $id)) {
-    print_error('Course Module ID was incorrect'); // NOTE this is invalid use of print_error, must be a lang string id
+    throw new moodle_exception('invalidcoursemodule');
 }
 if (!$course = $DB->get_record('course', array('id'=> $cm->course))) {
-    print_error('course is misconfigured');  // NOTE As above
+    throw new moodle_exception('coursemisconf');
 }
 if (!$miquiz = $DB->get_record('miquiz', array('id'=> $cm->instance))) {
-    print_error('course module is incorrect'); // NOTE As above
+    throw new moodle_exception('invalidcoursemodule');
 }
 require_login($course, false, $cm);
 
@@ -276,10 +276,9 @@ echo $PAGE->get_renderer('mod_miquiz')->render_from_template(
 );
 
 if ($is_manager) {
-    echo '<script type="text/javascript">if (typeof $ !== "undefined") var $x = jQuery.noConflict();</script>';
-    echo '<script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-3.3.1/dt-1.10.18/datatables.min.js"></script>';
-    echo '<script type="text/javascript">var $y = jQuery.noConflict(); if (typeof $ !== "undefined") $=$x;</script>';
-    $PAGE->requires->js_amd_inline('$y(document).ready(function() {$y("#userdatatable").DataTable();});');
+    echo '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-datatables@10.3.0/dist/style.css">';
+    echo '<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/simple-datatables@10.3.0/dist/umd/simple-datatables.js"></script>';
+    echo '<script type="text/javascript">document.addEventListener("DOMContentLoaded", function() { new simpleDatatables.DataTable("#userdatatable"); });</script>';
 }
 
 echo $OUTPUT->footer();
