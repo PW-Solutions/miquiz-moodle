@@ -1,4 +1,4 @@
-FROM php:8.1-apache
+FROM php:8.2-apache
 
 ARG MOODLE_URL
 
@@ -8,12 +8,14 @@ docker-php-ext-install mysqli zip gd intl soap opcache exif &&\
 mkdir -p /var/www/moodledata/lang &&\
 chown -R www-data:www-data /var/www/moodledata
 
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+
 RUN cd /var/www/moodledata/lang &&\
-curl -L https://download.moodle.org/download.php/direct/langpack/4.1/de.zip > de.zip &&\
+curl -L https://download.moodle.org/download.php/direct/langpack/5.1/de.zip > de.zip &&\
 unzip de.zip &&\
 rm de.zip &&\
 cd /var/www/html &&\
-curl -L https://download.moodle.org/download.php/direct/stable401/moodle-latest-401.tgz > moodle.tgz &&\
+curl -L https://download.moodle.org/download.php/direct/stable501/moodle-latest-501.tgz > moodle.tgz &&\
 tar -xzf moodle.tgz &&\
 rm moodle.tgz &&\
 mv moodle/* . && rm -rf moodle && cd / &&\
@@ -24,6 +26,8 @@ sed -e "s/pgsql/mariadb/" \
   -e "s|http://example.com/moodle|$MOODLE_URL|" \
   -e "s|/home/example/moodledata|/var/www/moodledata|" /var/www/html/config-dist.php > /var/www/html/config.php && \
 chown -R www-data:www-data /var/www/html &&\
+sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf &&\
+sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf &&\
 mkdir -p /var/log/php/errors &&\
 touch /var/log/php/errors/php_error.log &&\
 chmod 755 /var/log/php/errors/php_error.log &&\
